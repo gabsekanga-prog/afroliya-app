@@ -69,19 +69,18 @@ export async function saveRestaurantAction(
 }
 
 export async function deleteRestaurantAction(
-  _prev: { error?: string } | undefined,
   formData: FormData,
-): Promise<{ error?: string; ok?: boolean }> {
+): Promise<void> {
   await requireAdmin()
   const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
+  if (!admin) throw new Error('SUPABASE_SERVICE_ROLE_KEY manquant')
 
   const id = Number(formData.get('id'))
   const slug = String(formData.get('slug') ?? '').trim()
-  if (!Number.isFinite(id) || id < 1) return { error: 'Identifiant invalide' }
+  if (!Number.isFinite(id) || id < 1) throw new Error('Identifiant invalide')
 
   const { error } = await admin.from('restaurants').delete().eq('id', id)
-  if (error) return { error: error.message }
+  if (error) throw new Error(error.message)
 
   revalidatePath('/reserver-un-restaurant')
   if (slug) revalidatePath(`/reserver-un-restaurant/${slug}`)

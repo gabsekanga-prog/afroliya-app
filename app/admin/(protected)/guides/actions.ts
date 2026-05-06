@@ -96,18 +96,17 @@ export async function saveGuideAction(
 }
 
 export async function deleteGuideAction(
-  _prev: { error?: string } | undefined,
   formData: FormData,
-): Promise<{ error?: string; ok?: boolean }> {
+): Promise<void> {
   await requireAdmin()
   const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
+  if (!admin) throw new Error('SUPABASE_SERVICE_ROLE_KEY manquant')
 
   const slug = String(formData.get('slug') ?? '').trim()
-  if (!slug) return { error: 'Slug manquant' }
+  if (!slug) throw new Error('Slug manquant')
 
   const { error } = await admin.from('guides').delete().eq('slug', slug)
-  if (error) return { error: error.message }
+  if (error) throw new Error(error.message)
 
   revalidatePath('/guides', 'page')
   revalidatePath(`/guides/${slug}`, 'page')

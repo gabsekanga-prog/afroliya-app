@@ -3,8 +3,6 @@ import Link from 'next/link'
 import { fetchRestaurantsAdmin } from '@/lib/restaurants-admin'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
-import { deleteRestaurantAction } from './actions'
-
 export default async function AdminRestaurantsPage() {
   if (!getSupabaseAdmin()) {
     return (
