@@ -1,0 +1,94 @@
+Afroliya - Backlog tickets reservation MVP
+
+Sprint 1 - Reservation de base fiable (MVP)
+
+[ ] T1 - Creer le schema DB reservation
+- Tables: restaurants, service_slots, reservations, restaurant_users
+- reservations.status: confirmed, cancelled, no_show
+- Colonnes minimales: date, heure/creneau, couverts, coordonnees client
+
+[ ] T2 - Ajouter contraintes et index
+- Index: (restaurant_id, service_date, slot_start)
+- Check: party_size > 0
+- FK + NOT NULL sur champs critiques
+
+[ ] T3 - Seed de donnees de test
+- 2-3 restaurants
+- Creneaux sur 7 jours
+- Capacites differentes + reservations d'exemple
+
+[ ] T4 - Endpoint disponibilites
+- GET /api/restaurants/:id/slots?date=YYYY-MM-DD
+- Retour: creneaux, capacite totale, capacite restante, disponible/non
+
+[ ] T5 - Service de calcul capacite
+- Fonction serveur unique pour capacite restante par creneau
+- Exclure cancelled et no_show du comptage actif (selon regle)
+
+[ ] T6 - Endpoint creation reservation
+- POST /api/restaurants/:id/reservations
+- Valider payload + refuser si capacite insuffisante
+- Retour reservation confirmee ou erreur metier claire
+
+[ ] T7 - Protection concurrence (anti-surbooking)
+- Transaction DB (strategie atomique)
+- Test de concurrence basique (2 requetes simultanees)
+
+[ ] T8 - UI client MVP
+- Sur page resto: date, creneau, nb couverts, formulaire contact
+- Appel API + ecran de confirmation
+
+[ ] T9 - Gestion d'erreurs UX
+- Messages clairs: creneau complet, donnees invalides, erreur technique
+- Etats loading/disabled pendant soumission
+
+[ ] T10 - Logs minimaux
+- Log creation reservation, refus capacite, erreurs API
+- Inclure restaurant_id, date, creneau, party_size
+
+
+Sprint 2 - Back-office resto, securite, operationnel
+
+[ ] T11 - Auth restaurateur
+- Connexion comptes restos (email/password ou magic link)
+
+[ ] T12 - Autorisations / RLS
+- Un resto lit/ecrit uniquement ses donnees
+- Verif stricte cote DB (RLS) ou API
+
+[ ] T13 - Back-office infos de base resto
+- Modifier nom, description, adresse, image, contacts
+
+[ ] T14 - Back-office gestion creneaux
+- CRUD creneaux + capacite
+- Validation anti-doublons de creneaux
+
+[ ] T15 - Back-office liste reservations
+- Vue jour/semaine
+- Actions statut: confirmer (si besoin), annuler, no_show
+
+[ ] T16 - Emails transactionnels
+- Confirmation client
+- Notification resto (nouvelle reservation)
+
+[ ] T17 - Annulation client simple
+- Lien/token d'annulation dans email
+- Mise a jour statut + liberation capacite
+
+[ ] T18 - Tableaux de bord mini
+- KPIs: reservations/jour, taux annulation, no_show
+
+[ ] T19 - QA end-to-end
+- Parcours complet: dispo -> reservation -> notification -> annulation
+- Cas limite: dernier creneau disponible
+
+[ ] T20 - Mise en production controlee
+- Rollout progressif (quelques restos pilotes)
+- Verif logs + feedback terrain pendant 1 semaine
+
+
+Definition of Done (pour chaque ticket)
+- API + validation + gestion d'erreur
+- Test manuel clair (etapes + resultat attendu)
+- Logs utiles
+- UI minimale acceptable
