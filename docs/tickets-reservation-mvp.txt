@@ -1,11 +1,18 @@
 Afroliya - Backlog tickets reservation MVP
 
+Decision produit MVP
+- Modele: validation manuelle par le restaurant
+- Creation reservation: demande en attente (pending), pas confirmation automatique
+- Notification resto MVP: email + SMS
+- WhatsApp: hors MVP, prevu V2
+
 Sprint 1 - Reservation de base fiable (MVP)
 
 [ ] T1 - Creer le schema DB reservation
 - Tables: restaurants, service_slots, reservations, restaurant_users
-- reservations.status: confirmed, cancelled, no_show
+- reservations.status: pending, confirmed, declined, cancelled, no_show
 - Colonnes minimales: date, heure/creneau, couverts, coordonnees client
+- Ajouter champs utiles: confirmation_token, client_manage_token, token_expires_at
 
 [ ] T2 - Ajouter contraintes et index
 - Index: (restaurant_id, service_date, slot_start)
@@ -23,12 +30,14 @@ Sprint 1 - Reservation de base fiable (MVP)
 
 [ ] T5 - Service de calcul capacite
 - Fonction serveur unique pour capacite restante par creneau
-- Exclure cancelled et no_show du comptage actif (selon regle)
+- Compter pending et confirmed comme reservations actives
+- Exclure declined, cancelled et no_show du comptage actif
 
 [ ] T6 - Endpoint creation reservation
 - POST /api/restaurants/:id/reservations
 - Valider payload + refuser si capacite insuffisante
-- Retour reservation confirmee ou erreur metier claire
+- Creer une demande en pending
+- Retour demande transmise ou erreur metier claire
 
 [ ] T7 - Protection concurrence (anti-surbooking)
 - Transaction DB (strategie atomique)
@@ -36,14 +45,14 @@ Sprint 1 - Reservation de base fiable (MVP)
 
 [ ] T8 - UI client MVP
 - Sur page resto: date, creneau, nb couverts, formulaire contact
-- Appel API + ecran de confirmation
+- Appel API + ecran "demande transmise au restaurant"
 
 [ ] T9 - Gestion d'erreurs UX
 - Messages clairs: creneau complet, donnees invalides, erreur technique
 - Etats loading/disabled pendant soumission
 
 [ ] T10 - Logs minimaux
-- Log creation reservation, refus capacite, erreurs API
+- Log creation demande, acceptation/refus resto, annulation, refus capacite, erreurs API
 - Inclure restaurant_id, date, creneau, party_size
 
 
@@ -58,6 +67,7 @@ Sprint 2 - Back-office resto, securite, operationnel
 
 [ ] T13 - Back-office infos de base resto
 - Modifier nom, description, adresse, image, contacts
+- Ajouter telephone de notification SMS
 
 [ ] T14 - Back-office gestion creneaux
 - CRUD creneaux + capacite
@@ -65,24 +75,36 @@ Sprint 2 - Back-office resto, securite, operationnel
 
 [ ] T15 - Back-office liste reservations
 - Vue jour/semaine
-- Actions statut: confirmer (si besoin), annuler, no_show
+- Actions statut: accepter, refuser/annuler, no_show
 
-[ ] T16 - Emails transactionnels
-- Confirmation client
-- Notification resto (nouvelle reservation)
+[ ] T16 - Page action resto via lien securise
+- Lien depuis email/SMS vers une page simple sans connexion
+- Afficher details demande + coordonnees client
+- Actions: accepter, refuser/annuler
+- Bouton "Voir toutes les reservations" redirige vers connexion back-office
+- Gerer idempotence et conflits: double clic, demande deja annulee, demande deja traitee
 
-[ ] T17 - Annulation client simple
-- Lien/token d'annulation dans email
+[ ] T17 - Notifications transactionnelles MVP
+- Email client apres demande: "demande transmise" + lien gerer/voir reservation
+- Email client apres acceptation/refus/annulation
+- Email resto nouvelle demande + lien action securise
+- SMS resto nouvelle demande + lien action securise
+- WhatsApp hors MVP, prevu V2
+
+[ ] T18 - Annulation client simple
+- Lien/token de gestion dans email client
+- Page client: voir reservation + annuler la demande/reservation
 - Mise a jour statut + liberation capacite
+- Tokens signes, expiration, usage limite au perimetre de la reservation
 
-[ ] T18 - Tableaux de bord mini
+[ ] T19 - Tableaux de bord mini
 - KPIs: reservations/jour, taux annulation, no_show
 
-[ ] T19 - QA end-to-end
-- Parcours complet: dispo -> reservation -> notification -> annulation
+[ ] T20 - QA end-to-end
+- Parcours complet: dispo -> demande -> notification resto -> acceptation/refus -> notification client -> annulation
 - Cas limite: dernier creneau disponible
 
-[ ] T20 - Mise en production controlee
+[ ] T21 - Mise en production controlee
 - Rollout progressif (quelques restos pilotes)
 - Verif logs + feedback terrain pendant 1 semaine
 

@@ -25,7 +25,7 @@ const emptySection = (): GuideSubsection => ({
   imageSrc: '',
   imageAlt: '',
   description: '',
-  href: '/reserver-un-restaurant',
+  href: '/restaurants',
   buttonLabel: 'Voir',
 })
 
@@ -55,7 +55,7 @@ export function GuideForm({ guide }: Props) {
   }
 
   return (
-    <form action={formAction} className="max-w-3xl space-y-8">
+    <form action={formAction} className="max-w-6xl space-y-8">
       <input
         type="hidden"
         name="original_slug"

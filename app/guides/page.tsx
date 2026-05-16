@@ -18,24 +18,15 @@ export default async function GuidesIndexPage() {
     <>
       <section className="w-full bg-[#f8f1ea] py-10 sm:py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <nav
-            aria-label="Fil d'Ariane"
-            className="flex flex-wrap items-center gap-x-2 text-lg text-neutral-600"
-          >
-            <Link href="/blog" className="hover:text-[#8D5524] hover:underline">
-              Blog
-            </Link>
-            <span aria-hidden className="text-neutral-400">
-              /
-            </span>
+          <nav aria-label="Fil d'Ariane" className="text-lg text-neutral-600">
             <span className="font-semibold text-neutral-900" aria-current="page">
-              Guides
+              Guides thématiques
             </span>
           </nav>
           <h1 className="mt-6 text-3xl font-bold text-neutral-900 sm:text-4xl">
             Guides thématiques
           </h1>
-          <p className="mt-3 max-w-2xl text-lg text-neutral-600">
+          <p className="mt-3 max-w-6xl text-lg text-neutral-600">
             Explorez des restaurants afro selon vos envies : sélections par pays,
             ambiance et quartiers à Bruxelles et autour.
           </p>
@@ -48,7 +39,7 @@ export default async function GuidesIndexPage() {
             <p className="text-lg text-neutral-600">
               Aucun guide publié pour le moment. Revenez bientôt ou parcourez les{' '}
               <Link
-                href="/reserver-un-restaurant"
+                href="/restaurants"
                 className="font-semibold text-brand hover:underline"
               >
                 restaurants partenaires

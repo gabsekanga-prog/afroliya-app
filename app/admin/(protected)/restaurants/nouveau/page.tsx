@@ -17,6 +17,10 @@ export default function AdminNewRestaurantPage() {
       <div className="mt-8">
         <RestaurantForm restaurant={null} />
       </div>
+      <p className="mt-8 max-w-2xl text-lg text-neutral-600">
+        Après la création, vous serez redirigé vers la fiche du restaurant : vous pourrez y gérer les images,
+        photos de menu, cuisines, caractéristiques, horaires, offres et autres tables liées.
+      </p>
     </div>
   )
 }

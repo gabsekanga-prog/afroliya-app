@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { formInputClassName, formLabelClassName } from '@/app/components/form-fields'
 import { supabase } from '@/lib/supabase'
 
 type CommunitySignupSectionProps = {
@@ -82,26 +83,26 @@ export function CommunitySignupSection({
         <span className="text-brand shrink-0 font-semibold" aria-hidden>
           ✓
         </span>
-        <span>Découvrez des adresses</span>
+        <span>Ne ratez aucune nouveauté</span>
       </li>
       <li className="flex gap-2.5">
         <span className="text-brand shrink-0 font-semibold" aria-hidden>
           ✓
         </span>
-        <span>Gagnez des repas gratuits</span>
+        <span>Gagnez des repas et promos</span>
       </li>
       <li className="flex gap-2.5">
         <span className="text-brand shrink-0 font-semibold" aria-hidden>
           ✓
         </span>
-        <span>Profitez des offres spéciales</span>
+        <span>Participez à des événements exclusifs</span>
       </li>
     </ul>
   )
 
   const formInner = (
     <form className="grid gap-4" onSubmit={handleCommunitySubmit}>
-      <label className="flex flex-col gap-2 text-lg font-semibold text-neutral-800">
+      <label className={formLabelClassName}>
         E-mail
         <input
           type="email"
@@ -109,7 +110,7 @@ export function CommunitySignupSection({
           onChange={(event) => setCommunityEmail(event.target.value)}
           placeholder="Entrez votre e-mail"
           required
-          className="rounded-xl border border-neutral-300 bg-white px-4 py-3 font-normal text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+          className={formInputClassName}
         />
       </label>
 
@@ -139,49 +140,6 @@ export function CommunitySignupSection({
     </form>
   )
 
-  const benefitsListFull = (
-    <ul className="mt-3 space-y-2 text-lg text-neutral-600">
-      <li className="flex gap-2.5">
-        <span className="text-brand shrink-0 font-semibold" aria-hidden>
-          ✓
-        </span>
-        <span>Découvrez des adresses</span>
-      </li>
-      <li className="flex gap-2.5">
-        <span className="text-brand shrink-0 font-semibold" aria-hidden>
-          ✓
-        </span>
-        <span>Gagnez des repas gratuits</span>
-      </li>
-      <li className="flex gap-2.5">
-        <span className="text-brand shrink-0 font-semibold" aria-hidden>
-          ✓
-        </span>
-        <span>Profitez des offres spéciales</span>
-      </li>
-    </ul>
-  )
-
-  if (variant === 'guide') {
-    return (
-      <>
-        <h2 className="text-xl font-bold text-neutral-900 sm:text-2xl">
-          Rejoignez la communauté Afroliya
-        </h2>
-
-        <div className="relative mt-5 w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-50 sm:mt-6">
-          <img
-            src="/images/Nourriture%20congolaise.jpg"
-            alt="Plat de nourriture congolaise"
-            className="h-56 w-full object-cover sm:h-72 md:h-80"
-          />
-        </div>
-
-        {benefitsList}
-        <div className="mt-6 sm:mt-8">{formInner}</div>
-      </>
-    )
-  }
 
   return (
     <section id="communaute" className="w-full bg-[#f8f1ea] py-14 sm:py-24">
@@ -191,7 +149,7 @@ export function CommunitySignupSection({
             <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
               Rejoignez la communauté Afroliya
             </h2>
-            {benefitsListFull}
+            {benefitsList}
           </div>
 
           <div className="mt-8">{formInner}</div>

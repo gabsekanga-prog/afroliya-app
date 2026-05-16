@@ -36,19 +36,17 @@ export default async function AdminRestaurantsPage() {
           <thead className="border-b border-neutral-200 bg-stone-50">
             <tr>
               <th className="px-4 py-3 font-semibold">Nom</th>
-              <th className="px-4 py-3 font-semibold">Slug</th>
               <th className="px-4 py-3 font-semibold">Ville</th>
-              <th className="px-4 py-3 font-semibold">Publié</th>
+              <th className="px-4 py-3 font-semibold">Réservable</th>
               <th className="px-4 py-3 font-semibold">Actions</th>
             </tr>
           </thead>
           <tbody>
             {list.map((r) => (
               <tr key={r.id} className="border-b border-neutral-100 last:border-0">
-                <td className="px-4 py-3 font-medium">{r.nom}</td>
-                <td className="px-4 py-3 text-neutral-600">{r.slug}</td>
-                <td className="px-4 py-3 text-neutral-600">{r.ville}</td>
-                <td className="px-4 py-3">{r.published ? 'Oui' : 'Non'}</td>
+                <td className="px-4 py-3 font-medium">{r.name}</td>
+                <td className="px-4 py-3 text-neutral-600">{r.city}</td>
+                <td className="px-4 py-3">{r.bookable ? 'Oui' : 'Non'}</td>
                 <td className="px-4 py-3">
                   <Link
                     href={`/admin/restaurants/${r.id}`}

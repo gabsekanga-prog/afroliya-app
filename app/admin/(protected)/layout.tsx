@@ -27,18 +27,6 @@ export default async function AdminProtectedLayout({
             </Link>
             <nav className="flex flex-wrap gap-3 text-lg">
               <Link
-                href="/admin/restaurants"
-                className="text-neutral-700 hover:text-brand hover:underline"
-              >
-                Restaurants
-              </Link>
-              <Link
-                href="/admin/guides"
-                className="text-neutral-700 hover:text-brand hover:underline"
-              >
-                Guides
-              </Link>
-              <Link
                 href="/"
                 className="text-neutral-500 hover:text-brand hover:underline"
               >

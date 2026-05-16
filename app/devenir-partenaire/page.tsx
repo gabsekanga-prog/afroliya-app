@@ -2,91 +2,83 @@ import Link from 'next/link'
 import {
   BadgeEuro,
   CalendarClock,
+  Computer,
+  GlobeIcon,
+  LaptopIcon,
   Layers,
   Megaphone,
+  Target,
+  TargetIcon,
   type LucideIcon,
 } from 'lucide-react'
+import { PartnerApplicationForm } from '../components/partner-application-form'
+import { PlatformStatsList } from '../components/platform-stats-list'
 import { SiteFooter } from '../components/site-footer'
 
 const benefits: {
   title: string
   description: string
-  points: string[]
   icon: LucideIcon
 }[] = [
   {
-    title: 'Réservation en ligne',
-    description:
-      'Ne ratez plus aucune réservation, même en plein rush ou quand vous êtes fermé.',
-    icon: CalendarClock,
-    points: [
-      'Réservation 24h/24',
-      'Alertes en temps réel (SMS et e-mail)',
-      'Rappels automatiques (réduction des no-shows)',
-      'Intégration sur Google, site web, réseaux...',
-    ],
+    title: 'Touchez des milliers de passionnés',
+    description: 'Soyez référencé sur notre plateforme 100% afro et touchez chaque semaine des centaines de passionnés réellement intéressés par la cuisine afro et antillaise.',
+    icon: TargetIcon
   },
   {
-    title: 'Solution tout compris',
+    title: 'Recevez des réservations sans commission',
     description:
-      "On s'occupe de la technique, concentrez-vous sur votre métier.",
-    icon: Layers,
-    points: [
-      'Site web et nom de domaine',
-      'Hébergement et référencement (SEO)',
-      'Module de réservation',
-      'Menu digital (QR code)',
-      'Maintenance & support 7j/7',
-    ],
+      "Soyez réservable en ligne 24h/24. Ne ratez plus aucune réservation, même en plein rush ou quand vous êtes fermé. Protégez vos marges, loin des frais abusifs de certaines plateformes.",
+    icon: CalendarClock
   },
   {
-    title: 'Tarifs plus justes',
+    title: 'Obtenez vos propres outils digitaux',
     description:
-      'Protégez vos marges, loin des frais abusifs de certaines solutions.',
-    icon: BadgeEuro,
-    points: [
-      'Réservation sans commission',
-      'Abonnement fixe, sans surprise',
-      'Sans engagement : arrêtez quand vous voulez',
-    ],
-  },
-  {
-    title: 'Boost marketing',
-    description: 'Augmentez la visibilité de votre restaurant africain.',
-    icon: Megaphone,
-    points: [
-      'Référencement sur la plateforme 100% afro',
-      'Touchez +500 passionnés chaque semaine',
-      'Mise en avant (guides, newsletter, réseaux...)',
-      'Construisez votre propre base clients',
-    ],
-  },
+      'Ne subissez plus la loi des plateformes tierces. Obtenez tout ce qu\'il vous faut pour attirer des clients en ligne : site web, nom de domaine, référencement, réservation, menu digital (QR code), base de données de clients, etc.',
+    icon: GlobeIcon
+  }
 ]
 
 const offers = [
   {
-    name: 'Afroliya Free - Gratuit',
-    subtitle: 'Boostez votre visibilité.',
+    name: 'Basique - Gratuit',
+    subtitle: 'Pour une visibilité de base',
     cta: 'Inscrire votre resto',
     points: [
-      'Page vitrine : référencement sur la plateforme',
+      'Référencement sur la plateforme',
+      'Page vitrine professionnelle (infos, photos, menu, etc.)',
       'Touchez des centaines de passionnés chaque semaine',
       'Réservation par téléphone (sur votre numéro)',
       'Sans engagement : arrêtez quand vous voulez',
     ],
   },
   {
-    name: 'Afroliya Pro - Sur demande',
-    subtitle: 'Optimisez votre remplissage.',
-    cta: 'Demander un devis',
+    name: 'Standard - 29€/mois',
+    subtitle: 'Pour booster votre visibilité',
+    cta: 'Choisir l\'offre',
     points: [
-      'Tout le pack Free',
+      'Tout le pack Basique',
       'Réservation en ligne, 24h/24, sans commission',
-      'Mise en avant (guides, réseaux, newsletter...)',
+      'Widget de réservation pour votre site web',
+      'Liens de réservation sur Google, Instagram, Facebook, etc.',
+      'Mise en avant dans les résultats de recherche sur la plateforme',
+      'Mise en avant régulière sur nos guides et newsletters',
+      'Publications régulières sur nos réseaux sociaux'
+    ],
+  },
+  {
+    name: 'Premium - 59€/mois',
+    subtitle: 'Pour une présence en ligne optimale',
+    cta: 'Choisir l\'offre',
+    points: [
+      'Tout le pack Standard',
       'Site web et nom de domaine',
       'Hébergement et référencement (SEO)',
-      'Module de réservation',
-      'Menu digital (QR code)',
+      'Design optimisé pour les smartphones',
+      'Menu digital + QR codes sur vos tables',
+      'Base de données de clients',
+      'Optimisation de la fiche Google My Business',
+      'Gestion clé en main : on s\'occupe de tout le côté technique',
       'Maintenance et support 7j/7',
     ],
   },
@@ -112,14 +104,20 @@ export default function DevenirPartenairePage() {
               Concept
             </Link>
             <Link
-              href="/reserver-un-restaurant"
+              href="/restaurants"
               className="rounded-full px-4 py-2 text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
             >
-              Reserver un resto
+              Trouver un restaurant
             </Link>
             <span className="rounded-full bg-[#f5e6d9] px-4 py-2 text-[#8D5524]">
               Devenir partenaire
             </span>
+            <a
+              href="#liens-utiles"
+              className="rounded-full px-4 py-2 text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
+            >
+              Liens utiles
+            </a>
           </nav>
 
           <details className="group relative sm:hidden">
@@ -153,20 +151,26 @@ export default function DevenirPartenairePage() {
                 Concept
               </Link>
               <Link
-                href="/reserver-un-restaurant"
+                href="/restaurants"
                 className="mt-1 block rounded-xl px-4 py-2 text-lg font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
               >
-                Reserver un resto
+                Trouver un restaurant
               </Link>
               <span className="mt-1 block rounded-xl bg-[#f5e6d9] px-4 py-2 text-lg font-normal text-[#8D5524]">
                 Devenir partenaire
               </span>
+              <a
+                href="#liens-utiles"
+                className="mt-1 block rounded-xl px-4 py-2 text-lg font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
+              >
+                Liens utiles
+              </a>
             </div>
           </details>
         </div>
       </header>
 
-      <section className="w-full bg-[#2a1810] pb-0">
+      <section className="w-full bg-[#2a1810] pb-0 sm:pb-0">
         <div className="relative overflow-hidden">
           <img
             src="/images/Restauratrice%20resto%20afro%20gestion%20digital%20r%C3%A9servations%20couple%20clients.jpg"
@@ -174,18 +178,18 @@ export default function DevenirPartenairePage() {
             className="h-[420px] w-full object-cover sm:h-[500px] lg:h-[560px]"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#2f1d12]/80 via-[#2f1d12]/55 to-[#2f1d12]/30" />
+
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6">
-              <div className="max-w-2xl">
-                <h1 className="text-2xl font-bold leading-tight sm:text-5xl">
-                  Recevez des réservations en ligne dans votre restaurant africain
+              <div>
+                <h1 className="text-2xl font-bold leading-tight sm:text-5xl max-w-4xl">
+                  Le partenaire marketing de votre restaurant afro et antillais
                 </h1>
                 <p className="mt-4 text-lg text-[#f8e9dc]">
-                  Attirez des clients 24h/24 — Réduisez vos coûts — Optimisez le
-                  remplissage
+                  Touchez des milliers de passionnés — Recevez des réservations sans commission — Obtenez vos propres outils digitaux
                 </p>
                 <Link
-                  href="#form-partenaire"
+                  href="#offres-partenaire"
                   className="mt-8 inline-flex h-12 min-w-[230px] items-center justify-center rounded-xl bg-[#8D5524] px-6 text-lg font-normal text-white transition hover:bg-[#74431a]"
                 >
                   Devenir partenaire
@@ -200,18 +204,23 @@ export default function DevenirPartenairePage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
           <div>
             <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
-              Sans réservation en ligne, votre restaurant rate des clients
+              Un marketing inefficace peut mettre votre activité en danger...
             </h2>
-            <ul className="mt-6 space-y-2 text-neutral-600 sm:text-lg">
-              <li>✖︎ Beaucoup n aiment plus appeler</li>
-              <li>✖︎ Dépendance aux horaires</li>
-              <li>✖︎ Répondeur et appels manqués</li>
-              <li>✖︎ Faible visibilité en ligne</li>
+            <ul className="mt-6 space-y-2 pl-5 text-neutral-600 sm:pl-6 sm:text-lg">
+              <li>✖︎ Manque de visibilité</li>
+              <li>✖︎ Coûts marketing élevés</li>
+              <li>✖︎ Peu de nouveaux clients</li>
+              <li>✖︎ Forte dépendance (Uber, TheFork, etc.)</li>
             </ul>
             <p className="mt-6 font-semibold text-neutral-600 sm:text-lg">
-              Avec Afroliya, recevez des réservations en ligne et attirez des
-              clients 24h/24.
+              Afroliya est la solution qu'il vous faut.
             </p>
+            <Link
+              href="#offres-partenaire"
+              className="mt-8 inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
+            >
+              Devenir partenaire
+            </Link>
           </div>
           <img
             src="/images/Restaurant%20s%C3%A9n%C3%A9galais%20Bruxelles.webp"
@@ -223,12 +232,12 @@ export default function DevenirPartenairePage() {
 
       <section className="w-full bg-white py-14 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="mb-8 max-w-3xl sm:mb-10">
+        <div className="mb-8 sm:mb-10">
           <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
-            Comment Afroliya optimise votre remplissage ?
+            Boostez votre activité avec Afroliya
           </h2>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2">
+        <div className="grid gap-5 sm:grid-cols-3">
           {benefits.map((item) => {
             const Icon = item.icon
 
@@ -245,13 +254,8 @@ export default function DevenirPartenairePage() {
               <p className="mt-3 text-lg leading-relaxed text-neutral-600 sm:text-lg">
                 {item.description}
               </p>
-              <ul className="mt-4 space-y-2 text-lg text-neutral-600">
-                {item.points.map((point) => (
-                  <li key={point}>• {point}</li>
-                ))}
-              </ul>
               <Link
-                href="#form-partenaire"
+                href="#offres-partenaire"
                 className="mt-6 inline-flex rounded-xl bg-[#8D5524] px-5 py-2.5 text-lg font-normal text-white transition hover:bg-[#74431a]"
               >
                 Devenir partenaire
@@ -275,34 +279,13 @@ export default function DevenirPartenairePage() {
 
           <div>
             <h2 className="text-2xl font-bold leading-tight text-neutral-900 sm:text-4xl">
-              On optimise déjà le remplissage des restaurants africains
+              Nous sommes là pour vous donner un coup de main
             </h2>
 
-            <div className="mt-8 space-y-5">
-              <article className="border-l-2 border-neutral-300 pl-4 sm:pl-5">
-                <p className="text-3xl font-bold text-neutral-900 sm:text-4xl">+50</p>
-                <p className="mt-1 text-lg text-neutral-600 sm:text-base">
-                  Couverts réservés chaque semaine
-                </p>
-              </article>
-
-              <article className="border-l-2 border-neutral-300 pl-4 sm:pl-5">
-                <p className="text-3xl font-bold text-neutral-900 sm:text-4xl">+60%</p>
-                <p className="mt-1 text-lg text-neutral-600 sm:text-base">
-                  Réservations en dehors des heures d ouverture
-                </p>
-              </article>
-
-              <article className="border-l-2 border-neutral-300 pl-4 sm:pl-5">
-                <p className="text-3xl font-bold text-neutral-900 sm:text-4xl">+500</p>
-                <p className="mt-1 text-lg text-neutral-600 sm:text-base">
-                  Passionnés sur la plateforme chaque semaine
-                </p>
-              </article>
-            </div>
+            <PlatformStatsList />
 
             <Link
-              href="#form-partenaire"
+              href="#offres-partenaire"
               className="mt-8 inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
             >
               Devenir partenaire
@@ -311,27 +294,34 @@ export default function DevenirPartenairePage() {
         </div>
       </section>
 
-      <section className="w-full bg-white py-14 sm:py-24">
+      <section
+        id="offres-partenaire"
+        className="w-full scroll-mt-24 bg-white py-14 sm:py-24"
+      >
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
           Nos offres de partenariat
         </h2>
-        <div className="mt-8 grid gap-5 lg:grid-cols-2">
+        <div className="mt-8 grid gap-5 lg:grid-cols-3">
           {offers.map((offer) => (
             <article
               key={offer.name}
               className="rounded-2xl border border-neutral-200 bg-stone-50/80 p-6 shadow-sm"
             >
               <h3 className="text-xl font-bold text-neutral-900">{offer.name}</h3>
-              <p className="mt-2 text-neutral-600">{offer.subtitle}</p>
-              <ul className="mt-4 space-y-2 text-lg text-neutral-600">
+              <p className="mt-2 text-lg text-neutral-600">{offer.subtitle}</p>
+              <div className="mt-4 border-t border-neutral-200" aria-hidden />
+              <ul className="mt-4 space-y-2 text-base text-neutral-600">
                 {offer.points.map((point) => (
                   <li key={point}>• {point}</li>
                 ))}
               </ul>
-              <button className="mt-6 rounded-xl bg-[#8D5524] px-5 py-2.5 text-lg font-normal text-white transition hover:bg-[#74431a]">
+              <Link
+                href="#form-partenaire"
+                className="mt-6 inline-flex rounded-xl bg-[#8D5524] px-5 py-2.5 text-lg font-normal text-white transition hover:bg-[#74431a]"
+              >
                 {offer.cta}
-              </button>
+              </Link>
             </article>
           ))}
         </div>
@@ -340,76 +330,14 @@ export default function DevenirPartenairePage() {
 
       <section
         id="form-partenaire"
-        className="w-full bg-[#f8f1ea] py-16 pb-24 sm:py-20 sm:pb-32"
+        className="w-full scroll-mt-24 bg-[#f8f1ea] py-16 pb-24 sm:py-20 sm:pb-32"
       >
-        <div className="mx-auto max-w-2xl px-4 sm:px-6">
-          <h2 className="text-2xl font-bold text-neutral-900 sm:text-3xl">
+        <div className="mx-auto w-full max-w-2xl px-4 sm:px-6">
+          <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
             Démarrons la collaboration
           </h2>
 
-          <form className="mt-10 flex max-w-lg flex-col gap-6">
-            <label className="flex flex-col gap-1.5 text-lg font-bold text-neutral-800">
-              Restaurant
-              <input
-                className="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-lg font-normal text-neutral-900 placeholder:text-lg placeholder:text-neutral-500 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-300"
-                type="text"
-                name="restaurant"
-                required
-                placeholder="Nom du restaurant"
-                autoComplete="organization"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-lg font-bold text-neutral-800">
-              Offre souhaitée
-              <select
-                className="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-lg font-normal text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-300"
-                name="offer"
-                required
-              >
-                <option value="free">Afroliya Free</option>
-                <option value="pro">Afroliya Pro</option>
-              </select>
-            </label>
-            <label className="flex flex-col gap-1.5 text-lg font-bold text-neutral-800">
-              Nom et prénom
-              <input
-                className="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-lg font-normal text-neutral-900 placeholder:text-lg placeholder:text-neutral-500 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-300"
-                type="text"
-                name="name"
-                required
-                placeholder="Votre nom"
-                autoComplete="name"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-lg font-bold text-neutral-800">
-              Téléphone
-              <input
-                className="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-lg font-normal text-neutral-900 placeholder:text-lg placeholder:text-neutral-500 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-300"
-                type="tel"
-                name="phone"
-                required
-                placeholder="+32 …"
-                autoComplete="tel"
-              />
-            </label>
-            <label className="flex flex-col gap-1.5 text-lg font-bold text-neutral-800">
-              E-mail
-              <input
-                className="rounded-lg border border-neutral-300 bg-white px-3 py-2.5 text-lg font-normal text-neutral-900 placeholder:text-lg placeholder:text-neutral-500 outline-none transition focus:border-neutral-500 focus:ring-1 focus:ring-neutral-300"
-                type="email"
-                name="email"
-                required
-                placeholder="vous@exemple.com"
-                autoComplete="email"
-              />
-            </label>
-            <button
-              type="submit"
-              className="mt-1 w-full rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a] sm:w-auto sm:self-start"
-            >
-              Envoyer
-            </button>
-          </form>
+          <PartnerApplicationForm />
         </div>
       </section>
       <SiteFooter />

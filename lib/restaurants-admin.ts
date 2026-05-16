@@ -1,14 +1,41 @@
-import type { Restaurant } from '@/lib/restaurants'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
-export type RestaurantAdmin = Restaurant & {
-  published: boolean
-  sort_order: number
+/** Ligne éditable — colonnes de `public.restaurants`. */
+export type RestaurantAdmin = {
+  id: string
+  name: string
+  city: string
+  description: string | null
+  bookable: boolean | null
+  google_quotation: number | null
+  website_url: string | null
+  phone: string | null
+  email: string | null
+  address: string | null
+  google_maps_link: string | null
+  instagram_url: string | null
+  facebook_url: string | null
+  whatsapp_phone: string | null
 }
 
-type Row = Restaurant & { published: boolean; sort_order: number }
+const ADMIN_SELECT = `
+  id,
+  name,
+  city,
+  description,
+  bookable,
+  google_quotation,
+  website_url,
+  phone,
+  email,
+  address,
+  google_maps_link,
+  instagram_url,
+  facebook_url,
+  whatsapp_phone
+`
 
-function mapRow(row: Row): RestaurantAdmin {
+function mapRow(row: RestaurantAdmin): RestaurantAdmin {
   return { ...row }
 }
 
@@ -18,34 +45,30 @@ export async function fetchRestaurantsAdmin(): Promise<RestaurantAdmin[]> {
 
   const { data, error } = await admin
     .from('restaurants')
-    .select(
-      'id, slug, nom, cuisine, ville, note, image, description, published, sort_order',
-    )
-    .order('sort_order', { ascending: true })
+    .select(ADMIN_SELECT)
+    .order('created_at', { ascending: false })
 
   if (error) {
     console.error('[restaurants-admin] list', error.message)
     return []
   }
 
-  return ((data ?? []) as Row[]).map(mapRow)
+  return ((data ?? []) as RestaurantAdmin[]).map(mapRow)
 }
 
 export async function fetchRestaurantAdminById(
-  id: number,
+  id: string,
 ): Promise<RestaurantAdmin | null> {
   const admin = getSupabaseAdmin()
   if (!admin) return null
 
   const { data, error } = await admin
     .from('restaurants')
-    .select(
-      'id, slug, nom, cuisine, ville, note, image, description, published, sort_order',
-    )
+    .select(ADMIN_SELECT)
     .eq('id', id)
     .maybeSingle()
 
   if (error || !data) return null
 
-  return mapRow(data as Row)
+  return mapRow(data as RestaurantAdmin)
 }

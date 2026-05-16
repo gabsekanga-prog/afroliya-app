@@ -29,9 +29,7 @@ export function RestaurantForm({ restaurant }: Props) {
 
   return (
     <form action={formAction} className="max-w-2xl space-y-5">
-      {!isNew ? (
-        <input type="hidden" name="id" value={restaurant!.id} />
-      ) : null}
+      {!isNew ? <input type="hidden" name="id" value={restaurant!.id} /> : null}
 
       {state?.error ? (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-lg text-red-800">{state.error}</p>
@@ -43,63 +41,21 @@ export function RestaurantForm({ restaurant }: Props) {
       ) : null}
 
       <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
-        Slug (URL)
+        Nom (table restaurants)
         <input
-          name="slug"
+          name="name"
           required
-          defaultValue={restaurant?.slug ?? ''}
+          defaultValue={restaurant?.name ?? ''}
           className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal text-neutral-900 outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
-          placeholder="ex. mama-douala"
-        />
-      </label>
-
-      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
-        Nom
-        <input
-          name="nom"
-          required
-          defaultValue={restaurant?.nom ?? ''}
-          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
-        />
-      </label>
-
-      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
-        Cuisine
-        <input
-          name="cuisine"
-          required
-          defaultValue={restaurant?.cuisine ?? ''}
-          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
         />
       </label>
 
       <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
         Ville
         <input
-          name="ville"
+          name="city"
           required
-          defaultValue={restaurant?.ville ?? ''}
-          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
-        />
-      </label>
-
-      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
-        Note (affichage)
-        <input
-          name="note"
-          required
-          defaultValue={restaurant?.note ?? ''}
-          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
-          placeholder="4.8"
-        />
-      </label>
-
-      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
-        URL image
-        <input
-          name="image"
-          required
-          defaultValue={restaurant?.image ?? ''}
+          defaultValue={restaurant?.city ?? ''}
           className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
         />
       </label>
@@ -108,32 +64,108 @@ export function RestaurantForm({ restaurant }: Props) {
         Description
         <textarea
           name="description"
-          required
           rows={4}
           defaultValue={restaurant?.description ?? ''}
           className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
         />
       </label>
 
-      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
-        Ordre d affichage
-        <input
-          type="number"
-          name="sort_order"
-          defaultValue={restaurant?.sort_order ?? 0}
-          className="w-32 rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
-        />
-      </label>
-
       <label className="flex items-center gap-3 text-lg font-semibold text-neutral-800">
         <input
           type="checkbox"
-          name="published"
+          name="bookable"
           value="on"
-          defaultChecked={restaurant?.published !== false}
+          defaultChecked={restaurant?.bookable === true}
           className="h-5 w-5 rounded border-neutral-300 text-brand"
         />
-        Publié sur le site
+        Réservable en ligne (bookable)
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        Note Google (0 à 5, optionnel)
+        <input
+          name="google_quotation"
+          defaultValue={
+            restaurant?.google_quotation != null
+              ? String(restaurant.google_quotation)
+              : ''
+          }
+          className="w-40 rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+          placeholder="4.5"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        Site web
+        <input
+          name="website_url"
+          defaultValue={restaurant?.website_url ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        Téléphone
+        <input
+          name="phone"
+          defaultValue={restaurant?.phone ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        E-mail
+        <input
+          type="email"
+          name="email"
+          defaultValue={restaurant?.email ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        Adresse (ligne libre)
+        <input
+          name="address"
+          defaultValue={restaurant?.address ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        Lien Google Maps
+        <input
+          name="google_maps_link"
+          defaultValue={restaurant?.google_maps_link ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        Instagram
+        <input
+          name="instagram_url"
+          defaultValue={restaurant?.instagram_url ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        Facebook
+        <input
+          name="facebook_url"
+          defaultValue={restaurant?.facebook_url ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
+      </label>
+
+      <label className="flex flex-col gap-1 text-lg font-semibold text-neutral-800">
+        WhatsApp
+        <input
+          name="whatsapp_phone"
+          defaultValue={restaurant?.whatsapp_phone ?? ''}
+          className="rounded-xl border border-neutral-300 px-4 py-2.5 font-normal outline-none focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300"
+        />
       </label>
 
       <SubmitButton isNew={isNew} />

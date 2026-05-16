@@ -2,11 +2,14 @@ import Link from 'next/link'
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-neutral-200 bg-stone-100">
+    <footer
+      id="liens-utiles"
+      className="scroll-mt-24 border-t border-neutral-200 bg-stone-100"
+    >
       <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <h2 className="text-2xl font-bold text-neutral-900">Liens utiles</h2>
+        <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">Liens utiles</h2>
 
-        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             <h3 className="text-lg font-semibold uppercase tracking-wide text-neutral-800">
               La plateforme
@@ -19,10 +22,18 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link
-                  href="/reserver-un-restaurant"
+                  href="/restaurants"
                   className="text-neutral-600 hover:text-[#8D5524] hover:underline"
                 >
-                  Réserver un resto
+                  Trouver un restaurant
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/guides"
+                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
+                >
+                  Guides thématiques
                 </Link>
               </li>
               <li>
@@ -36,37 +47,6 @@ export function SiteFooter() {
               <li>
                 <Link href="#" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
                   Suggérer un resto
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-semibold uppercase tracking-wide text-neutral-800">
-              Nos contenus
-            </h3>
-            <ul className="mt-4 space-y-2 text-lg text-neutral-600">
-              <li>
-                <Link href="/blog" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
-                  Notre blog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/guides"
-                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
-                >
-                  Guides thématiques
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
-                  Bons plans
-                </Link>
-              </li>
-              <li>
-                <Link href="/blog" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
-                  Actualités
                 </Link>
               </li>
             </ul>

@@ -1,119 +1,33 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
-import { Clock3, MapPin, ShieldCheck, Wallet } from 'lucide-react'
+import { AlertCircle, CalendarCheck, MapPin, ShieldCheck, Target, Utensils } from 'lucide-react'
 import type { Guide } from '@/lib/guides'
 import { CommunitySignupSection } from './community-signup-section'
+import { PlatformStatsList } from './platform-stats-list'
 import { SiteFooter } from './site-footer'
 
 const plaisirBlocks = [
   {
-    title: 'Réservation 24h/24',
+    title: 'Découvrez des adresses',
     description:
-      'Bloquez votre table en quelques clics, quand vous voulez, sans dépendre des horaires, et sans devoir rappeler 5x.',
-    icon: Clock3,
+      'Ne tournez plus en rond avec les mêmes adresses. Découvrez facilement de nouvaux restaurants afro et antillais grâce à notre catalogue mise à jour régulièrement.',
+    icon: Target,
+  },
+
+  {
+    title: 'Réservez 24h/24',
+    description:
+      'Bloquez votre table en quelques clics, gratuitement, sans dépendre des horaires, et sans devoir rappeler 5x.',
+    icon: CalendarCheck,
   },
   {
-    title: '100% gratuit',
+    title: 'Réduisez les imprévus',
     description:
-      'Certaines plateformes vous demandent des acomptes et facturent des commissions. Chez Afroliya, vous ne payez aucun frais.',
-    icon: Wallet,
-  },
-  {
-    title: "Moins d'imprévus",
-    description:
-      'En réservant, vous permettez au restaurant d anticiper votre venue et de réduire les imprévus : attente, ruptures de stock, lenteurs.',
-    icon: ShieldCheck,
-  },
-  {
-    title: 'Plus de découvertes',
-    description:
-      'Ne tournez plus en rond avec les mêmes adresses. Explorez de nouvelles saveurs afro grâce à notre catalogue mis à jour régulièrement.',
-    icon: MapPin,
-  },
+      'Signalez vos plats et boissons préférés à l\'avance afin de réduire les imprévus (attente, rupture de stock, etc.).',
+    icon: AlertCircle,
+  }
 ]
-
-const stats = [
-  {
-    value: 50,
-    prefix: '+',
-    suffix: '',
-    label: 'Couverts réservés chaque semaine',
-  },
-  {
-    value: 60,
-    prefix: '+',
-    suffix: '%',
-    label: "Réservations en dehors des heures d'ouverture",
-  },
-  {
-    value: 500,
-    prefix: '+',
-    suffix: '',
-    label: 'Passionnés sur la plateforme chaque semaine',
-  },
-]
-
-function CountUp({
-  target,
-  duration = 1300,
-  prefix = '',
-  suffix = '',
-}: {
-  target: number
-  duration?: number
-  prefix?: string
-  suffix?: string
-}) {
-  const [count, setCount] = useState(0)
-  const [hasStarted, setHasStarted] = useState(false)
-  const ref = useRef<HTMLSpanElement | null>(null)
-
-  useEffect(() => {
-    const element = ref.current
-    if (!element || hasStarted) return
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setHasStarted(true)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.4 },
-    )
-
-    observer.observe(element)
-    return () => observer.disconnect()
-  }, [hasStarted])
-
-  useEffect(() => {
-    if (!hasStarted) return
-
-    const start = performance.now()
-
-    const tick = (now: number) => {
-      const progress = Math.min((now - start) / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setCount(Math.round(target * eased))
-
-      if (progress < 1) {
-        requestAnimationFrame(tick)
-      }
-    }
-
-    requestAnimationFrame(tick)
-  }, [duration, hasStarted, target])
-
-  return (
-    <span ref={ref} className="tabular-nums">
-      {prefix}
-      {count}
-      {suffix}
-    </span>
-  )
-}
 
 type Props = {
   guides: Guide[]
@@ -136,10 +50,10 @@ export function HomePageClient({ guides }: Props) {
               Concept
             </span>
             <Link
-              href="/reserver-un-restaurant"
+              href="/restaurants"
               className="rounded-full px-4 py-2 text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
             >
-              Reserver un restaurant
+              Trouver un restaurant
             </Link>
             <Link
               href="/devenir-partenaire"
@@ -147,6 +61,12 @@ export function HomePageClient({ guides }: Props) {
             >
               Devenir partenaire
             </Link>
+            <a
+              href="#liens-utiles"
+              className="rounded-full px-4 py-2 text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
+            >
+              Liens utiles
+            </a>
           </nav>
 
           <details className="group relative sm:hidden">
@@ -177,10 +97,10 @@ export function HomePageClient({ guides }: Props) {
                 Concept
               </span>
               <Link
-                href="/reserver-un-restaurant"
+                href="/restaurants"
                 className="mt-1 block rounded-xl px-4 py-2 text-lg font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
               >
-                Reserver un restaurant
+                Trouver un restaurant
               </Link>
               <Link
                 href="/devenir-partenaire"
@@ -188,6 +108,12 @@ export function HomePageClient({ guides }: Props) {
               >
                 Devenir partenaire
               </Link>
+              <a
+                href="#liens-utiles"
+                className="mt-1 block rounded-xl px-4 py-2 text-lg font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
+              >
+                Liens utiles
+              </a>
             </div>
           </details>
         </div>
@@ -204,27 +130,20 @@ export function HomePageClient({ guides }: Props) {
 
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6">
-              <div className="max-w-2xl">
-                <h1 className="text-2xl font-bold leading-tight sm:text-5xl">
-                  Réservez vos restaurants africains a Bruxelles et autour
+              <div>
+                <h1 className="text-2xl max-w-3xl font-bold leading-tight sm:text-5xl">
+                Votre plateforme des restos afro à Bruxelles et autour
                 </h1>
                 <p className="mt-4 text-lg text-[#f8e9dc]">
-                  Bloquez votre table 24h/24 — Évitez les imprévus — Maximisez le
-                  plaisir.
+                  Découvrez des adresses — Réservez 24h/24 — Réduisez les imprévus
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link
-                    href="/reserver-un-restaurant"
+                    href="/restaurants"
                     className="inline-flex h-12 min-w-[230px] items-center justify-center rounded-xl bg-[#8D5524] px-6 text-lg font-normal text-white transition hover:bg-[#74431a]"
                   >
-                    Réserver un restaurant
+                    Trouver un restaurant
                   </Link>
-                  <a
-                    href="#communaute"
-                    className="inline-flex h-12 min-w-[230px] items-center justify-center rounded-xl border border-white/60 px-6 text-lg font-normal text-white transition hover:bg-white/15"
-                  >
-                    Rejoindre la communauté
-                  </a>
                 </div>
               </div>
             </div>
@@ -236,22 +155,22 @@ export function HomePageClient({ guides }: Props) {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
           <div className="order-2 lg:order-2">
             <h2 className="text-2xl font-bold leading-tight text-neutral-900 sm:text-4xl">
-              Tomber sur des imprévus peut gâcher votre plaisir...
+              Ne gâchez plus vos sorties dans les restos afro...
             </h2>
             <ul className="mt-7 space-y-3 text-base text-neutral-600 sm:text-lg">
-              <li>✖︎ Attente pour une table</li>
-              <li>✖︎ Ruptures de stock</li>
-              <li>✖︎ Staff en sous-effectif</li>
-              <li>✖︎ Service plus lent</li>
+              <li>✖︎ Ne pas savoir où manger</li>
+              <li>✖︎ Perdre du temps à chercher sur Google, Instagram, etc.</li>
+              <li>✖︎ Devoir rappeler 5x pour réserver une table</li>
+              <li>✖︎ Tomber sur des imprévus (attente, rupture de stock, etc.)</li>
             </ul>
             <p className="mt-7 text-base font-bold text-neutral-600 sm:text-lg">
-              Avec Afroliya, évitez les imprévus et maximisez le plaisir.
+              Afroliya vous évite ces soucis.
             </p>
             <Link
-              href="/reserver-un-restaurant"
+              href="/restaurants"
               className="mt-8 inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
             >
-              Réserver un restaurant
+              Trouver un restaurant
             </Link>
           </div>
 
@@ -267,13 +186,13 @@ export function HomePageClient({ guides }: Props) {
 
       <section className="w-full bg-white py-14 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="mb-8 max-w-3xl sm:mb-10">
+          <div className="mb-8 sm:mb-10">
             <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
-              Comment Afroliya maximise votre plaisir ?
+              Mangez afro sans prises de tête avec Afroliya
             </h2>
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
             {plaisirBlocks.map((block) => {
               const Icon = block.icon
 
@@ -294,10 +213,10 @@ export function HomePageClient({ guides }: Props) {
                   </p>
 
                   <Link
-                    href="/reserver-un-restaurant"
+                    href="/restaurants"
                     className="mt-6 inline-flex rounded-xl bg-[#8D5524] px-5 py-2.5 text-lg font-normal text-white transition hover:bg-[#74431a]"
                   >
-                    Réserver un restaurant
+                    Trouver un resto
                   </Link>
                 </article>
               )
@@ -318,34 +237,16 @@ export function HomePageClient({ guides }: Props) {
 
           <div>
             <h2 className="mt-2 text-2xl font-bold leading-tight text-neutral-900 sm:text-4xl">
-              On maximise déjà le plaisir de plein de passionnés
+              On est là pour vous simplifier la vie
             </h2>
 
-            <div className="mt-8 space-y-5">
-              {stats.map((stat) => (
-                <article
-                  key={stat.label}
-                  className="border-l-2 border-neutral-300 pl-4 sm:pl-5"
-                >
-                  <p className="text-3xl font-bold text-neutral-900 sm:text-4xl">
-                    <CountUp
-                      target={stat.value}
-                      prefix={stat.prefix}
-                      suffix={stat.suffix}
-                    />
-                  </p>
-                  <p className="mt-1 text-lg text-neutral-600 sm:text-base">
-                    {stat.label}
-                  </p>
-                </article>
-              ))}
-            </div>
+            <PlatformStatsList />
 
             <Link
-              href="/reserver-un-restaurant"
+              href="/restaurants"
               className="mt-8 inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
             >
-              Réserver un restaurant
+              Trouver un restaurant
             </Link>
           </div>
         </div>
@@ -353,13 +254,11 @@ export function HomePageClient({ guides }: Props) {
 
       <section className="w-full bg-white py-14 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="max-w-3xl">
+          <div className="w-full">
             <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
-              Découvrez nos guides thématiques
+              Nos guides thématiques
             </h2>
-            <p className="mt-3 text-lg text-neutral-600">
-              Explorez des restaurants afro selon vos envies
-            </p>
+            <p className="mt-4 text-lg text-neutral-600">Explorez des restaurants afro selon vos envies</p>
           </div>
 
           {guides.length > 0 ? (

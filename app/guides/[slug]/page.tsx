@@ -51,21 +51,18 @@ export default async function GuideDetailPage({
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#2f1d12]/80 via-[#2f1d12]/55 to-[#2f1d12]/35" />
           <div className="absolute inset-0 flex items-end">
-            <div className="mx-auto w-full max-w-3xl px-4 py-8 text-white sm:px-6 sm:py-10">
+            <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6 sm:py-10">
               <nav
                 aria-label="Fil d'Ariane"
                 className="flex flex-wrap items-center gap-x-2 text-lg text-[#f8e9dc]"
               >
-                <Link href="/blog" className="hover:text-white hover:underline">
-                  Blog
+                <Link href="/guides" className="hover:text-white hover:underline">
+                  Guides thématiques
                 </Link>
                 <span aria-hidden className="text-white/50">
                   /
                 </span>
-                <Link href="/guides" className="hover:text-white hover:underline">
-                  Guides
-                </Link>
-                <span className="sr-only" aria-current="page">
+                <span className="text-white/90" aria-current="page">
                   {guide.title}
                 </span>
               </nav>
@@ -78,12 +75,12 @@ export default async function GuideDetailPage({
       </section>
 
       <section className="w-full flex-1 bg-white pb-16 pt-6 sm:pb-20 sm:pt-10">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
           <GuideStructuredContent guide={guide} />
 
           <div className="mt-12 flex flex-wrap gap-4 border-t border-neutral-200 pt-10">
             <Link
-              href="/reserver-un-restaurant"
+              href="/restaurants"
               className="inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
             >
               Réserver un restaurant
