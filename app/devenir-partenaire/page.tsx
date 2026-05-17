@@ -182,8 +182,8 @@ export default function DevenirPartenairePage() {
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6">
               <div>
-                <h1 className="text-2xl font-bold leading-tight sm:text-5xl max-w-4xl">
-                  Le partenaire marketing de votre restaurant afro et antillais
+                <h1 className="text-2xl font-bold leading-tight sm:text-5xl max-w-5xl">
+                  Le partenaire marketing de votre restaurant africain et antillais
                 </h1>
                 <p className="mt-4 text-lg text-[#f8e9dc]">
                   Touchez des milliers de passionnés — Recevez des réservations sans commission — Obtenez vos propres outils digitaux
@@ -204,16 +204,16 @@ export default function DevenirPartenairePage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
           <div>
             <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
-              Un marketing inefficace peut mettre votre activité en danger...
+              Votre restaurant souffre-t-il d'un marketing inefficace ?
             </h2>
             <ul className="mt-6 space-y-2 pl-5 text-neutral-600 sm:pl-6 sm:text-lg">
-              <li>✖︎ Manque de visibilité</li>
-              <li>✖︎ Coûts marketing élevés</li>
               <li>✖︎ Peu de nouveaux clients</li>
-              <li>✖︎ Forte dépendance (Uber, TheFork, etc.)</li>
+              <li>✖︎ Fréquentation irrégulière</li>
+              <li>✖︎ Coûts marketing élevés</li>
+              <li>✖︎ Dépendance aux outils tiers (Uber, TheFork, etc.)</li>
             </ul>
             <p className="mt-6 font-semibold text-neutral-600 sm:text-lg">
-              Afroliya est la solution qu'il vous faut.
+              Ne mettez plus votre activité en danger.
             </p>
             <Link
               href="#offres-partenaire"

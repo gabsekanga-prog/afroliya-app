@@ -5,6 +5,8 @@ import { DeleteRestaurantForm } from '@/app/admin/(protected)/components/delete-
 import {
   fetchCuisinesCatalog,
   fetchRestaurantCuisinesAdmin,
+  fetchRestaurantTarifsAdmin,
+  fetchTarifsCatalog,
   fetchRestaurantDealsAdmin,
   fetchRestaurantFeatureLinksAdmin,
   fetchRestaurantFeaturesCatalog,
@@ -17,6 +19,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 import { RestaurantForm } from '../restaurant-form'
 import { RestaurantCuisinesPanel } from '../restaurant-cuisines-panel'
+import { RestaurantTarifsPanel } from '../restaurant-tarifs-panel'
 import { RestaurantDealsPanel } from '../restaurant-deals-panel'
 import { RestaurantFeatureLinksPanel } from '../restaurant-feature-links-panel'
 import { RestaurantImagesPanel } from '../restaurant-images-panel'
@@ -45,19 +48,23 @@ export default async function AdminEditRestaurantPage({
     images,
     slots,
     cuisinesAssigned,
+    tarifsAssigned,
     deals,
     featureLinks,
     photosMenu,
     cuisineCatalog,
+    tarifCatalog,
     featureCatalog,
   ] = await Promise.all([
     fetchRestaurantImagesAdmin(id),
     fetchRestaurantOpeningSlotsAdmin(id),
     fetchRestaurantCuisinesAdmin(id),
+    fetchRestaurantTarifsAdmin(id),
     fetchRestaurantDealsAdmin(id),
     fetchRestaurantFeatureLinksAdmin(id),
     fetchRestaurantPhotosMenuAdmin(id),
     fetchCuisinesCatalog(),
+    fetchTarifsCatalog(),
     fetchRestaurantFeaturesCatalog(),
   ])
 
@@ -84,6 +91,11 @@ export default async function AdminEditRestaurantPage({
         restaurantId={id}
         assigned={cuisinesAssigned}
         catalog={cuisineCatalog}
+      />
+      <RestaurantTarifsPanel
+        restaurantId={id}
+        assigned={tarifsAssigned}
+        catalog={tarifCatalog}
       />
       <RestaurantFeatureLinksPanel
         restaurantId={id}

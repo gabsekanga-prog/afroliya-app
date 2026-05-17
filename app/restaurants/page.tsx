@@ -1,13 +1,15 @@
 import Link from 'next/link'
 
-import { FormSelect, formInputClassName } from '@/app/components/form-fields'
-import { fetchPublishedRestaurants } from '@/lib/restaurants'
+import { RestaurantsListClient } from '@/app/components/restaurants-list-client'
+import { buildRestaurantFilterOptions, fetchPublishedRestaurants } from '@/lib/restaurants'
 import { SiteFooter } from '../components/site-footer'
 
 export const dynamic = 'force-dynamic'
 
 export default async function ReserverUnRestaurantPage() {
   const restaurants = await fetchPublishedRestaurants()
+  const filterOptions = buildRestaurantFilterOptions(restaurants)
+
   return (
     <main className="min-h-screen text-neutral-900">
       <header className="relative z-50 border-b border-neutral-200 bg-white/80 backdrop-blur">
@@ -99,92 +101,15 @@ export default async function ReserverUnRestaurantPage() {
             <h1 className="text-2xl font-bold leading-tight text-neutral-900 sm:text-4xl">
               Restaurants africains à Bruxelles et autour
             </h1>
-            <p className="mt-3 text-neutral-600 text-lg">
+            <p className="mt-3 text-lg text-neutral-600">
               Découvrez des adresses — Réservez 24h/24 — Réduisez les imprévus
             </p>
           </div>
 
-          <div className="mt-7 rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm sm:p-5">
-            <div className="grid gap-3 md:grid-cols-[1fr_170px]">
-              <input
-                type="text"
-                placeholder="Rechercher par nom"
-                className={formInputClassName}
-              />
-              <button className="rounded-xl bg-[#8D5524] px-4 py-2.5 font-normal text-white transition hover:bg-[#74431a]">
-                Rechercher
-              </button>
-            </div>
-
-            <div className="mt-3 grid gap-3 sm:grid-cols-2">
-              <FormSelect>
-                <option>Cuisines</option>
-                <option>Cuisine congolaise</option>
-                <option>Cuisine sénégalaise</option>
-                <option>Cuisine camerounaise</option>
-                <option>Cuisine éthiopienne</option>
-              </FormSelect>
-
-              <FormSelect>
-                <option>Lieux</option>
-                <option>Bruxelles</option>
-                <option>Ixelles</option>
-                <option>Saint-Gilles</option>
-                <option>Etterbeek</option>
-              </FormSelect>
-            </div>
-          </div>
+          <RestaurantsListClient restaurants={restaurants} filterOptions={filterOptions} />
         </div>
       </section>
 
-      <section className="w-full bg-stone-100 py-12 sm:pb-20">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-neutral-900 sm:text-2xl">
-              Restaurants populaires
-            </h2>
-            <a
-              href="#"
-              className="text-lg font-semibold text-neutral-800 hover:text-[#8D5524] hover:underline"
-            >
-              Voir tous les restos
-            </a>
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {restaurants.length === 0 ? (
-              <p className="col-span-full text-lg text-neutral-600">
-                Aucun restaurant publié pour le moment. Revenez bientôt.
-              </p>
-            ) : null}
-            {restaurants.map((restaurant) => (
-              <Link
-                key={restaurant.id}
-                href={`/restaurants/${restaurant.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]"
-              >
-                <img
-                  src={restaurant.image}
-                  alt=""
-                  className="h-44 w-full object-cover"
-                />
-                <div className="space-y-3 p-5">
-                  <div className="flex items-start justify-between gap-3">
-                    <h3 className="text-lg font-bold text-neutral-900">{restaurant.nom}</h3>
-                    <span className="rounded-full bg-neutral-200 px-2.5 py-1 text-sm font-semibold text-neutral-800">
-                      ★ {restaurant.note}
-                    </span>
-                  </div>
-                  <p className="text-lg text-neutral-600">{restaurant.cuisine}</p>
-                  <p className="text-lg text-neutral-600">{restaurant.ville}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
       <SiteFooter />
     </main>
   )

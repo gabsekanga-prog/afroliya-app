@@ -39,12 +39,11 @@ function kindFromPostgresType(typeStr: string): ColumnInputKind {
   return 'text'
 }
 
-function parseDatabaseDefinition(definition: string): ColumnsByTable {
+function parseTableDefinition(definition: string): ColumnsByTable {
   const byTable: ColumnsByTable = {}
 
-  // Example in file: CREATE TABLE public.restaurants ( ... );
   const createTableRe =
-    /CREATE TABLE public\.([a-zA-Z0-9_]+)\s*\(([\s\S]*?)\);\s*/g
+    /create\s+table\s+public\.([a-zA-Z0-9_]+)\s*\(([\s\S]*?)\)\s*(?:tablespace\s+\w+)?\s*;/gi
 
   for (;;) {
     const match = createTableRe.exec(definition)
@@ -57,15 +56,10 @@ function parseDatabaseDefinition(definition: string): ColumnsByTable {
     for (const rawLine of body.split('\n')) {
       const line = rawLine.trim()
       if (!line) continue
-      if (line.startsWith('CONSTRAINT ')) continue
-
-      // Skip closing paren just in case.
+      if (line.toLowerCase().startsWith('constraint ')) continue
       if (line === ');') continue
 
-      // Column definitions like: "id uuid NOT NULL DEFAULT gen_random_uuid(),"
-      const lineNoComma = line.endsWith(',')
-        ? line.slice(0, -1).trim()
-        : line
+      const lineNoComma = line.endsWith(',') ? line.slice(0, -1).trim() : line
       const colNameMatch = /^([a-zA-Z_][a-zA-Z0-9_]*)\s+(.+)$/.exec(lineNoComma)
       if (!colNameMatch) continue
 
@@ -80,18 +74,25 @@ function parseDatabaseDefinition(definition: string): ColumnsByTable {
   return byTable
 }
 
+function loadTableDefinitions(): ColumnsByTable {
+  const dir = path.join(process.cwd(), 'supabase', 'table_definitions')
+  if (!fs.existsSync(dir)) return {}
+
+  const merged: ColumnsByTable = {}
+  for (const file of fs.readdirSync(dir)) {
+    if (!file.endsWith('.sql')) continue
+    const raw = fs.readFileSync(path.join(dir, file), 'utf8')
+    const parsed = parseTableDefinition(raw)
+    for (const [table, cols] of Object.entries(parsed)) {
+      merged[table] = { ...merged[table], ...cols }
+    }
+  }
+  return merged
+}
+
 function getColumnsByTableCached(): ColumnsByTable {
   if (cachedColumnsByTable) return cachedColumnsByTable
-
-  const definitionPath = path.join(
-    process.cwd(),
-    'supabase',
-    'migrations',
-    'database_definition',
-  )
-
-  const raw = fs.readFileSync(definitionPath, 'utf8')
-  cachedColumnsByTable = parseDatabaseDefinition(raw)
+  cachedColumnsByTable = loadTableDefinitions()
   return cachedColumnsByTable
 }
 
@@ -101,4 +102,3 @@ export function getAdminTableColumnInputKinds(
   const byTable = getColumnsByTableCached()
   return byTable[tableName] ?? {}
 }
-

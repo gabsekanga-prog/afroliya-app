@@ -37,7 +37,10 @@ export default async function AdminRestaurantsPage() {
             <tr>
               <th className="px-4 py-3 font-semibold">Nom</th>
               <th className="px-4 py-3 font-semibold">Ville</th>
+              <th className="px-4 py-3 font-semibold">Commune</th>
               <th className="px-4 py-3 font-semibold">Réservable</th>
+              <th className="px-4 py-3 font-semibold">Sponsorisé</th>
+              <th className="px-4 py-3 font-semibold">Actif</th>
               <th className="px-4 py-3 font-semibold">Actions</th>
             </tr>
           </thead>
@@ -46,7 +49,10 @@ export default async function AdminRestaurantsPage() {
               <tr key={r.id} className="border-b border-neutral-100 last:border-0">
                 <td className="px-4 py-3 font-medium">{r.name}</td>
                 <td className="px-4 py-3 text-neutral-600">{r.city}</td>
+                <td className="px-4 py-3 text-neutral-600">{r.commune ?? '—'}</td>
                 <td className="px-4 py-3">{r.bookable ? 'Oui' : 'Non'}</td>
+                <td className="px-4 py-3">{r.sponsored ? 'Oui' : 'Non'}</td>
+                <td className="px-4 py-3">{r.active ? 'Oui' : 'Non'}</td>
                 <td className="px-4 py-3">
                   <Link
                     href={`/admin/restaurants/${r.id}`}

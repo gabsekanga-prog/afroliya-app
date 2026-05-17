@@ -2,6 +2,53 @@ import { unstable_noStore as noStore } from 'next/cache'
 
 import { supabase } from '@/lib/supabase'
 
+export type RestaurantCuisineTag = {
+  key: string
+  label: string
+}
+
+export type RestaurantMenuPage = {
+  id: string
+  imageSrc: string
+  caption: string | null
+  sortOrder: number
+}
+
+export type RestaurantFeature = {
+  key: string
+  label: string
+}
+
+export type RestaurantOpeningHoursDay = {
+  day: number
+  dayLabel: string
+  slots: { openTime: string; closeTime: string }[]
+}
+
+const OPENING_DAY_LABELS: Record<number, string> = {
+  0: 'Dimanche',
+  1: 'Lundi',
+  2: 'Mardi',
+  3: 'Mercredi',
+  4: 'Jeudi',
+  5: 'Vendredi',
+  6: 'Samedi',
+}
+
+/** Lundi → dimanche */
+const OPENING_DAY_ORDER = [1, 2, 3, 4, 5, 6, 0] as const
+
+function formatOpeningTime(value: string | null | undefined): string {
+  if (!value) return ''
+  const raw = String(value).trim()
+  if (/^\d{2}:\d{2}:\d{2}/.test(raw)) return raw.slice(0, 5)
+  if (/^\d{1,2}:\d{2}/.test(raw)) {
+    const [hours, minutes] = raw.split(':')
+    return `${hours.padStart(2, '0')}:${minutes}`
+  }
+  return raw
+}
+
 /** Modèle public (UI) — dérivé de la table `restaurants` + relations. */
 export type Restaurant = {
   id: string
@@ -9,10 +56,43 @@ export type Restaurant = {
   slug: string
   nom: string
   cuisine: string
+  cuisines: RestaurantCuisineTag[]
+  commune: string
+  /** Champ `address` en base. */
+  adresse: string
+  codePostal: string
   ville: string
+  telephone: string
+  email: string
+  siteWeb: string
+  lienGoogleMaps: string
+  instagram: string
+  facebook: string
+  whatsapp: string
+  latitude: number | null
+  longitude: number | null
   note: string
+  /** Nombre d’avis Google (`google_review_total_value`). */
+  googleReviewCount: number | null
   image: string
+  /** Galerie : couverture en premier, puis les autres photos. */
+  images: string[]
   description: string
+  /** Libellés des tarifs associés (vide si aucun). */
+  tarif: string
+  sponsored: boolean
+  bookable: boolean
+}
+
+export type RestaurantFilterOptions = {
+  cuisines: RestaurantCuisineTag[]
+  lieux: string[]
+}
+
+export type RestaurantFilters = {
+  query: string
+  cuisineKey: string
+  lieu: string
 }
 
 const PLACEHOLDER_IMAGE =
@@ -25,6 +105,11 @@ type CuisineJoin = { key: string; description: string | null } | null
 type RestaurantCuisineRow = {
   cuisines: CuisineJoin | CuisineJoin[] | null
 } | null
+
+type TarifJoin = { key: string; label: string | null } | null
+type RestaurantTarifRow = {
+  tarifs: TarifJoin | TarifJoin[] | null
+} | null
 type RestaurantImageRow = {
   image_url: string
   cover: boolean | null
@@ -35,25 +120,58 @@ type DbRestaurantRow = {
   id: string
   name: string
   city: string
+  commune: string | null
+  address: string | null
+  postal_code: string | null
+  phone: string | null
+  email: string | null
+  website_url: string | null
+  google_maps_link: string | null
+  instagram_url: string | null
+  facebook_url: string | null
+  whatsapp_phone: string | null
+  latitude: number | null
+  longitude: number | null
   description: string | null
   google_quotation: number | null
   google_review_total_value: number | null
+  sponsored: boolean | null
+  bookable: boolean | null
   restaurant_images: RestaurantImageRow[] | RestaurantImageRow | null
   restaurant_cuisines: RestaurantCuisineRow[] | null
+  restaurants_tarifs: RestaurantTarifRow[] | null
+}
+
+function normalizeImageRows(
+  images: RestaurantImageRow[] | RestaurantImageRow | null | undefined,
+): RestaurantImageRow[] {
+  return Array.isArray(images) ? images : images != null ? [images] : []
+}
+
+function buildGalleryImages(
+  images: RestaurantImageRow[] | RestaurantImageRow | null | undefined,
+): string[] {
+  const list = normalizeImageRows(images)
+  if (!list.length) return [PLACEHOLDER_IMAGE]
+
+  const sorted = [...list].sort((a, b) => {
+    if (a.cover === true && b.cover !== true) return -1
+    if (b.cover === true && a.cover !== true) return 1
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+  })
+
+  const urls = sorted
+    .map((row) => row.image_url?.trim())
+    .filter((url): url is string => Boolean(url))
+
+  const unique = [...new Set(urls)]
+  return unique.length ? unique : [PLACEHOLDER_IMAGE]
 }
 
 function pickCoverImage(
   images: RestaurantImageRow[] | RestaurantImageRow | null | undefined,
 ): string {
-  const list = Array.isArray(images) ? images : images != null ? [images] : []
-  if (!list.length) return PLACEHOLDER_IMAGE
-  const withCover = list.filter((i) => i.cover === true)
-  const pool = withCover.length ? withCover : list
-  const sorted = [...pool].sort(
-    (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
-  )
-  const url = sorted[0]?.image_url?.trim()
-  return url || PLACEHOLDER_IMAGE
+  return buildGalleryImages(images)[0] ?? PLACEHOLDER_IMAGE
 }
 
 function stripCuisinePrefix(label: string): string {
@@ -62,23 +180,47 @@ function stripCuisinePrefix(label: string): string {
   return withoutPrefix || trimmed
 }
 
-function formatCuisineLabels(rows: RestaurantCuisineRow[] | null | undefined): string {
-  if (!rows?.length) return 'Africaine'
+function parseCuisineEntries(
+  rows: RestaurantCuisineRow[] | null | undefined,
+): RestaurantCuisineTag[] {
+  if (!rows?.length) return [{ key: 'africaine', label: 'Africaine' }]
+
+  const byKey = new Map<string, string>()
+
+  for (const row of rows) {
+    const raw = row?.cuisines
+    const list = Array.isArray(raw) ? raw : raw != null ? [raw] : []
+    for (const c of list) {
+      if (!c?.key) continue
+      const label = stripCuisinePrefix((c.description ?? '').trim() || c.key)
+      byKey.set(c.key, label || c.key)
+    }
+  }
+
+  if (!byKey.size) return [{ key: 'africaine', label: 'Africaine' }]
+  return [...byKey.entries()].map(([key, label]) => ({ key, label }))
+}
+
+function formatCuisineLabels(entries: RestaurantCuisineTag[]): string {
+  const labels = entries.map((c) => c.label).filter(Boolean)
+  return labels.length ? [...new Set(labels)].join(' · ') : 'Africaine'
+}
+
+function formatTarifLabels(rows: RestaurantTarifRow[] | null | undefined): string {
+  if (!rows?.length) return ''
   const labels = rows
     .map((row) => {
-      const raw = row?.cuisines
+      const raw = row?.tarifs
       const list = Array.isArray(raw) ? raw : raw != null ? [raw] : []
       return list
-        .map((c) => {
-          if (!c) return null
-          const rawLabel = (c.description ?? '').trim() || c.key
-          const label = rawLabel ? stripCuisinePrefix(rawLabel) : null
-          return label || null
+        .map((t) => {
+          if (!t) return null
+          return (t.label ?? '').trim() || t.key || null
         })
         .filter(Boolean)
     })
     .flat() as string[]
-  return labels.length ? [...new Set(labels)].join(' · ') : 'Africaine'
+  return labels.length ? [...new Set(labels)].join(' · ') : ''
 }
 
 function formatNote(q: number | null | undefined): string {
@@ -86,17 +228,178 @@ function formatNote(q: number | null | undefined): string {
   return Number(q).toFixed(1)
 }
 
+export function formatCuisineCommune(cuisine: string, commune: string): string {
+  const cuisinePart = cuisine.trim()
+  const communePart = commune.trim()
+  if (cuisinePart && communePart) return `${cuisinePart} — ${communePart}`
+  return cuisinePart || communePart
+}
+
+export function formatCuisineCommuneTarif(
+  cuisine: string,
+  commune: string,
+  tarif: string,
+): string {
+  return [cuisine, commune, tarif]
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .join(' — ')
+}
+
+/** Ligne hero : « ★ 4,5 (+120 avis Google) • €€ ». */
+export function formatRestaurantHeroRatingLine(
+  note: string,
+  googleReviewCount: number | null,
+  tarif: string,
+): string {
+  const segments: string[] = []
+
+  if (note.trim() && note !== '—') {
+    let rating = `★ ${note}`
+    if (googleReviewCount != null && googleReviewCount > 0) {
+      rating += ` (+${googleReviewCount} avis Google)`
+    }
+    segments.push(rating)
+  }
+
+  const prix = tarif.trim()
+  if (prix) segments.push(prix)
+
+  return segments.join(' • ')
+}
+
+export function buildRestaurantFilterOptions(
+  restaurants: Restaurant[],
+): RestaurantFilterOptions {
+  const cuisineMap = new Map<string, string>()
+  const lieux = new Set<string>()
+
+  for (const restaurant of restaurants) {
+    for (const cuisine of restaurant.cuisines) {
+      cuisineMap.set(cuisine.key, cuisine.label)
+    }
+    const lieu = restaurant.commune.trim() || restaurant.ville.trim()
+    if (lieu) lieux.add(lieu)
+  }
+
+  return {
+    cuisines: [...cuisineMap.entries()]
+      .map(([key, label]) => ({ key, label }))
+      .sort((a, b) => a.label.localeCompare(b.label, 'fr')),
+    lieux: [...lieux].sort((a, b) => a.localeCompare(b, 'fr')),
+  }
+}
+
+function shuffleRestaurants<T>(items: T[]): T[] {
+  const arr = [...items]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = arr[i]
+    arr[i] = arr[j]!
+    arr[j] = tmp!
+  }
+  return arr
+}
+
+/** Sponsorised first, then bookable; random order within each group. */
+export function sortRestaurantsForDisplay(restaurants: Restaurant[]): Restaurant[] {
+  const sponsored: Restaurant[] = []
+  const bookable: Restaurant[] = []
+  const others: Restaurant[] = []
+
+  for (const restaurant of restaurants) {
+    if (restaurant.sponsored) {
+      sponsored.push(restaurant)
+    } else if (restaurant.bookable) {
+      bookable.push(restaurant)
+    } else {
+      others.push(restaurant)
+    }
+  }
+
+  return [
+    ...shuffleRestaurants(sponsored),
+    ...shuffleRestaurants(bookable),
+    ...shuffleRestaurants(others),
+  ]
+}
+
+export function filterRestaurants(
+  restaurants: Restaurant[],
+  filters: RestaurantFilters,
+): Restaurant[] {
+  const query = filters.query.trim().toLowerCase()
+  const cuisineKey = filters.cuisineKey.trim()
+  const lieu = filters.lieu.trim().toLowerCase()
+
+  return restaurants.filter((restaurant) => {
+    if (cuisineKey && !restaurant.cuisines.some((c) => c.key === cuisineKey)) {
+      return false
+    }
+
+    if (lieu) {
+      const commune = restaurant.commune.trim().toLowerCase()
+      const ville = restaurant.ville.trim().toLowerCase()
+      if (commune !== lieu && ville !== lieu) return false
+    }
+
+    if (!query) return true
+
+    const haystack = [
+      restaurant.nom,
+      restaurant.cuisine,
+      restaurant.commune,
+      restaurant.ville,
+      restaurant.tarif,
+      restaurant.description,
+    ]
+      .join(' ')
+      .toLowerCase()
+
+    return haystack.includes(query)
+  })
+}
+
 export function mapDbRestaurantToPublic(row: DbRestaurantRow): Restaurant {
   const id = row.id
+  const cuisines = parseCuisineEntries(row.restaurant_cuisines)
+  const cuisine = formatCuisineLabels(cuisines)
+  const commune = (row.commune ?? '').trim()
+  const ville = row.city?.trim() || ''
   return {
     id,
     slug: id,
     nom: row.name?.trim() || 'Restaurant',
-    ville: row.city?.trim() || '',
-    cuisine: formatCuisineLabels(row.restaurant_cuisines),
+    ville,
+    cuisine,
+    cuisines,
+    commune,
+    adresse: (row.address ?? '').trim(),
+    codePostal: (row.postal_code ?? '').trim(),
+    telephone: (row.phone ?? '').trim(),
+    email: (row.email ?? '').trim(),
+    siteWeb: (row.website_url ?? '').trim(),
+    lienGoogleMaps: (row.google_maps_link ?? '').trim(),
+    instagram: (row.instagram_url ?? '').trim(),
+    facebook: (row.facebook_url ?? '').trim(),
+    whatsapp: (row.whatsapp_phone ?? '').trim(),
+    latitude:
+      row.latitude != null && !Number.isNaN(Number(row.latitude)) ? Number(row.latitude) : null,
+    longitude:
+      row.longitude != null && !Number.isNaN(Number(row.longitude))
+        ? Number(row.longitude)
+        : null,
     note: formatNote(row.google_quotation),
+    googleReviewCount:
+      row.google_review_total_value != null && !Number.isNaN(Number(row.google_review_total_value))
+        ? Number(row.google_review_total_value)
+        : null,
+    images: buildGalleryImages(row.restaurant_images),
     image: pickCoverImage(row.restaurant_images),
     description: (row.description ?? '').trim() || 'Découvrez ce restaurant partenaire.',
+    tarif: formatTarifLabels(row.restaurants_tarifs),
+    sponsored: row.sponsored === true,
+    bookable: row.bookable === true,
   }
 }
 
@@ -104,24 +407,56 @@ const RESTAURANT_PUBLIC_SELECT = `
   id,
   name,
   city,
+  commune,
+  address,
+  postal_code,
+  phone,
+  email,
+  website_url,
+  google_maps_link,
+  instagram_url,
+  facebook_url,
+  whatsapp_phone,
+  latitude,
+  longitude,
   description,
   google_quotation,
   google_review_total_value,
+  sponsored,
+  bookable,
   restaurant_images ( image_url, cover, created_at ),
-  restaurant_cuisines ( cuisines ( key, description ) )
+  restaurant_cuisines ( cuisines ( key, description ) ),
+  restaurants_tarifs ( tarif_key, tarifs ( key, label ) )
 `
 
 const RESTAURANT_MINIMAL_SELECT = `
   id,
   name,
   city,
+  commune,
+  address,
+  postal_code,
+  phone,
+  email,
+  website_url,
+  google_maps_link,
+  instagram_url,
+  facebook_url,
+  whatsapp_phone,
+  latitude,
+  longitude,
   description,
   google_quotation,
   google_review_total_value,
+  sponsored,
+  bookable,
   created_at
 `
 
-type DbRestaurantCore = Omit<DbRestaurantRow, 'restaurant_images' | 'restaurant_cuisines'> & {
+type DbRestaurantCore = Omit<
+  DbRestaurantRow,
+  'restaurant_images' | 'restaurant_cuisines' | 'restaurants_tarifs'
+> & {
   created_at?: string
 }
 
@@ -131,6 +466,7 @@ function asRowWithEmptyRelations(row: DbRestaurantCore): DbRestaurantRow {
     ...core,
     restaurant_images: null,
     restaurant_cuisines: null,
+    restaurants_tarifs: null,
   }
 }
 
@@ -183,9 +519,15 @@ async function fetchRestaurantCuisinesMap(
   return map
 }
 
+function normalizeCuisineRows(
+  rows: RestaurantCuisineRow[] | null | undefined,
+): RestaurantCuisineRow[] {
+  return rows?.length ? rows : []
+}
+
 async function enrichRowsWithCuisines(rows: DbRestaurantRow[]): Promise<DbRestaurantRow[]> {
   const idsMissingCuisines = rows
-    .filter((row) => !row.restaurant_cuisines?.length)
+    .filter((row) => normalizeCuisineRows(row.restaurant_cuisines).length === 0)
     .map((row) => row.id)
 
   if (idsMissingCuisines.length === 0) return rows
@@ -193,11 +535,144 @@ async function enrichRowsWithCuisines(rows: DbRestaurantRow[]): Promise<DbRestau
   const cuisineMap = await fetchRestaurantCuisinesMap(idsMissingCuisines)
 
   return rows.map((row) => {
-    if (row.restaurant_cuisines?.length) return row
+    if (normalizeCuisineRows(row.restaurant_cuisines).length > 0) return row
     const fromDb = cuisineMap.get(row.id)
     if (!fromDb?.length) return row
     return { ...row, restaurant_cuisines: fromDb }
   })
+}
+
+type ImageLinkDbRow = {
+  restaurant_id: string
+  image_url: string
+  cover: boolean | null
+  created_at: string
+}
+
+async function fetchRestaurantImagesMap(
+  restaurantIds: string[],
+): Promise<Map<string, RestaurantImageRow[]>> {
+  if (!supabase || restaurantIds.length === 0) return new Map()
+
+  const { data, error } = await supabase
+    .from('restaurant_images')
+    .select('restaurant_id, image_url, cover, created_at')
+    .in('restaurant_id', restaurantIds)
+
+  if (error) {
+    console.warn('[restaurants] lecture restaurant_images :', error.message)
+    return new Map()
+  }
+
+  const map = new Map<string, RestaurantImageRow[]>()
+
+  for (const link of (data ?? []) as ImageLinkDbRow[]) {
+    const id = link.restaurant_id
+    const bucket = map.get(id) ?? []
+    bucket.push({
+      image_url: link.image_url,
+      cover: link.cover,
+      created_at: link.created_at,
+    })
+    map.set(id, bucket)
+  }
+
+  return map
+}
+
+type TarifLinkDbRow = {
+  restaurant_id: string
+  tarif_key?: string
+  tarifs: TarifJoin | TarifJoin[] | null
+}
+
+function toRestaurantTarifRows(
+  links: TarifLinkDbRow[] | null | undefined,
+): RestaurantTarifRow[] {
+  if (!links?.length) return []
+
+  return links.map((link) => {
+    if (link.tarifs != null) {
+      return { tarifs: link.tarifs }
+    }
+    if (link.tarif_key) {
+      return { tarifs: { key: link.tarif_key, label: null } }
+    }
+    return { tarifs: null }
+  })
+}
+
+async function fetchRestaurantTarifsMap(
+  restaurantIds: string[],
+): Promise<Map<string, RestaurantTarifRow[]>> {
+  if (!supabase || restaurantIds.length === 0) return new Map()
+
+  const { data, error } = await supabase
+    .from('restaurants_tarifs')
+    .select('restaurant_id, tarif_key, tarifs ( key, label )')
+    .in('restaurant_id', restaurantIds)
+
+  if (error) {
+    console.warn('[restaurants] lecture restaurants_tarifs :', error.message)
+    return new Map()
+  }
+
+  const map = new Map<string, RestaurantTarifRow[]>()
+
+  for (const link of (data ?? []) as TarifLinkDbRow[]) {
+    const id = link.restaurant_id
+    const bucket = map.get(id) ?? []
+    bucket.push(...toRestaurantTarifRows([link]))
+    map.set(id, bucket)
+  }
+
+  return map
+}
+
+function normalizeTarifRows(
+  rows: RestaurantTarifRow[] | null | undefined,
+): RestaurantTarifRow[] {
+  return rows?.length ? rows : []
+}
+
+async function enrichRowsWithTarifs(rows: DbRestaurantRow[]): Promise<DbRestaurantRow[]> {
+  const idsMissingTarifs = rows
+    .filter((row) => normalizeTarifRows(row.restaurants_tarifs).length === 0)
+    .map((row) => row.id)
+
+  if (idsMissingTarifs.length === 0) return rows
+
+  const tarifMap = await fetchRestaurantTarifsMap(idsMissingTarifs)
+
+  return rows.map((row) => {
+    if (normalizeTarifRows(row.restaurants_tarifs).length > 0) return row
+    const fromDb = tarifMap.get(row.id)
+    if (!fromDb?.length) return row
+    return { ...row, restaurants_tarifs: fromDb }
+  })
+}
+
+async function enrichRowsWithImages(rows: DbRestaurantRow[]): Promise<DbRestaurantRow[]> {
+  const idsMissingImages = rows
+    .filter((row) => normalizeImageRows(row.restaurant_images).length === 0)
+    .map((row) => row.id)
+
+  if (idsMissingImages.length === 0) return rows
+
+  const imageMap = await fetchRestaurantImagesMap(idsMissingImages)
+
+  return rows.map((row) => {
+    if (normalizeImageRows(row.restaurant_images).length > 0) return row
+    const fromDb = imageMap.get(row.id)
+    if (!fromDb?.length) return row
+    return { ...row, restaurant_images: fromDb }
+  })
+}
+
+async function enrichPublishedRows(rows: DbRestaurantRow[]): Promise<DbRestaurantRow[]> {
+  const withCuisines = await enrichRowsWithCuisines(rows)
+  const withImages = await enrichRowsWithImages(withCuisines)
+  return enrichRowsWithTarifs(withImages)
 }
 
 export async function fetchPublishedRestaurants(): Promise<Restaurant[]> {
@@ -208,6 +683,7 @@ export async function fetchPublishedRestaurants(): Promise<Restaurant[]> {
   let { data, error } = await supabase
     .from('restaurants')
     .select(RESTAURANT_PUBLIC_SELECT)
+    .eq('active', true)
     .order('created_at', { ascending: false })
 
   if (error) {
@@ -215,6 +691,7 @@ export async function fetchPublishedRestaurants(): Promise<Restaurant[]> {
     const fb = await supabase
       .from('restaurants')
       .select(RESTAURANT_MINIMAL_SELECT)
+      .eq('active', true)
       .order('created_at', { ascending: false })
     if (fb.error) {
       console.error('[restaurants] fetchPublishedRestaurants', fb.error.message)
@@ -230,8 +707,141 @@ export async function fetchPublishedRestaurants(): Promise<Restaurant[]> {
     ? (data as unknown as DbRestaurantCore[]).map((r) => asRowWithEmptyRelations(r))
     : (data as unknown as DbRestaurantRow[])
 
-  const enriched = await enrichRowsWithCuisines(rows)
-  return enriched.map(mapDbRestaurantToPublic)
+  const enriched = await enrichPublishedRows(rows)
+  return sortRestaurantsForDisplay(enriched.map(mapDbRestaurantToPublic))
+}
+
+type FeatureJoin = {
+  key: string
+  label: string | null
+  sort_order: number | null
+  is_active: boolean | null
+} | null
+
+type FeatureLinkRow = {
+  feature_key: string | null
+  restaurant_features: FeatureJoin | FeatureJoin[] | null
+}
+
+function normalizeFeatureJoin(
+  feature: FeatureJoin | FeatureJoin[] | null | undefined,
+): FeatureJoin {
+  if (Array.isArray(feature)) return feature[0] ?? null
+  return feature ?? null
+}
+
+export async function fetchRestaurantFeatures(restaurantId: string): Promise<RestaurantFeature[]> {
+  noStore()
+  if (!supabase || !UUID_RE.test(restaurantId.trim())) return []
+
+  const { data, error } = await supabase
+    .from('restaurant_feature_links')
+    .select('feature_key, restaurant_features ( key, label, sort_order, is_active )')
+    .eq('restaurant_id', restaurantId.trim())
+
+  if (error) {
+    console.warn('[restaurants] lecture restaurant_feature_links :', error.message)
+    return []
+  }
+
+  const rows = (data ?? []) as FeatureLinkRow[]
+
+  return rows
+    .map((row) => {
+      const feature = normalizeFeatureJoin(row.restaurant_features)
+      if (feature?.is_active === false) return null
+      const key = (feature?.key ?? row.feature_key ?? '').trim()
+      if (!key) return null
+      const label = (feature?.label ?? '').trim() || key
+      return {
+        key,
+        label,
+        sortOrder: Number(feature?.sort_order) || 0,
+      }
+    })
+    .filter((item): item is RestaurantFeature & { sortOrder: number } => item != null)
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.label.localeCompare(b.label, 'fr'))
+    .map(({ key, label }) => ({ key, label }))
+}
+
+export async function fetchRestaurantOpeningHours(
+  restaurantId: string,
+): Promise<RestaurantOpeningHoursDay[]> {
+  noStore()
+  if (!supabase || !UUID_RE.test(restaurantId.trim())) return []
+
+  const { data, error } = await supabase
+    .from('restaurant_opening_slots')
+    .select('day, open_time, close_time, sort_order')
+    .eq('restaurant_id', restaurantId.trim())
+    .order('day', { ascending: true })
+    .order('sort_order', { ascending: true })
+
+  if (error) {
+    console.warn('[restaurants] lecture restaurant_opening_slots :', error.message)
+    return []
+  }
+
+  const byDay = new Map<number, { openTime: string; closeTime: string; sortOrder: number }[]>()
+
+  for (const row of data ?? []) {
+    const day = row.day
+    if (typeof day !== 'number' || day < 0 || day > 6) continue
+    const openTime = formatOpeningTime(row.open_time)
+    const closeTime = formatOpeningTime(row.close_time)
+    if (!openTime || !closeTime) continue
+    const slots = byDay.get(day) ?? []
+    slots.push({
+      openTime,
+      closeTime,
+      sortOrder: Number(row.sort_order) || slots.length,
+    })
+    byDay.set(day, slots)
+  }
+
+  if (byDay.size === 0) return []
+
+  return OPENING_DAY_ORDER.map((day) => {
+    const slots = byDay.get(day) ?? []
+    slots.sort((a, b) => a.sortOrder - b.sortOrder)
+    return {
+      day,
+      dayLabel: OPENING_DAY_LABELS[day] ?? `Jour ${day}`,
+      slots: slots.map(({ openTime, closeTime }) => ({ openTime, closeTime })),
+    }
+  })
+}
+
+export async function fetchRestaurantMenuPages(restaurantId: string): Promise<RestaurantMenuPage[]> {
+  noStore()
+  if (!supabase || !UUID_RE.test(restaurantId.trim())) return []
+
+  const { data, error } = await supabase
+    .from('restaurant_photos_menu')
+    .select('id, image_src, caption, sort_order')
+    .eq('restaurant_id', restaurantId.trim())
+    .eq('published', true)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (error) {
+    console.warn('[restaurants] lecture restaurant_photos_menu :', error.message)
+    return []
+  }
+
+  return (data ?? [])
+    .map((row: {
+      id: string
+      image_src: string
+      caption: string | null
+      sort_order: number | null
+    }) => ({
+      id: row.id,
+      imageSrc: row.image_src?.trim() ?? '',
+      caption: row.caption?.trim() || null,
+      sortOrder: Number(row.sort_order) || 0,
+    }))
+    .filter((page) => Boolean(page.imageSrc))
 }
 
 export async function fetchRestaurantBySlug(slug: string): Promise<Restaurant | null> {
@@ -246,6 +856,7 @@ export async function fetchRestaurantBySlug(slug: string): Promise<Restaurant | 
     .from('restaurants')
     .select(RESTAURANT_PUBLIC_SELECT)
     .eq('id', id)
+    .eq('active', true)
     .maybeSingle()
 
   if (error) {
@@ -254,6 +865,7 @@ export async function fetchRestaurantBySlug(slug: string): Promise<Restaurant | 
       .from('restaurants')
       .select(RESTAURANT_MINIMAL_SELECT)
       .eq('id', id)
+      .eq('active', true)
       .maybeSingle()
     if (fb.error) {
       console.error('[restaurants] fetchRestaurantBySlug', fb.error.message)
@@ -269,15 +881,31 @@ export async function fetchRestaurantBySlug(slug: string): Promise<Restaurant | 
     ? asRowWithEmptyRelations(data as unknown as DbRestaurantCore)
     : (data as unknown as DbRestaurantRow)
 
-  const [enriched] = await enrichRowsWithCuisines([row])
+  const [enriched] = await enrichPublishedRows([row])
   return mapDbRestaurantToPublic(enriched)
+}
+
+/** Jusqu’à `limit` restaurants sponsorisés actifs, ordre aléatoire (hors restaurant courant). */
+export async function fetchRandomSponsoredRestaurants(
+  excludeRestaurantId: string,
+  limit = 3,
+): Promise<Restaurant[]> {
+  noStore()
+  const restaurants = await fetchPublishedRestaurants()
+  const sponsored = restaurants.filter(
+    (restaurant) => restaurant.sponsored && restaurant.id !== excludeRestaurantId,
+  )
+  return shuffleRestaurants(sponsored).slice(0, Math.max(0, limit))
 }
 
 export async function fetchPublishedRestaurantSlugs(): Promise<string[]> {
   noStore()
   if (!supabase) return []
 
-  const { data, error } = await supabase.from('restaurants').select('id')
+  const { data, error } = await supabase
+    .from('restaurants')
+    .select('id')
+    .eq('active', true)
 
   if (error) {
     console.error('[restaurants] fetchPublishedRestaurantSlugs', error.message)

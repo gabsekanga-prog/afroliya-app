@@ -32,6 +32,20 @@ export type RestaurantCuisineAdminRow = {
     | null
 }
 
+export type TarifCatalogRow = {
+  key: string
+  label: string | null
+}
+
+export type RestaurantTarifAdminRow = {
+  restaurant_id: string
+  tarif_key: string
+  tarifs:
+    | { key: string; label: string | null }
+    | { key: string; label: string | null }[]
+    | null
+}
+
 export type RestaurantDealAdminRow = {
   id: string
   restaurant_id: string | null
@@ -121,6 +135,40 @@ export async function fetchCuisinesCatalog(): Promise<CuisineCatalogRow[]> {
   }
 
   return (data ?? []) as CuisineCatalogRow[]
+}
+
+export async function fetchTarifsCatalog(): Promise<TarifCatalogRow[]> {
+  const admin = getSupabaseAdmin()
+  if (!admin) return []
+
+  const { data, error } = await admin.from('tarifs').select('key, label').order('key')
+
+  if (error) {
+    console.error('[tarifs-catalog]', error.message)
+    return []
+  }
+
+  return (data ?? []) as TarifCatalogRow[]
+}
+
+export async function fetchRestaurantTarifsAdmin(
+  restaurantId: string,
+): Promise<RestaurantTarifAdminRow[]> {
+  const admin = getSupabaseAdmin()
+  if (!admin) return []
+
+  const { data, error } = await admin
+    .from('restaurants_tarifs')
+    .select('restaurant_id, tarif_key, tarifs ( key, label )')
+    .eq('restaurant_id', restaurantId)
+    .order('tarif_key')
+
+  if (error) {
+    console.error('[restaurants-tarifs-admin]', error.message)
+    return []
+  }
+
+  return (data ?? []) as unknown as RestaurantTarifAdminRow[]
 }
 
 export async function fetchRestaurantCuisinesAdmin(

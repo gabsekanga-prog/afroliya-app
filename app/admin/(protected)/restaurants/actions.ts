@@ -21,6 +21,22 @@ function parseGoogleNote(raw: string): number | null {
   return n
 }
 
+function parseOptionalNonNegativeInt(raw: string): number | null {
+  const t = raw.trim()
+  if (!t) return null
+  const n = Number(t)
+  if (!Number.isFinite(n) || !Number.isInteger(n) || n < 0) return null
+  return n
+}
+
+function parseOptionalCoord(raw: string): number | null {
+  const t = raw.trim().replace(',', '.')
+  if (!t) return null
+  const n = Number(t)
+  if (!Number.isFinite(n)) return null
+  return n
+}
+
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
@@ -39,11 +55,21 @@ export async function saveRestaurantAction(
   const city = String(formData.get('city') ?? '').trim()
   const description = emptyToNull(String(formData.get('description') ?? ''))
   const bookable = formData.has('bookable')
+  const sponsored = formData.has('sponsored')
+  const active = formData.has('active')
   const google_quotation = parseGoogleNote(String(formData.get('google_quotation') ?? ''))
+  const google_review_total_value = parseOptionalNonNegativeInt(
+    String(formData.get('google_review_total_value') ?? ''),
+  )
   const website_url = emptyToNull(String(formData.get('website_url') ?? ''))
   const phone = emptyToNull(String(formData.get('phone') ?? ''))
   const email = emptyToNull(String(formData.get('email') ?? ''))
   const address = emptyToNull(String(formData.get('address') ?? ''))
+  const commune = emptyToNull(String(formData.get('commune') ?? ''))
+  const postal_code = emptyToNull(String(formData.get('postal_code') ?? ''))
+  const country_code = emptyToNull(String(formData.get('country_code') ?? ''))
+  const latitude = parseOptionalCoord(String(formData.get('latitude') ?? ''))
+  const longitude = parseOptionalCoord(String(formData.get('longitude') ?? ''))
   const google_maps_link = emptyToNull(String(formData.get('google_maps_link') ?? ''))
   const instagram_url = emptyToNull(String(formData.get('instagram_url') ?? ''))
   const facebook_url = emptyToNull(String(formData.get('facebook_url') ?? ''))
@@ -58,11 +84,19 @@ export async function saveRestaurantAction(
     city,
     description,
     bookable,
+    sponsored,
+    active,
     google_quotation,
+    google_review_total_value,
     website_url,
     phone,
     email,
     address,
+    commune,
+    postal_code,
+    country_code,
+    latitude,
+    longitude,
     google_maps_link,
     instagram_url,
     facebook_url,
@@ -300,6 +334,55 @@ export async function deleteRestaurantCuisineAction(
   return { ok: true }
 }
 
+export async function addRestaurantTarifAction(
+  _prev: { error?: string; ok?: boolean } | undefined,
+  formData: FormData,
+): Promise<{ error?: string; ok?: boolean }> {
+  await requireAdmin()
+  const admin = getSupabaseAdmin()
+  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
+
+  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
+  const tarif_key = String(formData.get('tarif_key') ?? '').trim()
+  if (!UUID_RE.test(restaurantId) || !tarif_key) {
+    return { error: 'Restaurant ou tarif invalide.' }
+  }
+
+  const { error } = await admin
+    .from('restaurants_tarifs')
+    .insert({ restaurant_id: restaurantId, tarif_key })
+  if (error) {
+    if (error.code === '23505') return { error: 'Ce tarif est déjà associé à ce restaurant.' }
+    return { error: error.message }
+  }
+
+  revalidateRestaurantPublicAndAdmin(restaurantId)
+  return { ok: true }
+}
+
+export async function deleteRestaurantTarifAction(
+  _prev: { error?: string; ok?: boolean } | undefined,
+  formData: FormData,
+): Promise<{ error?: string; ok?: boolean }> {
+  await requireAdmin()
+  const admin = getSupabaseAdmin()
+  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
+
+  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
+  const tarif_key = String(formData.get('tarif_key') ?? '').trim()
+  if (!UUID_RE.test(restaurantId) || !tarif_key) return { error: 'Paramètres invalides.' }
+
+  const { error } = await admin
+    .from('restaurants_tarifs')
+    .delete()
+    .match({ restaurant_id: restaurantId, tarif_key })
+
+  if (error) return { error: error.message }
+
+  revalidateRestaurantPublicAndAdmin(restaurantId)
+  return { ok: true }
+}
+
 export async function saveRestaurantDealAction(
   _prev: { error?: string; ok?: boolean } | undefined,
   formData: FormData,
@@ -477,6 +560,7 @@ export async function deleteRestaurantAction(formData: FormData): Promise<void> 
   await admin.from('restaurant_feature_links').delete().eq('restaurant_id', id)
   await admin.from('restaurant_deals').delete().eq('restaurant_id', id)
   await admin.from('restaurant_cuisines').delete().eq('restaurant_id', id)
+  await admin.from('restaurants_tarifs').delete().eq('restaurant_id', id)
   await admin.from('restaurant_opening_slots').delete().eq('restaurant_id', id)
   await admin.from('restaurant_images').delete().eq('restaurant_id', id)
 

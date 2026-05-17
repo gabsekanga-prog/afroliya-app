@@ -28,7 +28,6 @@ export const ADMIN_TABLES: AdminTableConfig[] = [
       'google_quotation',
       'google_review_total_value',
       'city',
-      'address_line1',
       'postal_code',
       'country_code',
       'latitude',
@@ -39,6 +38,8 @@ export const ADMIN_TABLES: AdminTableConfig[] = [
       'phone',
       'email',
       'sponsored',
+      'commune',
+      'active',
     ],
   },
   {
@@ -120,6 +121,19 @@ export const ADMIN_TABLES: AdminTableConfig[] = [
     primaryKey: ['key'],
     defaultOrder: 'created_at',
     columns: ['created_at', 'key', 'description'],
+  },
+  {
+    name: 'tarifs',
+    label: 'Tarifs',
+    primaryKey: ['key'],
+    defaultOrder: 'key',
+    columns: ['key', 'label'],
+  },
+  {
+    name: 'restaurants_tarifs',
+    label: 'Restaurants tarifs',
+    primaryKey: ['restaurant_id', 'tarif_key'],
+    columns: ['restaurant_id', 'tarif_key'],
   },
   {
     name: 'restaurant_cuisines',

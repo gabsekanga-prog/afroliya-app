@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { AlertCircle, CalendarCheck, MapPin, ShieldCheck, Target, Utensils } from 'lucide-react'
+import { AlertCircle, CalendarCheck, Clock, MapPin, ShieldCheck, Target, Utensils } from 'lucide-react'
 import type { Guide } from '@/lib/guides'
 import { CommunitySignupSection } from './community-signup-section'
 import { PlatformStatsList } from './platform-stats-list'
@@ -9,23 +9,23 @@ import { SiteFooter } from './site-footer'
 
 const plaisirBlocks = [
   {
-    title: 'Découvrez des adresses',
+    title: 'Découvrez des adresses à Bruxelles et autour',
     description:
-      'Ne tournez plus en rond avec les mêmes adresses. Découvrez facilement de nouvaux restaurants afro et antillais grâce à notre catalogue mise à jour régulièrement.',
-    icon: Target,
+      'Ne perdez plus du temps à chercher. Découvrez facilement des restaurants africains et antillais grâce à notre catalogue mis à jour régulièrement.',
+    icon: Utensils,
   },
 
   {
-    title: 'Réservez 24h/24',
+    title: 'Réservez gratuitement 24h/24',
     description:
-      'Bloquez votre table en quelques clics, gratuitement, sans dépendre des horaires, et sans devoir rappeler 5x.',
+      'Bloquez votre table en quelques clics, sans frais, quand vous voulez, sans dépendre des horaires, et sans devoir rappeler 5x.',
     icon: CalendarCheck,
   },
   {
-    title: 'Réduisez les imprévus',
+    title: 'Réduisez l\'attente et les ruptures de stock',
     description:
-      'Signalez vos plats et boissons préférés à l\'avance afin de réduire les imprévus (attente, rupture de stock, etc.).',
-    icon: AlertCircle,
+      'Signalez vos plats et boissons préférés à l\'avance afin de réduire au maximum l\'attente et les ruptures de stock.',
+    icon: Clock,
   }
 ]
 
@@ -131,11 +131,11 @@ export function HomePageClient({ guides }: Props) {
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6">
               <div>
-                <h1 className="text-2xl max-w-3xl font-bold leading-tight sm:text-5xl">
-                Votre plateforme des restos afro à Bruxelles et autour
+                <h1 className="text-2xl max-w-4xl font-bold leading-tight sm:text-5xl">
+                Votre plateforme de restaurants africains et antillais
                 </h1>
                 <p className="mt-4 text-lg text-[#f8e9dc]">
-                  Découvrez des adresses — Réservez 24h/24 — Réduisez les imprévus
+                  Découvrez des adresses à Bruxelles et autour — Réservez gratuitement 24h/24 — Réduisez l'attente et les ruptures de stock
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link
@@ -155,16 +155,16 @@ export function HomePageClient({ guides }: Props) {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
           <div className="order-2 lg:order-2">
             <h2 className="text-2xl font-bold leading-tight text-neutral-900 sm:text-4xl">
-              Ne gâchez plus vos sorties dans les restos afro...
+              Avez-vous déjà rencontré l'un de ces problèmes ?
             </h2>
             <ul className="mt-7 space-y-3 text-base text-neutral-600 sm:text-lg">
               <li>✖︎ Ne pas savoir où manger</li>
               <li>✖︎ Perdre du temps à chercher sur Google, Instagram, etc.</li>
               <li>✖︎ Devoir rappeler 5x pour réserver une table</li>
-              <li>✖︎ Tomber sur des imprévus (attente, rupture de stock, etc.)</li>
+              <li>✖︎ Attente et ruptures de stock</li>
             </ul>
             <p className="mt-7 text-base font-bold text-neutral-600 sm:text-lg">
-              Afroliya vous évite ces soucis.
+              Ne gâchez plus vos sorties au restaurant.
             </p>
             <Link
               href="/restaurants"
