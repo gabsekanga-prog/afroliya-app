@@ -12,6 +12,7 @@ import {
   fetchRestaurantFeaturesCatalog,
   fetchRestaurantImagesAdmin,
   fetchRestaurantOpeningSlotsAdmin,
+  fetchRestaurantMenuSectionsAdmin,
   fetchRestaurantPhotosMenuAdmin,
 } from '@/lib/restaurant-relations-admin'
 import { fetchRestaurantAdminById } from '@/lib/restaurants-admin'
@@ -24,6 +25,7 @@ import { RestaurantDealsPanel } from '../restaurant-deals-panel'
 import { RestaurantFeatureLinksPanel } from '../restaurant-feature-links-panel'
 import { RestaurantImagesPanel } from '../restaurant-images-panel'
 import { RestaurantOpeningSlotsPanel } from '../restaurant-opening-slots-panel'
+import { RestaurantMenuTextPanel } from '../restaurant-menu-text-panel'
 import { RestaurantPhotosMenuPanel } from '../restaurant-photos-menu-panel'
 
 const UUID_RE =
@@ -52,6 +54,7 @@ export default async function AdminEditRestaurantPage({
     deals,
     featureLinks,
     photosMenu,
+    menuSections,
     cuisineCatalog,
     tarifCatalog,
     featureCatalog,
@@ -63,6 +66,7 @@ export default async function AdminEditRestaurantPage({
     fetchRestaurantDealsAdmin(id),
     fetchRestaurantFeatureLinksAdmin(id),
     fetchRestaurantPhotosMenuAdmin(id),
+    fetchRestaurantMenuSectionsAdmin(id),
     fetchCuisinesCatalog(),
     fetchTarifsCatalog(),
     fetchRestaurantFeaturesCatalog(),
@@ -87,6 +91,7 @@ export default async function AdminEditRestaurantPage({
 
       <RestaurantImagesPanel restaurantId={id} images={images} />
       <RestaurantPhotosMenuPanel restaurantId={id} photos={photosMenu} />
+      <RestaurantMenuTextPanel restaurantId={id} sections={menuSections} />
       <RestaurantCuisinesPanel
         restaurantId={id}
         assigned={cuisinesAssigned}

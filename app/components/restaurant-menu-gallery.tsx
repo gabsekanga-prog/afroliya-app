@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { Images } from 'lucide-react'
 
 import { ZoomableLightboxImage } from '@/app/components/zoomable-lightbox-image'
 import type { RestaurantMenuPage } from '@/lib/restaurants'
@@ -39,6 +40,7 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const count = pages.length
   const current = pages[index]
+  const preview = pages[0]
 
   const goPrev = useCallback(() => {
     setIndex((value) => (value - 1 + count) % count)
@@ -47,6 +49,11 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
   const goNext = useCallback(() => {
     setIndex((value) => (value + 1) % count)
   }, [count])
+
+  const openLightbox = useCallback(() => {
+    setIndex(0)
+    setLightboxOpen(true)
+  }, [])
 
   const closeLightbox = useCallback(() => setLightboxOpen(false), [])
 
@@ -65,92 +72,46 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
     }
   }, [lightboxOpen, closeLightbox, goPrev, goNext])
 
-  if (!current) return null
+  if (!preview || !current) return null
 
   const showArrows = count > 1
+  const pageCountLabel = `${count} page${count !== 1 ? 's' : ''}`
 
   return (
     <>
-      <div className="relative max-w-2xl">
-        <button
-          type="button"
-          onClick={() => setLightboxOpen(true)}
-          className="block w-full overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]"
-          aria-label={`Agrandir — ${pageLabel(alt, index, current.caption)}`}
-        >
+      <div className="flex w-full max-w-md items-center gap-5 overflow-hidden rounded-xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-6">
+        <span className="relative shrink-0">
           <img
-            src={current.imageSrc}
-            alt={pageLabel(alt, index, current.caption)}
-            className="mx-auto max-h-[min(75vh,720px)] w-full object-contain"
+            src={preview.imageSrc}
+            alt={`Aperçu du menu — ${alt}`}
+            className="h-24 w-[4.5rem] rounded-lg border border-neutral-200 object-cover object-top"
             loading="lazy"
             draggable={false}
           />
-        </button>
-
-        {showArrows ? (
-          <>
-            <button
-              type="button"
-              onClick={goPrev}
-              aria-label="Page précédente du menu"
-              className="absolute left-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#8D5524] shadow-md transition hover:bg-[#f5e6d9] sm:left-3"
+          {count > 1 ? (
+            <span
+              className="absolute -bottom-1 -right-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#8D5524] px-1.5 text-xs font-semibold text-white"
+              aria-hidden
             >
-              <ChevronIcon direction="left" />
-            </button>
-            <button
-              type="button"
-              onClick={goNext}
-              aria-label="Page suivante du menu"
-              className="absolute right-2 top-1/2 z-10 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#8D5524] shadow-md transition hover:bg-[#f5e6d9] sm:right-3"
-            >
-              <ChevronIcon direction="right" />
-            </button>
-          </>
-        ) : null}
-      </div>
-
-      <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-        <p className="text-sm text-neutral-600">
-          Page {index + 1} / {count}
-          {current.caption ? ` · ${current.caption}` : ''}
-        </p>
-        {showArrows ? (
+              {count}
+            </span>
+          ) : null}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="flex items-center gap-2 text-lg font-semibold text-neutral-900">
+            <Images className="h-5 w-5 shrink-0 text-[#8D5524]" strokeWidth={1.75} aria-hidden />
+            La carte en images
+          </p>
+          <p className="mt-1 text-sm text-neutral-600">{pageCountLabel}</p>
           <button
             type="button"
-            onClick={goNext}
-            className="text-sm font-medium text-[#8D5524] underline-offset-2 hover:underline"
+            onClick={openLightbox}
+            className="mt-3 inline-flex rounded-xl bg-[#8D5524] px-5 py-2 text-base font-normal text-white transition hover:bg-[#74431a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]"
           >
-            Page suivante
+            Voir
           </button>
-        ) : null}
-      </div>
-
-      {showArrows && count <= 8 ? (
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {pages.map((page, thumbIndex) => (
-            <button
-              key={page.id}
-              type="button"
-              onClick={() => setIndex(thumbIndex)}
-              aria-label={pageLabel(alt, thumbIndex, page.caption)}
-              aria-current={thumbIndex === index}
-              className={`shrink-0 overflow-hidden rounded-lg border-2 transition ${
-                thumbIndex === index
-                  ? 'border-[#8D5524] shadow-sm'
-                  : 'border-transparent opacity-70 hover:opacity-100'
-              }`}
-            >
-              <img
-                src={page.imageSrc}
-                alt=""
-                className="h-16 w-12 object-cover object-top"
-                loading="lazy"
-                draggable={false}
-              />
-            </button>
-          ))}
         </div>
-      ) : null}
+      </div>
 
       {lightboxOpen ? (
         <div
@@ -209,6 +170,36 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
               {current.caption ? ` — ${current.caption}` : ''}
             </figcaption>
           </figure>
+
+          {showArrows && count <= 8 ? (
+            <div
+              className="absolute bottom-4 left-1/2 z-10 flex max-w-[min(100%,36rem)] -translate-x-1/2 gap-2 overflow-x-auto rounded-xl bg-black/40 p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              onClick={(event) => event.stopPropagation()}
+            >
+              {pages.map((page, thumbIndex) => (
+                <button
+                  key={page.id}
+                  type="button"
+                  onClick={() => setIndex(thumbIndex)}
+                  aria-label={pageLabel(alt, thumbIndex, page.caption)}
+                  aria-current={thumbIndex === index}
+                  className={`shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                    thumbIndex === index
+                      ? 'border-white shadow-sm'
+                      : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img
+                    src={page.imageSrc}
+                    alt=""
+                    className="h-14 w-11 object-cover object-top"
+                    loading="lazy"
+                    draggable={false}
+                  />
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </>

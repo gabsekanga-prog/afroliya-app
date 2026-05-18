@@ -1,9 +1,11 @@
-import { MapPin, Utensils } from 'lucide-react'
+import { AlertTriangle, MapPin, Utensils } from 'lucide-react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 
 import { CollapsibleText } from '@/app/components/collapsible-text'
+import { CommunitySignupSection } from '@/app/components/community-signup-section'
 import { RestaurantCard } from '@/app/components/restaurant-card'
+import { RestaurantMenuAccordion } from '@/app/components/restaurant-menu-accordion'
 import { RestaurantMenuGallery } from '@/app/components/restaurant-menu-gallery'
 import { RestaurantContactAccess } from '@/app/components/restaurant-contact-access'
 import { RestaurantOpeningHours } from '@/app/components/restaurant-opening-hours'
@@ -19,6 +21,7 @@ import {
   fetchRestaurantBySlug,
   fetchRestaurantFeatures,
   fetchRestaurantMenuPages,
+  fetchRestaurantMenuSections,
   fetchRestaurantOpeningHours,
   formatRestaurantHeroRatingLine,
 } from '@/lib/restaurants'
@@ -50,7 +53,11 @@ export default async function RestaurantDetailPage({
     notFound()
   }
 
+  const menuSections = await fetchRestaurantMenuSections(restaurant.id)
   const menuPages = await fetchRestaurantMenuPages(restaurant.id)
+  const hasTextMenu = menuSections.some((section) => section.items.length > 0)
+  const hasMenuPhotos = menuPages.length > 0
+  const hasMenuContent = hasTextMenu || hasMenuPhotos
   const features = await fetchRestaurantFeatures(restaurant.id)
   const openingHours = await fetchRestaurantOpeningHours(restaurant.id)
   const sponsoredSuggestions = await fetchRandomSponsoredRestaurants(restaurant.id, 3)
@@ -292,17 +299,28 @@ export default async function RestaurantDetailPage({
           >
             La carte
           </h2>
-          {menuPages.length > 0 ? (
+          {hasMenuContent ? (
             <>
-              <p className="mt-2 text-lg text-neutral-600">
-                Menu indicatif. Plats et prix susceptibles de changer.
+              <p className="mt-2 flex items-start gap-2 text-lg text-neutral-600">
+                <AlertTriangle
+                  className="mt-0.5 h-4 w-4 shrink-0 text-amber-600/75"
+                  strokeWidth={2}
+                  aria-hidden
+                />
+                <span>
+                  Informations purement indicatives. Plats et prix susceptibles de changer.
+                </span>
               </p>
-              <p className="mt-4 text-sm text-neutral-600 italic">
-              🔍 Cliquez pour agrandir et zoomer.
-              </p>
-              <div className="mt-6">
-                <RestaurantMenuGallery pages={menuPages} alt={restaurant.nom} />
-              </div>
+              {hasMenuPhotos ? (
+                <div className="mt-6">
+                  <RestaurantMenuGallery pages={menuPages} alt={restaurant.nom} />
+                </div>
+              ) : null}
+              {hasTextMenu ? (
+                <div className={hasMenuPhotos ? 'mt-10' : 'mt-6'}>
+                  <RestaurantMenuAccordion sections={menuSections} />
+                </div>
+              ) : null}
               <div className="mt-8">
                 <a
                   href="#reserver"
@@ -364,8 +382,13 @@ export default async function RestaurantDetailPage({
           >
             Horaires
           </h2>
-          <p className="mt-2 text-lg text-neutral-600">
-            Horaires indicatifs. Réservez pour être sûr(e).
+          <p className="mt-2 flex items-start gap-2 text-lg text-neutral-600">
+            <AlertTriangle
+              className="mt-0.5 h-4 w-4 shrink-0 text-amber-600/75"
+              strokeWidth={2}
+              aria-hidden
+            />
+            <span>Informations purement indicatives. Réservez pour être sûr(e).</span>
           </p>
           {openingHours.length > 0 ? (
             <RestaurantOpeningHours days={openingHours} />
@@ -427,6 +450,8 @@ export default async function RestaurantDetailPage({
           />
         </div>
       </section>
+
+      <CommunitySignupSection />
 
       {sponsoredSuggestions.length > 0 ? (
         <section

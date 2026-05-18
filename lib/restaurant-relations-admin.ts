@@ -1,3 +1,8 @@
+import {
+  formatMenuDisplayText,
+  formatMenuDisplayTextRequired,
+  formatMenuPrice,
+} from '@/lib/format-menu-text'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 export type RestaurantImageAdminRow = {
@@ -246,6 +251,83 @@ export async function fetchRestaurantFeatureLinksAdmin(
   }
 
   return (data ?? []) as unknown as RestaurantFeatureLinkAdminRow[]
+}
+
+export type RestaurantMenuItemAdminRow = {
+  id: string
+  section_id: string
+  name: string
+  description: string | null
+  price: string | null
+  sort_order: number | null
+  published: boolean | null
+}
+
+export type RestaurantMenuSectionAdminRow = {
+  id: string
+  restaurant_id: string
+  name: string
+  sort_order: number | null
+  published: boolean | null
+  items: RestaurantMenuItemAdminRow[]
+}
+
+export async function fetchRestaurantMenuSectionsAdmin(
+  restaurantId: string,
+): Promise<RestaurantMenuSectionAdminRow[]> {
+  const admin = getSupabaseAdmin()
+  if (!admin) return []
+
+  const { data: sections, error: sectionsError } = await admin
+    .from('restaurant_menu_sections')
+    .select('id, restaurant_id, name, sort_order, published')
+    .eq('restaurant_id', restaurantId)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (sectionsError) {
+    console.error('[restaurant-menu-sections-admin]', sectionsError.message)
+    return []
+  }
+
+  const sectionRows = sections ?? []
+  if (sectionRows.length === 0) return []
+
+  const sectionIds = sectionRows.map((row) => row.id)
+
+  const { data: items, error: itemsError } = await admin
+    .from('restaurant_menu_items')
+    .select('id, section_id, name, description, price, sort_order, published')
+    .in('section_id', sectionIds)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (itemsError) {
+    console.error('[restaurant-menu-items-admin]', itemsError.message)
+    return []
+  }
+
+  const itemsBySection = new Map<string, RestaurantMenuItemAdminRow[]>()
+  for (const row of items ?? []) {
+    const typed = row as RestaurantMenuItemAdminRow
+    const list = itemsBySection.get(typed.section_id) ?? []
+    list.push({
+      ...typed,
+      name: formatMenuDisplayTextRequired(typed.name),
+      description: formatMenuDisplayText(typed.description),
+      price: formatMenuPrice(typed.price),
+    })
+    itemsBySection.set(typed.section_id, list)
+  }
+
+  return sectionRows.map((section) => {
+    const typed = section as Omit<RestaurantMenuSectionAdminRow, 'items'>
+    return {
+      ...typed,
+      name: formatMenuDisplayTextRequired(typed.name),
+      items: itemsBySection.get(typed.id) ?? [],
+    }
+  })
 }
 
 export async function fetchRestaurantPhotosMenuAdmin(

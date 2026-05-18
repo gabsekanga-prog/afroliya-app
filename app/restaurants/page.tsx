@@ -102,7 +102,7 @@ export default async function ReserverUnRestaurantPage() {
               Restaurants africains à Bruxelles et autour
             </h1>
             <p className="mt-3 text-lg text-neutral-600">
-              Découvrez des adresses — Réservez 24h/24 — Réduisez les imprévus
+            Découvrez des adresses — Réservez 24h/24 — Réduisez l'attente et les ruptures de stock
             </p>
           </div>
 

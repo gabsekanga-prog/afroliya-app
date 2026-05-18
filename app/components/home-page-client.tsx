@@ -9,16 +9,16 @@ import { SiteFooter } from './site-footer'
 
 const plaisirBlocks = [
   {
-    title: 'Découvrez des adresses à Bruxelles et autour',
+    title: 'Découvrez des adresses',
     description:
       'Ne perdez plus du temps à chercher. Découvrez facilement des restaurants africains et antillais grâce à notre catalogue mis à jour régulièrement.',
     icon: Utensils,
   },
 
   {
-    title: 'Réservez gratuitement 24h/24',
+    title: 'Réservez 24h/24',
     description:
-      'Bloquez votre table en quelques clics, sans frais, quand vous voulez, sans dépendre des horaires, et sans devoir rappeler 5x.',
+      'Bloquez votre table en quelques clics, gratuitement, quand vous voulez, sans dépendre des horaires, et sans devoir rappeler 5x.',
     icon: CalendarCheck,
   },
   {
@@ -131,11 +131,11 @@ export function HomePageClient({ guides }: Props) {
           <div className="absolute inset-0 flex items-center">
             <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6">
               <div>
-                <h1 className="text-2xl max-w-4xl font-bold leading-tight sm:text-5xl">
-                Votre plateforme de restaurants africains et antillais
+                <h1 className="text-2xl max-w-5xl font-bold leading-tight sm:text-5xl">
+                Votre plateforme de restaurants africains à Bruxelles et autour
                 </h1>
                 <p className="mt-4 text-lg text-[#f8e9dc]">
-                  Découvrez des adresses à Bruxelles et autour — Réservez gratuitement 24h/24 — Réduisez l'attente et les ruptures de stock
+                  Découvrez des adresses — Réservez 24h/24 — Réduisez l'attente et les ruptures de stock
                 </p>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link

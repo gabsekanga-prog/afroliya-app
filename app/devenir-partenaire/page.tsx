@@ -204,7 +204,7 @@ export default function DevenirPartenairePage() {
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
           <div>
             <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
-              Votre restaurant souffre-t-il d'un marketing inefficace ?
+              Votre restaurant rencontre-t-il l'un de ces problèmes ?
             </h2>
             <ul className="mt-6 space-y-2 pl-5 text-neutral-600 sm:pl-6 sm:text-lg">
               <li>✖︎ Peu de nouveaux clients</li>

@@ -1,5 +1,10 @@
 import { unstable_noStore as noStore } from 'next/cache'
 
+import {
+  formatMenuDisplayText,
+  formatMenuDisplayTextRequired,
+  formatMenuPrice,
+} from '@/lib/format-menu-text'
 import { supabase } from '@/lib/supabase'
 
 export type RestaurantCuisineTag = {
@@ -12,6 +17,19 @@ export type RestaurantMenuPage = {
   imageSrc: string
   caption: string | null
   sortOrder: number
+}
+
+export type RestaurantMenuItem = {
+  id: string
+  name: string
+  description: string | null
+  price: string | null
+}
+
+export type RestaurantMenuSection = {
+  id: string
+  name: string
+  items: RestaurantMenuItem[]
 }
 
 export type RestaurantFeature = {
@@ -810,6 +828,75 @@ export async function fetchRestaurantOpeningHours(
       slots: slots.map(({ openTime, closeTime }) => ({ openTime, closeTime })),
     }
   })
+}
+
+export async function fetchRestaurantMenuSections(
+  restaurantId: string,
+): Promise<RestaurantMenuSection[]> {
+  noStore()
+  if (!supabase || !UUID_RE.test(restaurantId.trim())) return []
+
+  const rid = restaurantId.trim()
+
+  const { data: sections, error: sectionsError } = await supabase
+    .from('restaurant_menu_sections')
+    .select('id, name, sort_order')
+    .eq('restaurant_id', rid)
+    .eq('published', true)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (sectionsError) {
+    console.warn('[restaurants] lecture restaurant_menu_sections :', sectionsError.message)
+    return []
+  }
+
+  const sectionRows = sections ?? []
+  if (sectionRows.length === 0) return []
+
+  const sectionIds = sectionRows.map((row: { id: string }) => row.id)
+
+  const { data: items, error: itemsError } = await supabase
+    .from('restaurant_menu_items')
+    .select('id, section_id, name, description, price, sort_order')
+    .in('section_id', sectionIds)
+    .eq('published', true)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (itemsError) {
+    console.warn('[restaurants] lecture restaurant_menu_items :', itemsError.message)
+    return []
+  }
+
+  const itemsBySection = new Map<string, RestaurantMenuItem[]>()
+  for (const row of items ?? []) {
+    const typed = row as {
+      id: string
+      section_id: string
+      name: string
+      description: string | null
+      price: string | null
+    }
+    const name = typed.name?.trim() ?? ''
+    if (!name) continue
+    const list = itemsBySection.get(typed.section_id) ?? []
+    list.push({
+      id: typed.id,
+      name: formatMenuDisplayTextRequired(name),
+      description: formatMenuDisplayText(typed.description?.trim() || null),
+      price: formatMenuPrice(typed.price?.trim() || null),
+    })
+    itemsBySection.set(typed.section_id, list)
+  }
+
+  return sectionRows
+    .map((row: { id: string; name: string }) => ({
+      id: row.id,
+      name: formatMenuDisplayTextRequired((row.name ?? '').trim()),
+      items: itemsBySection.get(row.id) ?? [],
+    }))
+    .filter((section) => section.name.length > 0)
 }
 
 export async function fetchRestaurantMenuPages(restaurantId: string): Promise<RestaurantMenuPage[]> {
