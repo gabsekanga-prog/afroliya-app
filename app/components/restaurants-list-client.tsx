@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react'
 
+import { siteBodyClass, siteHeading2Class } from '@/lib/site-styles'
+
 import { FormSelect, formInputClassName } from '@/app/components/form-fields'
 import { RestaurantCard } from '@/app/components/restaurant-card'
 import {
@@ -92,7 +94,7 @@ export function RestaurantsListClient({ restaurants, filterOptions }: Props) {
       <section className="w-full bg-stone-100 py-12 sm:pb-20">
         <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold text-neutral-900 sm:text-2xl">
+            <h2 className={siteHeading2Class}>
               {hasActiveFilters
                 ? `${filtered.length} restaurant${filtered.length !== 1 ? 's' : ''}`
                 : 'Restaurants recommandés'}
@@ -110,11 +112,11 @@ export function RestaurantsListClient({ restaurants, filterOptions }: Props) {
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {restaurants.length === 0 ? (
-              <p className="col-span-full text-lg text-neutral-600">
+              <p className="col-span-full text-base text-neutral-600 md:text-lg">
                 Aucun restaurant publié pour le moment. Revenez bientôt.
               </p>
             ) : filtered.length === 0 ? (
-              <p className="col-span-full text-lg text-neutral-600">
+              <p className="col-span-full text-base text-neutral-600 md:text-lg">
                 Aucun restaurant ne correspond à votre recherche. Essayez d&apos;autres critères.
               </p>
             ) : (

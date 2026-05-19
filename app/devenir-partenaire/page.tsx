@@ -9,8 +9,26 @@ import {
   Megaphone,
   Target,
   TargetIcon,
+  Utensils,
   type LucideIcon,
 } from 'lucide-react'
+import { SiteHeader } from '@/app/components/site-header'
+import {
+  siteBodyClass,
+  siteBodyRelaxedClass,
+  siteBodySemiboldClass,
+  siteButtonPrimaryClass,
+  siteButtonPrimarySmClass,
+  siteHeading1Class,
+  siteHeading2Class,
+  siteHeading2LeadingClass,
+  siteHeading3Class,
+  siteHeroInnerClass,
+  siteHeroLeadOnDarkClass,
+  siteHeroSectionClass,
+  siteSectionPaddingClass,
+} from '@/lib/site-styles'
+
 import { PartnerApplicationForm } from '../components/partner-application-form'
 import { PlatformStatsList } from '../components/platform-stats-list'
 import { SiteFooter } from '../components/site-footer'
@@ -23,7 +41,7 @@ const benefits: {
   {
     title: 'Touchez des milliers de passionnés',
     description: 'Soyez référencé sur notre plateforme 100% afro et touchez chaque semaine des centaines de passionnés réellement intéressés par la cuisine afro et antillaise.',
-    icon: TargetIcon
+    icon: Utensils
   },
   {
     title: 'Recevez des réservations sans commission',
@@ -87,90 +105,9 @@ const offers = [
 export default function DevenirPartenairePage() {
   return (
     <main className="min-h-screen text-neutral-900">
-      <header className="relative z-50 border-b border-neutral-200 bg-white/80 backdrop-blur">
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-          <Link href="/" aria-label="Aller a la page Concept">
-            <img
-              src="/logo/Afroliya-logo-mini-rectangle.png"
-              alt="Afroliya"
-              className="h-9 w-auto sm:h-10"
-            />
-          </Link>
-          <nav className="hidden items-center gap-2 text-lg font-normal sm:flex">
-            <Link
-              href="/"
-              className="rounded-full px-4 py-2 text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
-            >
-              Concept
-            </Link>
-            <Link
-              href="/restaurants"
-              className="rounded-full px-4 py-2 text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
-            >
-              Trouver un restaurant
-            </Link>
-            <span className="rounded-full bg-[#f5e6d9] px-4 py-2 text-[#8D5524]">
-              Devenir partenaire
-            </span>
-            <a
-              href="#liens-utiles"
-              className="rounded-full px-4 py-2 text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
-            >
-              Liens utiles
-            </a>
-          </nav>
+      <SiteHeader active="partenaire" />
 
-          <details className="group relative sm:hidden">
-            <summary className="flex h-10 w-10 cursor-pointer list-none items-center justify-center rounded-xl border border-neutral-300 bg-white text-brand transition hover:border-[#c9a882] [&::-webkit-details-marker]:hidden">
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                className="h-5 w-5 group-open:hidden"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M4 7h16M4 12h16M4 17h16" />
-              </svg>
-              <svg
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                className="hidden h-5 w-5 group-open:block"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path d="M6 6l12 12M18 6l-12 12" />
-              </svg>
-            </summary>
-            <div className="absolute right-0 top-12 z-50 w-64 rounded-2xl border border-neutral-200 bg-white p-2 shadow-lg">
-              <Link
-                href="/"
-                className="block rounded-xl px-4 py-2 text-lg font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
-              >
-                Concept
-              </Link>
-              <Link
-                href="/restaurants"
-                className="mt-1 block rounded-xl px-4 py-2 text-lg font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
-              >
-                Trouver un restaurant
-              </Link>
-              <span className="mt-1 block rounded-xl bg-[#f5e6d9] px-4 py-2 text-lg font-normal text-[#8D5524]">
-                Devenir partenaire
-              </span>
-              <a
-                href="#liens-utiles"
-                className="mt-1 block rounded-xl px-4 py-2 text-lg font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
-              >
-                Liens utiles
-              </a>
-            </div>
-          </details>
-        </div>
-      </header>
-
-      <section className="w-full bg-[#2a1810] pb-0 sm:pb-0">
+      <section className={siteHeroSectionClass}>
         <div className="relative overflow-hidden">
           <img
             src="/images/Restauratrice%20resto%20afro%20gestion%20digital%20r%C3%A9servations%20couple%20clients.jpg"
@@ -180,17 +117,17 @@ export default function DevenirPartenairePage() {
           <div className="absolute inset-0 bg-gradient-to-r from-[#2f1d12]/80 via-[#2f1d12]/55 to-[#2f1d12]/30" />
 
           <div className="absolute inset-0 flex items-center">
-            <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6">
+            <div className={siteHeroInnerClass}>
               <div>
-                <h1 className="text-2xl font-bold leading-tight sm:text-5xl max-w-5xl">
+                <h1 className={`${siteHeading1Class} max-w-5xl`}>
                   Le partenaire marketing de votre restaurant africain et antillais
                 </h1>
-                <p className="mt-4 text-lg text-[#f8e9dc]">
+                <p className={siteHeroLeadOnDarkClass}>
                   Touchez des milliers de passionnés — Recevez des réservations sans commission — Obtenez vos propres outils digitaux
                 </p>
                 <Link
                   href="#offres-partenaire"
-                  className="mt-8 inline-flex h-12 min-w-[230px] items-center justify-center rounded-xl bg-[#8D5524] px-6 text-lg font-normal text-white transition hover:bg-[#74431a]"
+                  className={`mt-8 ${siteButtonPrimaryClass} h-12 min-w-[230px]`}
                 >
                   Devenir partenaire
                 </Link>
@@ -200,24 +137,24 @@ export default function DevenirPartenairePage() {
         </div>
       </section>
 
-      <section className="w-full bg-[#f8f1ea] py-14 sm:py-24">
+      <section className={`w-full bg-[#f8f1ea] ${siteSectionPaddingClass}`}>
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
           <div>
-            <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
+            <h2 className={siteHeading2Class}>
               Votre restaurant rencontre-t-il l'un de ces problèmes ?
             </h2>
-            <ul className="mt-6 space-y-2 pl-5 text-neutral-600 sm:pl-6 sm:text-lg">
+            <ul className={`mt-6 space-y-2 pl-6 ${siteBodyClass}`}>
               <li>✖︎ Peu de nouveaux clients</li>
               <li>✖︎ Fréquentation irrégulière</li>
               <li>✖︎ Coûts marketing élevés</li>
               <li>✖︎ Dépendance aux outils tiers (Uber, TheFork, etc.)</li>
             </ul>
-            <p className="mt-6 font-semibold text-neutral-600 sm:text-lg">
+            <p className={`mt-6 ${siteBodySemiboldClass}`}>
               Ne mettez plus votre activité en danger.
             </p>
             <Link
               href="#offres-partenaire"
-              className="mt-8 inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
+              className={`mt-8 ${siteButtonPrimaryClass}`}
             >
               Devenir partenaire
             </Link>
@@ -230,10 +167,10 @@ export default function DevenirPartenairePage() {
         </div>
       </section>
 
-      <section className="w-full bg-white py-14 sm:py-24">
+      <section className={`w-full bg-white ${siteSectionPaddingClass}`}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="mb-8 sm:mb-10">
-          <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
+          <h2 className={siteHeading2Class}>
             Boostez votre activité avec Afroliya
           </h2>
         </div>
@@ -250,13 +187,13 @@ export default function DevenirPartenairePage() {
                 <Icon size={20} strokeWidth={2} />
               </div>
 
-              <h3 className="mt-4 text-xl font-bold text-neutral-900">{item.title}</h3>
-              <p className="mt-3 text-lg leading-relaxed text-neutral-600 sm:text-lg">
+              <h3 className={`mt-4 ${siteHeading3Class}`}>{item.title}</h3>
+              <p className={`mt-3 ${siteBodyRelaxedClass}`}>
                 {item.description}
               </p>
               <Link
                 href="#offres-partenaire"
-                className="mt-6 inline-flex rounded-xl bg-[#8D5524] px-5 py-2.5 text-lg font-normal text-white transition hover:bg-[#74431a]"
+                className={`mt-6 ${siteButtonPrimarySmClass}`}
               >
                 Devenir partenaire
               </Link>
@@ -267,7 +204,7 @@ export default function DevenirPartenairePage() {
         </div>
       </section>
 
-      <section className="w-full bg-stone-100 py-14 sm:py-24">
+      <section className={`w-full bg-stone-100 ${siteSectionPaddingClass}`}>
         <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
           <div className="overflow-hidden rounded-3xl border border-neutral-200/80">
             <img
@@ -278,7 +215,7 @@ export default function DevenirPartenairePage() {
           </div>
 
           <div>
-            <h2 className="text-2xl font-bold leading-tight text-neutral-900 sm:text-4xl">
+            <h2 className={siteHeading2LeadingClass}>
               Nous sommes là pour vous donner un coup de main
             </h2>
 
@@ -286,7 +223,7 @@ export default function DevenirPartenairePage() {
 
             <Link
               href="#offres-partenaire"
-              className="mt-8 inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
+              className={`mt-8 ${siteButtonPrimaryClass}`}
             >
               Devenir partenaire
             </Link>
@@ -296,10 +233,10 @@ export default function DevenirPartenairePage() {
 
       <section
         id="offres-partenaire"
-        className="w-full scroll-mt-24 bg-white py-14 sm:py-24"
+        className={`w-full scroll-mt-24 bg-white ${siteSectionPaddingClass}`}
       >
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
+        <h2 className={siteHeading2Class}>
           Nos offres de partenariat
         </h2>
         <div className="mt-8 grid gap-5 lg:grid-cols-3">
@@ -308,17 +245,17 @@ export default function DevenirPartenairePage() {
               key={offer.name}
               className="rounded-2xl border border-neutral-200 bg-stone-50/80 p-6 shadow-sm"
             >
-              <h3 className="text-xl font-bold text-neutral-900">{offer.name}</h3>
-              <p className="mt-2 text-lg text-neutral-600">{offer.subtitle}</p>
+              <h3 className={siteHeading3Class}>{offer.name}</h3>
+              <p className={`mt-2 ${siteBodyClass}`}>{offer.subtitle}</p>
               <div className="mt-4 border-t border-neutral-200" aria-hidden />
-              <ul className="mt-4 space-y-2 text-base text-neutral-600">
+              <ul className="mt-4 space-y-2 ${siteBodyClass}">
                 {offer.points.map((point) => (
                   <li key={point}>• {point}</li>
                 ))}
               </ul>
               <Link
                 href="#form-partenaire"
-                className="mt-6 inline-flex rounded-xl bg-[#8D5524] px-5 py-2.5 text-lg font-normal text-white transition hover:bg-[#74431a]"
+                className={`mt-6 ${siteButtonPrimarySmClass}`}
               >
                 {offer.cta}
               </Link>
@@ -333,7 +270,7 @@ export default function DevenirPartenairePage() {
         className="w-full scroll-mt-24 bg-[#f8f1ea] py-16 pb-24 sm:py-20 sm:pb-32"
       >
         <div className="mx-auto w-full max-w-2xl px-4 sm:px-6">
-          <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
+          <h2 className={siteHeading2Class}>
             Démarrons la collaboration
           </h2>
 

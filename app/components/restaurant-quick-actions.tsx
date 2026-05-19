@@ -3,6 +3,8 @@
 import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+
 export type QuickActionItem = {
   id: string
   label: string
@@ -210,7 +212,7 @@ export function RestaurantQuickActions({ actions }: Props) {
                     href={action.href}
                     role="menuitem"
                     onClick={handleActionClick}
-                    className="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-lg text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524]"
+                    className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 ${restaurantPageTextLinkClass}`}
                   >
                     <QuickActionIcon id={action.id} />
                     <span>{action.label}</span>

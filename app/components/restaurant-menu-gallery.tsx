@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Images } from 'lucide-react'
 
 import { ZoomableLightboxImage } from '@/app/components/zoomable-lightbox-image'
+import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
 import type { RestaurantMenuPage } from '@/lib/restaurants'
 
 type Props = {
@@ -106,9 +107,9 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
           <button
             type="button"
             onClick={openLightbox}
-            className="mt-3 inline-flex rounded-xl bg-[#8D5524] px-5 py-2 text-base font-normal text-white transition hover:bg-[#74431a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]"
+            className={`mt-2 block text-left ${restaurantPageTextLinkClass}`}
           >
-            Voir
+            Voir la carte
           </button>
         </div>
       </div>

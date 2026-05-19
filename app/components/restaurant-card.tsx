@@ -1,6 +1,8 @@
+import { siteHeading3Class } from '@/lib/site-styles'
 import Link from 'next/link'
 
-import { formatCuisineCommune, type Restaurant } from '@/lib/restaurants'
+import { RestaurantCuisineLocation } from '@/app/components/restaurant-cuisine-location'
+import type { Restaurant } from '@/lib/restaurants'
 
 type Props = {
   restaurant: Restaurant
@@ -24,16 +26,14 @@ export function RestaurantCard({ restaurant, openInNewTab = false }: Props) {
       />
       <div className="space-y-3 p-5">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-lg font-bold text-neutral-900">{restaurant.nom}</h3>
+          <h3 className={siteHeading3Class}>{restaurant.nom}</h3>
           <span className="rounded-full bg-neutral-200 px-2.5 py-1 text-sm font-semibold text-neutral-800">
             ★ {restaurant.note}
           </span>
         </div>
-        <p className="text-lg text-neutral-600">
-          {formatCuisineCommune(restaurant.cuisine, restaurant.commune)}
-        </p>
+        <RestaurantCuisineLocation restaurant={restaurant} />
         {restaurant.tarif ? (
-          <p className="text-base font-medium text-[#8D5524]">{restaurant.tarif}</p>
+          <p className="text-sm font-medium text-[#8D5524]">{restaurant.tarif}</p>
         ) : null}
       </div>
     </Link>

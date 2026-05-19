@@ -1,6 +1,8 @@
 'use client'
 
 import Link from 'next/link'
+
+import { siteHeading3OnDarkClass } from '@/lib/site-styles'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 
@@ -104,7 +106,7 @@ export function GuidesCarousel({ guides }: Props) {
               aria-hidden
             />
             <div className="relative mt-auto flex w-full flex-col justify-end p-5 sm:p-6">
-              <h3 className="text-lg font-bold leading-snug text-white sm:text-xl">
+              <h3 className={siteHeading3OnDarkClass}>
                 {guide.title}
               </h3>
               <span className="mt-3 inline-flex text-base font-semibold text-[#f8e9dc] underline-offset-4 group-hover:underline">

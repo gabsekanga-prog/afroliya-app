@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 
+import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+import { siteBodyClass } from '@/lib/site-styles'
+
 type Props = {
   text: string
   /** Nombre de lignes visibles lorsque le texte est replié (défaut : 2). */
@@ -48,7 +51,7 @@ export function CollapsibleText({ text, collapsedLines = 2, className = '' }: Pr
       <p
         ref={contentRef}
         id="restaurant-presentation-text"
-        className={`text-lg text-neutral-600 ${expanded ? '' : clampClass}`}
+        className={`${siteBodyClass} ${expanded ? '' : clampClass}`}
       >
         {trimmed}
       </p>
@@ -56,7 +59,7 @@ export function CollapsibleText({ text, collapsedLines = 2, className = '' }: Pr
         <button
           type="button"
           onClick={() => setExpanded((value) => !value)}
-          className="mt-2 text-lg font-bold text-[#8D5524] underline-offset-2 hover:underline"
+          className={`mt-2 ${restaurantPageTextLinkClass}`}
           aria-expanded={expanded}
           aria-controls="restaurant-presentation-text"
         >

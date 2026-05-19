@@ -1,3 +1,14 @@
+import {
+  siteGuideIntroSectionClass,
+  siteGuideListSectionClass,
+  siteHeading1PageClass,
+  siteHeading1OnDarkClass,
+  siteHeading3OnDarkClass,
+  siteHeroBreadcrumbOnDarkClass,
+  siteHeroSectionClass,
+  siteBodyClass,
+  siteButtonPrimaryClass,
+} from '@/lib/site-styles'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
@@ -16,27 +27,27 @@ export default async function GuidesIndexPage() {
 
   return (
     <>
-      <section className="w-full bg-[#f8f1ea] py-10 sm:py-14">
+      <section className={siteGuideIntroSectionClass}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <nav aria-label="Fil d'Ariane" className="text-lg text-neutral-600">
+          <nav aria-label="Fil d'Ariane" className="text-base text-neutral-600 md:text-lg">
             <span className="font-semibold text-neutral-900" aria-current="page">
               Guides thématiques
             </span>
           </nav>
-          <h1 className="mt-6 text-3xl font-bold text-neutral-900 sm:text-4xl">
+          <h1 className={`mt-6 ${siteHeading1PageClass}`}>
             Guides thématiques
           </h1>
-          <p className="mt-3 max-w-6xl text-lg text-neutral-600">
+          <p className="mt-3 max-w-6xl text-base text-neutral-600 md:text-lg">
             Explorez des restaurants afro selon vos envies : sélections par pays,
             ambiance et quartiers à Bruxelles et autour.
           </p>
         </div>
       </section>
 
-      <section className="w-full bg-white py-12 sm:py-16">
+      <section className={siteGuideListSectionClass}>
         <div className="mx-auto max-w-6xl px-4 sm:px-6">
           {guides.length === 0 ? (
-            <p className="text-lg text-neutral-600">
+            <p className="text-base text-neutral-600 md:text-lg">
               Aucun guide publié pour le moment. Revenez bientôt ou parcourez les{' '}
               <Link
                 href="/restaurants"
@@ -64,10 +75,10 @@ export default async function GuidesIndexPage() {
                     aria-hidden
                   />
                   <div className="relative mt-auto p-6">
-                    <h2 className="text-xl font-bold leading-snug text-white">
+                    <h2 className={siteHeading3OnDarkClass}>
                       {guide.title}
                     </h2>
-                    <span className="mt-3 inline-flex text-lg font-semibold text-[#f8e9dc] underline-offset-4 group-hover:underline">
+                    <span className="mt-3 inline-flex text-base font-semibold text-[#f8e9dc] underline-offset-4 group-hover:underline">
                       Lire le guide
                     </span>
                   </div>

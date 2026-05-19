@@ -1,29 +1,38 @@
 import Link from 'next/link'
 
+import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+import {
+  siteBodyClass,
+  siteFooterColumnTitleClass,
+  siteFooterLabelClass,
+  siteHeading2Class,
+  siteSectionPaddingClass,
+} from '@/lib/site-styles'
+
+const footerLinkClass = restaurantPageTextLinkClass
+
 export function SiteFooter() {
   return (
     <footer
       id="liens-utiles"
-      className="scroll-mt-24 border-t border-neutral-200 bg-stone-100"
+      className={`scroll-mt-24 border-t border-neutral-200 bg-stone-100 ${siteSectionPaddingClass}`}
     >
-      <div className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6">
-        <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">Liens utiles</h2>
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+        <h2 className={siteHeading2Class}>Liens utiles</h2>
 
         <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <h3 className="text-lg font-semibold uppercase tracking-wide text-neutral-800">
-              La plateforme
-            </h3>
-            <ul className="mt-4 space-y-2 text-lg text-neutral-600">
+            <h3 className={siteFooterColumnTitleClass}>La plateforme</h3>
+            <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
-                <Link href="/" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
+                <Link href="/" className={footerLinkClass}>
                   Le concept
                 </Link>
               </li>
               <li>
                 <Link
                   href="/restaurants"
-                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
+                  className={footerLinkClass}
                 >
                   Trouver un restaurant
                 </Link>
@@ -31,7 +40,7 @@ export function SiteFooter() {
               <li>
                 <Link
                   href="/guides"
-                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
+                  className={footerLinkClass}
                 >
                   Guides thématiques
                 </Link>
@@ -39,13 +48,13 @@ export function SiteFooter() {
               <li>
                 <a
                   href="/#communaute"
-                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
+                  className={footerLinkClass}
                 >
                   Rejoindre la communauté
                 </a>
               </li>
               <li>
-                <Link href="#" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
+                <Link href="#" className={footerLinkClass}>
                   Suggérer un resto
                 </Link>
               </li>
@@ -53,25 +62,23 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold uppercase tracking-wide text-neutral-800">
-              Partenaires
-            </h3>
-            <ul className="mt-4 space-y-2 text-lg text-neutral-600">
+            <h3 className={siteFooterColumnTitleClass}>Partenaires</h3>
+            <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
                 <Link
                   href="/devenir-partenaire"
-                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
+                  className={footerLinkClass}
                 >
                   Devenir partenaire
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
+                <Link href="#" className={footerLinkClass}>
                   Nos offres
                 </Link>
               </li>
               <li>
-                <Link href="#" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
+                <Link href="#" className={footerLinkClass}>
                   Espace resto
                 </Link>
               </li>
@@ -79,19 +86,17 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold uppercase tracking-wide text-neutral-800">
-              À propos
-            </h3>
-            <ul className="mt-4 space-y-2 text-lg text-neutral-600">
+            <h3 className={siteFooterColumnTitleClass}>À propos</h3>
+            <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
-                <Link href="#" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
+                <Link href="#" className={footerLinkClass}>
                   Nous contacter
                 </Link>
               </li>
               <li>
                 <a
                   href="mailto:contact@afroliya.be"
-                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
+                  className={footerLinkClass}
                 >
                   contact@afroliya.be
                 </a>
@@ -99,13 +104,13 @@ export function SiteFooter() {
               <li>
                 <a
                   href="tel:+32456880787"
-                  className="text-neutral-600 hover:text-[#8D5524] hover:underline"
+                  className={footerLinkClass}
                 >
                   +32 456 88 07 87
                 </a>
               </li>
               <li>
-                <Link href="#" className="text-neutral-600 hover:text-[#8D5524] hover:underline">
+                <Link href="#" className={footerLinkClass}>
                   Mentions légales
                 </Link>
               </li>
@@ -114,9 +119,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-neutral-300 pt-6">
-          <span className="text-lg font-semibold text-neutral-800">
-            Réseaux sociaux :
-          </span>
+          <span className={siteFooterLabelClass}>Réseaux sociaux :</span>
           <a
             href="#"
             aria-label="Instagram"

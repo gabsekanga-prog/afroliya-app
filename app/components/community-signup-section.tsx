@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import { formInputClassName, formLabelClassName } from '@/app/components/form-fields'
 import { supabase } from '@/lib/supabase'
+import { siteBodyRelaxedClass, siteButtonPrimaryClass, siteHeading2Class, siteSectionPaddingClass } from '@/lib/site-styles'
 
 type CommunitySignupSectionProps = {
   /** `full` : section pleine largeur (Concept, liste des guides). `guide` : bloc aligné sur les sous-sections d’un guide. */
@@ -78,7 +79,7 @@ export function CommunitySignupSection({
   }
 
   const benefitsList = (
-    <ul className="mt-5 space-y-2 text-lg leading-relaxed text-neutral-600 sm:mt-6">
+    <ul className={`mt-5 space-y-2 ${siteBodyRelaxedClass} sm:mt-6`}>
       <li className="flex gap-2.5">
         <span className="text-brand shrink-0 font-semibold" aria-hidden>
           ✓
@@ -118,7 +119,7 @@ export function CommunitySignupSection({
         <button
           type="submit"
           disabled={isSubmittingCommunity}
-          className="inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a] disabled:opacity-70"
+          className={`inline-flex ${siteButtonPrimaryClass} disabled:opacity-70`}
         >
           {isSubmittingCommunity
             ? 'Envoi en cours...'
@@ -142,11 +143,11 @@ export function CommunitySignupSection({
 
 
   return (
-    <section id="communaute" className="w-full bg-[#f8f1ea] py-14 sm:py-24">
+    <section id="communaute" className={`w-full bg-[#f8f1ea] ${siteSectionPaddingClass}`}>
       <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-10">
         <div>
           <div className="max-w-2xl">
-            <h2 className="text-2xl font-bold text-neutral-900 sm:text-4xl">
+            <h2 className={siteHeading2Class}>
               Rejoignez la communauté Afroliya
             </h2>
             {benefitsList}

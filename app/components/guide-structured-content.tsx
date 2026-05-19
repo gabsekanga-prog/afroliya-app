@@ -1,3 +1,10 @@
+import {
+  siteBodyClass,
+  siteBodyOnDarkClass,
+  siteBodyRelaxedClass,
+  siteButtonPrimarySmClass,
+  siteHeading3Class,
+} from '@/lib/site-styles'
 import Link from 'next/link'
 
 import { CommunitySignupSection } from '@/app/components/community-signup-section'
@@ -7,8 +14,7 @@ function SubsectionButton({ item }: { item: GuideSubsection }) {
   const external =
     item.href.startsWith('http://') || item.href.startsWith('https://')
 
-  const className =
-    'mt-6 inline-flex w-fit rounded-xl bg-[#8D5524] px-5 py-2.5 text-lg font-normal text-white transition hover:bg-[#74431a]'
+  const className = `mt-6 inline-flex w-fit ${siteButtonPrimarySmClass}`
 
   if (external) {
     return (
@@ -38,7 +44,7 @@ export function GuideStructuredContent({ guide }: Props) {
   return (
     <>
       {guide.intro ? (
-        <p className="mt-6 text-lg leading-relaxed text-neutral-700 sm:mt-8">
+        <p className={`mt-6 ${siteBodyOnDarkClass} sm:mt-8`}>
           {guide.intro}
         </p>
       ) : null}
@@ -46,7 +52,7 @@ export function GuideStructuredContent({ guide }: Props) {
       <ul className="mt-10 list-none divide-y divide-neutral-200 border-t border-neutral-200 p-0 sm:mt-12">
         {guide.subsections.map((item, index) => (
           <li key={`${item.title}-${index}`} className="py-8 sm:py-10">
-            <h2 className="text-xl font-bold text-neutral-900 sm:text-2xl">
+            <h2 className={siteHeading3Class}>
               {item.title}
             </h2>
 
@@ -58,7 +64,7 @@ export function GuideStructuredContent({ guide }: Props) {
               />
             </div>
 
-            <p className="mt-5 text-lg leading-relaxed text-neutral-600 sm:mt-6">
+            <p className={`mt-5 ${siteBodyRelaxedClass} sm:mt-6`}>
               {item.description}
             </p>
 
@@ -68,7 +74,7 @@ export function GuideStructuredContent({ guide }: Props) {
 
         {guide.subsections.length === 0 ? (
           <li className="py-8 sm:py-10">
-            <p className="text-lg text-neutral-600">
+            <p className="text-base text-neutral-600 md:text-lg">
               Les détails de ce guide seront publiés prochainement.
             </p>
           </li>

@@ -1,3 +1,14 @@
+import {
+  siteGuideIntroSectionClass,
+  siteGuideListSectionClass,
+  siteHeading1PageClass,
+  siteHeading1OnDarkClass,
+  siteHeading3OnDarkClass,
+  siteHeroBreadcrumbOnDarkClass,
+  siteHeroSectionClass,
+  siteBodyClass,
+  siteButtonPrimaryClass,
+} from '@/lib/site-styles'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
@@ -42,7 +53,7 @@ export default async function GuideDetailPage({
 
   return (
     <>
-      <section className="w-full bg-[#2a1810] pb-0">
+      <section className={siteHeroSectionClass}>
         <div className="relative overflow-hidden">
           <img
             src={guide.imageSrc}
@@ -54,7 +65,7 @@ export default async function GuideDetailPage({
             <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6 sm:py-10">
               <nav
                 aria-label="Fil d'Ariane"
-                className="flex flex-wrap items-center gap-x-2 text-lg text-[#f8e9dc]"
+                className={siteHeroBreadcrumbOnDarkClass}
               >
                 <Link href="/guides" className="hover:text-white hover:underline">
                   Guides thématiques
@@ -66,7 +77,7 @@ export default async function GuideDetailPage({
                   {guide.title}
                 </span>
               </nav>
-              <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-5xl">
+              <h1 className={`mt-4 ${siteHeading1OnDarkClass}`}>
                 {guide.title}
               </h1>
             </div>
@@ -81,7 +92,7 @@ export default async function GuideDetailPage({
           <div className="mt-12 flex flex-wrap gap-4 border-t border-neutral-200 pt-10">
             <Link
               href="/restaurants"
-              className="inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
+              className={siteButtonPrimaryClass}
             >
               Réserver un restaurant
             </Link>

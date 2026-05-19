@@ -2,6 +2,7 @@ import { Globe, MapPin, Phone } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import type { Restaurant } from '@/lib/restaurants'
+import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
 
 function formatAccessAddress(restaurant: Restaurant): string {
   return restaurant.adresse.trim()
@@ -111,7 +112,7 @@ function AddressMap({
             href={mapsHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-[#8D5524] underline-offset-2 hover:underline"
+            className={restaurantPageTextLinkClass}
           >
             Ouvrir dans Google Maps
           </a>
@@ -146,7 +147,7 @@ export function RestaurantContactAccess({ restaurant }: Props) {
           href={mapsHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline-offset-2 hover:text-[#8D5524] hover:underline"
+          className={restaurantPageTextLinkClass}
         >
           {address}
         </a>
@@ -163,7 +164,7 @@ export function RestaurantContactAccess({ restaurant }: Props) {
       children: (
         <a
           href={`tel:${restaurant.telephone.replace(/\s/g, '')}`}
-          className="underline-offset-2 hover:text-[#8D5524] hover:underline"
+          className={restaurantPageTextLinkClass}
         >
           {restaurant.telephone}
         </a>
@@ -181,7 +182,7 @@ export function RestaurantContactAccess({ restaurant }: Props) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="underline-offset-2 hover:text-[#8D5524] hover:underline"
+          className={restaurantPageTextLinkClass}
         >
           {restaurant.siteWeb.replace(/^https?:\/\//i, '')}
         </a>
@@ -190,7 +191,7 @@ export function RestaurantContactAccess({ restaurant }: Props) {
   }
 
   if (restaurant.instagram || restaurant.facebook) {
-    const linkClass = 'font-medium text-[#8D5524] underline-offset-2 hover:underline'
+    const linkClass = restaurantPageTextLinkClass
     rows.push({
       icon: <FacebookIcon className="h-6 w-6" />,
       label: 'Réseaux sociaux',
