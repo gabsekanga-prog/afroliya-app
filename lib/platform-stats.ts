@@ -1,20 +1,20 @@
 export const platformStats = [
   {
-    value: 500,
-    prefix: '+',
-    suffix: '',
-    label: 'Passionnés sur la plateforme chaque semaine',
-  },
-  {
     value: 50,
     prefix: '+',
     suffix: '',
-    label: 'Couverts réservés chaque semaine',
+    label: 'Réservations et achats effectués chaque semaine',
   },
   {
-    value: 60,
+    value: 500,
     prefix: '+',
-    suffix: '%',
-    label: "Réservations en dehors des heures d'ouverture",
+    suffix: '',
+    label: 'Passionnés actifs chaque semaine',
   },
+  {
+    value: 2000,
+    prefix: '+',
+    suffix: '',
+    label: "Abonnés intéressés (newsletter et réseaux sociaux)",
+  }
 ] as const

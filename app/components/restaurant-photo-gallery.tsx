@@ -9,8 +9,11 @@ type Props = {
   coverIndex?: number
 }
 
+/** Plus de vignettes visibles = cartes plus compactes (~1,8 mobile/tablette, ~3 PC). */
 const SLIDE_CLASS =
-  'w-[calc((100%-1rem)/2)] shrink-0 snap-start lg:w-[calc((100%-2rem)/3)]'
+  'w-[calc((100%-1.25rem)/1.35)] shrink-0 snap-start sm:w-[calc((100%-1.25rem)/2.2)] md:w-[calc((100%-1.25rem)/2.8)] lg:w-[calc((100%-1.25rem)/3.2)]'
+
+const TRACK_GAP_PX = 16
 
 function ChevronIcon({ direction }: { direction: 'left' | 'right' }) {
   return (
@@ -48,9 +51,23 @@ export function RestaurantPhotoGallery({ images, alt, coverIndex }: Props) {
     if (!track || count === 0) return
     const slide = track.children[0] as HTMLElement | undefined
     if (!slide) return
-    const gap = 16
-    const amount = slide.offsetWidth + gap
-    track.scrollBy({ left: direction * amount, behavior: 'smooth' })
+
+    const step = slide.offsetWidth + TRACK_GAP_PX
+    const maxScroll = Math.max(0, track.scrollWidth - track.clientWidth)
+    const edgeThreshold = 8
+    const atStart = track.scrollLeft <= edgeThreshold
+    const atEnd = track.scrollLeft >= maxScroll - edgeThreshold
+
+    if (direction === 1 && atEnd) {
+      track.scrollTo({ left: 0, behavior: 'smooth' })
+      return
+    }
+    if (direction === -1 && atStart) {
+      track.scrollTo({ left: maxScroll, behavior: 'smooth' })
+      return
+    }
+
+    track.scrollBy({ left: direction * step, behavior: 'smooth' })
   }, [count])
 
   const goPrev = useCallback(() => {
@@ -104,12 +121,12 @@ export function RestaurantPhotoGallery({ images, alt, coverIndex }: Props) {
               key={`${src}-${index}`}
               type="button"
               onClick={() => setLightboxIndex(index)}
-              className={`${SLIDE_CLASS} group overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]`}
+              className={`${SLIDE_CLASS} group overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]`}
             >
               <img
                 src={src}
                 alt={photoAlt(alt, index, coverIndex)}
-                className="aspect-[4/3] h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                className="aspect-[4/3] min-h-[140px] w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:min-h-[160px] lg:min-h-[180px]"
                 loading="lazy"
                 draggable={false}
               />
@@ -121,16 +138,16 @@ export function RestaurantPhotoGallery({ images, alt, coverIndex }: Props) {
           <>
             <button
               type="button"
-              onClick={() => scrollBySlide(-1)}
-              aria-label="Faire défiler vers la gauche"
+              onClick={() => goPrev()}
+              aria-label="Photo précédente"
               className="absolute -left-1 top-[calc(50%-1.125rem)] z-10 flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#8D5524] shadow-md transition hover:bg-[#f5e6d9] sm:-left-3"
             >
               <ChevronIcon direction="left" />
             </button>
             <button
               type="button"
-              onClick={() => scrollBySlide(1)}
-              aria-label="Faire défiler vers la droite"
+              onClick={() => goNext()}
+              aria-label="Photo suivante"
               className="absolute -right-1 top-[calc(50%-1.125rem)] z-10 flex h-9 w-9 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#8D5524] shadow-md transition hover:bg-[#f5e6d9] sm:-right-3"
             >
               <ChevronIcon direction="right" />

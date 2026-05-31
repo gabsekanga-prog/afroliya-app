@@ -1,9 +1,10 @@
 import { MapPin, Utensils } from 'lucide-react'
 
 import type { Restaurant } from '@/lib/restaurants'
+import { formatRestaurantLocationLine } from '@/lib/restaurants'
 
 type Props = {
-  restaurant: Pick<Restaurant, 'cuisine' | 'codePostal' | 'commune'>
+  restaurant: Pick<Restaurant, 'cuisine' | 'codePostal' | 'commune' | 'ville'>
   className?: string
   cuisineIconClassName?: string
   locationIconClassName?: string
@@ -17,10 +18,11 @@ export function RestaurantCuisineLocation({
   locationIconClassName = 'h-3.5 w-3.5 shrink-0 text-neutral-500',
   separatorClassName = 'text-neutral-400',
 }: Props) {
-  const location = [restaurant.codePostal, restaurant.commune]
-    .map((part) => part.trim())
-    .filter(Boolean)
-    .join(' ')
+  const location = formatRestaurantLocationLine(
+    restaurant.codePostal,
+    restaurant.commune,
+    restaurant.ville,
+  )
 
   if (!restaurant.cuisine && !location) return null
 

@@ -2,7 +2,9 @@ import { Globe, MapPin, Phone } from 'lucide-react'
 import type { ReactNode } from 'react'
 
 import type { Restaurant } from '@/lib/restaurants'
+import { formatBelgianPhoneDisplay, formatBelgianPhoneTelHref } from '@/lib/format-phone'
 import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+import { RestaurantReservationLink } from '@/app/components/restaurant-reservation-link'
 
 function formatAccessAddress(restaurant: Restaurant): string {
   return restaurant.adresse.trim()
@@ -53,16 +55,13 @@ function ContactRow({ icon, label, children }: ContactRowProps) {
   )
 }
 
-function ReserveButton() {
+function ReserveButton({ restaurant }: { restaurant: Restaurant }) {
   return (
-    <div className="mt-6">
-      <a
-        href="#reserver"
-        className="inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
-      >
-        Réserver une table
-      </a>
-    </div>
+    <RestaurantReservationLink
+      restaurant={restaurant}
+      wrapperClassName="mt-6"
+      className="inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
+    />
   )
 }
 
@@ -163,10 +162,10 @@ export function RestaurantContactAccess({ restaurant }: Props) {
       label: 'Téléphone',
       children: (
         <a
-          href={`tel:${restaurant.telephone.replace(/\s/g, '')}`}
+          href={formatBelgianPhoneTelHref(restaurant.telephone)}
           className={restaurantPageTextLinkClass}
         >
-          {restaurant.telephone}
+          {formatBelgianPhoneDisplay(restaurant.telephone)}
         </a>
       ),
     })
@@ -229,7 +228,7 @@ export function RestaurantContactAccess({ restaurant }: Props) {
     return (
       <div className="mt-6">
         <p className="text-lg text-neutral-600">Coordonnées non renseignées pour le moment.</p>
-        <ReserveButton />
+        <ReserveButton restaurant={restaurant} />
       </div>
     )
   }
@@ -238,7 +237,7 @@ export function RestaurantContactAccess({ restaurant }: Props) {
     return (
       <div className="mt-6">
         <ContactList rows={rows} />
-        <ReserveButton />
+        <ReserveButton restaurant={restaurant} />
       </div>
     )
   }
@@ -247,7 +246,7 @@ export function RestaurantContactAccess({ restaurant }: Props) {
     <div className="mt-6 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-stretch">
       <div>
         <ContactList rows={rows} />
-        <ReserveButton />
+        <ReserveButton restaurant={restaurant} />
       </div>
       <AddressMap restaurant={restaurant} address={address} mapsHref={mapsHref} />
     </div>

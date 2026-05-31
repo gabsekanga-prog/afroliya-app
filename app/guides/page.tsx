@@ -1,18 +1,14 @@
-import {
-  siteGuideIntroSectionClass,
-  siteGuideListSectionClass,
-  siteHeading1PageClass,
-  siteHeading1OnDarkClass,
-  siteHeading3OnDarkClass,
-  siteHeroBreadcrumbOnDarkClass,
-  siteHeroSectionClass,
-  siteBodyClass,
-  siteButtonPrimaryClass,
-} from '@/lib/site-styles'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
 import { fetchPublishedGuides } from '@/lib/guides'
+import {
+  siteGuideIntroSectionClass,
+  siteGuideListSectionClass,
+  siteHeading1PageClass,
+  siteHeading3OnDarkClass,
+  siteBodyClass,
+} from '@/lib/site-styles'
 
 export const revalidate = 120
 
@@ -28,24 +24,18 @@ export default async function GuidesIndexPage() {
   return (
     <>
       <section className={siteGuideIntroSectionClass}>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <nav aria-label="Fil d'Ariane" className="text-base text-neutral-600 md:text-lg">
-            <span className="font-semibold text-neutral-900" aria-current="page">
-              Guides thématiques
-            </span>
-          </nav>
-          <h1 className={`mt-6 ${siteHeading1PageClass}`}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+          <h1 className={siteHeading1PageClass}>
             Guides thématiques
           </h1>
-          <p className="mt-3 max-w-6xl text-base text-neutral-600 md:text-lg">
-            Explorez des restaurants afro selon vos envies : sélections par pays,
-            ambiance et quartiers à Bruxelles et autour.
+          <p className="mt-3 max-w-7xl text-base text-neutral-600 md:text-lg">
+            Savourez l'Afrique selon vos envies : spécialités, quartiers, ambiance et plus.
           </p>
         </div>
       </section>
 
       <section className={siteGuideListSectionClass}>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           {guides.length === 0 ? (
             <p className="text-base text-neutral-600 md:text-lg">
               Aucun guide publié pour le moment. Revenez bientôt ou parcourez les{' '}

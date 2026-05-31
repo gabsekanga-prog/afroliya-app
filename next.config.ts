@@ -8,6 +8,16 @@ const nextConfig: NextConfig = {
         destination: '/guides',
         permanent: true,
       },
+      {
+        source: '/trouver-une-activite',
+        destination: '/trouver-une-experience',
+        permanent: true,
+      },
+      {
+        source: '/cours',
+        destination: '/activites',
+        permanent: true,
+      },
     ]
   },
 };

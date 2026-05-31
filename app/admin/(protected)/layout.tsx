@@ -17,7 +17,7 @@ export default async function AdminProtectedLayout({
   return (
     <div className="min-h-screen bg-stone-100 text-neutral-900">
       <header className="border-b border-neutral-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div className="flex flex-wrap items-center gap-4 sm:gap-8">
             <Link
               href="/admin"
@@ -43,7 +43,7 @@ export default async function AdminProtectedLayout({
           </div>
         ) : null}
       </header>
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">{children}</div>
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6">{children}</div>
     </div>
   )
 }

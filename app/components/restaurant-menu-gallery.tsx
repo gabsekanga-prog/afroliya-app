@@ -1,10 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { Images } from 'lucide-react'
 
 import { ZoomableLightboxImage } from '@/app/components/zoomable-lightbox-image'
-import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
 import type { RestaurantMenuPage } from '@/lib/restaurants'
 
 type Props = {
@@ -41,7 +39,6 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const count = pages.length
   const current = pages[index]
-  const preview = pages[0]
 
   const goPrev = useCallback(() => {
     setIndex((value) => (value - 1 + count) % count)
@@ -52,7 +49,6 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
   }, [count])
 
   const openLightbox = useCallback(() => {
-    setIndex(0)
     setLightboxOpen(true)
   }, [])
 
@@ -73,59 +69,73 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
     }
   }, [lightboxOpen, closeLightbox, goPrev, goNext])
 
-  if (!preview || !current) return null
+  if (!current) return null
 
   const showArrows = count > 1
-  const pageCountLabel = `${count} page${count !== 1 ? 's' : ''}`
 
   return (
     <>
-      <div className="flex w-full max-w-md items-center gap-5 overflow-hidden rounded-xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-6">
-        <span className="relative shrink-0">
+      <div className="relative w-full max-w-3xl">
+        <p className="mb-3 text-left text-sm text-neutral-600">
+          Page {index + 1} / {count}
+          {current.caption ? ` — ${current.caption}` : ''}
+          {' · '}
+          <span className="text-neutral-500">Cliquez pour agrandir</span>
+        </p>
+
+        <button
+          type="button"
+          onClick={openLightbox}
+          className="group block w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white px-4 py-8 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524] sm:px-6 sm:py-10"
+          aria-label={`Agrandir la page ${index + 1} du menu`}
+        >
           <img
-            src={preview.imageSrc}
-            alt={`Aperçu du menu — ${alt}`}
-            className="h-24 w-[4.5rem] rounded-lg border border-neutral-200 object-cover object-top"
+            src={current.imageSrc}
+            alt={pageLabel(alt, index, current.caption)}
+            className="mx-auto max-h-[min(72vh,560px)] w-full bg-white object-contain object-center"
             loading="lazy"
             draggable={false}
           />
-          {count > 1 ? (
-            <span
-              className="absolute -bottom-1 -right-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#8D5524] px-1.5 text-xs font-semibold text-white"
-              aria-hidden
+        </button>
+
+        {showArrows ? (
+          <>
+            <button
+              type="button"
+              onClick={goPrev}
+              aria-label="Page précédente du menu"
+              className="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#8D5524] shadow-md transition hover:bg-[#f5e6d9]"
             >
-              {count}
-            </span>
-          ) : null}
-        </span>
-        <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-2 text-lg font-semibold text-neutral-900">
-            <Images className="h-5 w-5 shrink-0 text-[#8D5524]" strokeWidth={1.75} aria-hidden />
-            La carte en images
-          </p>
-          <p className="mt-1 text-sm text-neutral-600">{pageCountLabel}</p>
-          <button
-            type="button"
-            onClick={openLightbox}
-            className={`mt-2 block text-left ${restaurantPageTextLinkClass}`}
-          >
-            Voir la carte
-          </button>
-        </div>
+              <ChevronIcon direction="left" />
+            </button>
+            <button
+              type="button"
+              onClick={goNext}
+              aria-label="Page suivante du menu"
+              className="absolute right-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-neutral-200 bg-white text-[#8D5524] shadow-md transition hover:bg-[#f5e6d9]"
+            >
+              <ChevronIcon direction="right" />
+            </button>
+          </>
+        ) : null}
       </div>
 
       {lightboxOpen ? (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#2a1810]/95 p-4"
           role="dialog"
           aria-modal="true"
           aria-label={`Menu — page ${index + 1} sur ${count}`}
           onClick={closeLightbox}
         >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[#8D5524]/12 via-transparent to-[#edd9c4]/8"
+          />
           <button
             type="button"
             onClick={closeLightbox}
-            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-white/30 bg-black/50 text-white transition hover:bg-black/70"
+            className="absolute right-4 top-4 z-10 flex h-10 w-10 items-center justify-center rounded-full border border-[#c9a882]/40 bg-[#2a1810]/70 text-[#f8e9dc] transition hover:border-[#8D5524] hover:bg-[#8D5524]/30"
             aria-label="Fermer"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
@@ -142,7 +152,7 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
                   goPrev()
                 }}
                 aria-label="Page précédente"
-                className="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/50 text-white transition hover:bg-black/70 sm:left-4"
+                className="absolute left-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#c9a882]/40 bg-[#2a1810]/70 text-[#f8e9dc] transition hover:border-[#8D5524] hover:bg-[#8D5524]/30 sm:left-4"
               >
                 <ChevronIcon direction="left" />
               </button>
@@ -153,28 +163,31 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
                   goNext()
                 }}
                 aria-label="Page suivante"
-                className="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-black/50 text-white transition hover:bg-black/70 sm:right-4"
+                className="absolute right-2 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-[#c9a882]/40 bg-[#2a1810]/70 text-[#f8e9dc] transition hover:border-[#8D5524] hover:bg-[#8D5524]/30 sm:right-4"
               >
                 <ChevronIcon direction="right" />
               </button>
             </>
           ) : null}
 
-          <figure className="max-w-5xl" onClick={(event) => event.stopPropagation()}>
+          <figure className="max-w-5xl pb-28 sm:pb-24" onClick={(event) => event.stopPropagation()}>
             <ZoomableLightboxImage
               src={current.imageSrc}
               alt={pageLabel(alt, index, current.caption)}
               resetKey={index}
+              controlsPlacement="fixed-bottom"
+              toolbarMeta={
+                <>
+                  Page {index + 1} / {count}
+                  {current.caption ? ` — ${current.caption}` : ''}
+                </>
+              }
             />
-            <figcaption className="mt-2 text-center text-sm text-white/85">
-              Page {index + 1} / {count}
-              {current.caption ? ` — ${current.caption}` : ''}
-            </figcaption>
           </figure>
 
           {showArrows && count <= 8 ? (
             <div
-              className="absolute bottom-4 left-1/2 z-10 flex max-w-[min(100%,36rem)] -translate-x-1/2 gap-2 overflow-x-auto rounded-xl bg-black/40 p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              className="absolute bottom-[5.75rem] left-1/2 z-10 flex max-w-[min(100%,36rem)] -translate-x-1/2 gap-2 overflow-x-auto rounded-xl border border-[#8D5524]/25 bg-[#2a1810]/60 p-2 [scrollbar-width:none] sm:bottom-[5.25rem] [&::-webkit-scrollbar]:hidden"
               onClick={(event) => event.stopPropagation()}
             >
               {pages.map((page, thumbIndex) => (
@@ -186,8 +199,8 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
                   aria-current={thumbIndex === index}
                   className={`shrink-0 overflow-hidden rounded-lg border-2 transition ${
                     thumbIndex === index
-                      ? 'border-white shadow-sm'
-                      : 'border-transparent opacity-60 hover:opacity-100'
+                      ? 'border-[#8D5524] shadow-sm shadow-[#8D5524]/30'
+                      : 'border-transparent opacity-60 hover:border-[#c9a882]/50 hover:opacity-100'
                   }`}
                 >
                   <img

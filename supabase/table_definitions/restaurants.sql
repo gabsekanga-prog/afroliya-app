@@ -1,6 +1,7 @@
 create table public.restaurants (
   id uuid not null default gen_random_uuid (),
   name text not null,
+  slug text null,
   address text null,
   created_at timestamp with time zone null default now(),
   website_url text null,
@@ -9,6 +10,7 @@ create table public.restaurants (
   bookable boolean null,
   google_quotation double precision null,
   google_review_total_value bigint null,
+  google_reviews_summary text null,
   city text not null,
   postal_code text null,
   country_code text null,
@@ -20,6 +22,7 @@ create table public.restaurants (
   phone text null,
   email text null,
   sponsored boolean null,
+  booking_url text null,
   commune text null,
   active boolean null default false,
   constraint restaurants_pkey primary key (id)

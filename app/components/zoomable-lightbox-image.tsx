@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 
 const MIN_SCALE = 1
 const MAX_SCALE = 4
@@ -13,6 +13,10 @@ type Props = {
   /** Change pour réinitialiser le zoom (ex. index de page). */
   resetKey?: string | number
   className?: string
+  /** Barre fixe en bas du viewport (lightbox plein écran). */
+  controlsPlacement?: 'inline' | 'fixed-bottom'
+  /** Infos contextuelles affichées dans la barre fixe (ex. numéro de page). */
+  toolbarMeta?: ReactNode
 }
 
 function touchDistance(touches: React.TouchList): number {
@@ -20,7 +24,14 @@ function touchDistance(touches: React.TouchList): number {
   return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY)
 }
 
-export function ZoomableLightboxImage({ src, alt, resetKey, className = '' }: Props) {
+export function ZoomableLightboxImage({
+  src,
+  alt,
+  resetKey,
+  className = '',
+  controlsPlacement = 'inline',
+  toolbarMeta,
+}: Props) {
   const [scale, setScale] = useState(1)
   const [pan, setPan] = useState({ x: 0, y: 0 })
   const viewportRef = useRef<HTMLDivElement>(null)
@@ -145,44 +156,18 @@ export function ZoomableLightboxImage({ src, alt, resetKey, className = '' }: Pr
   }
 
   const isZoomed = scale > 1
-  const controlClass =
-    'flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/50 text-lg text-white transition hover:bg-black/70 disabled:opacity-40'
+  const isFixedBottom = controlsPlacement === 'fixed-bottom'
+  const controlClass = isFixedBottom
+    ? 'flex h-9 w-9 items-center justify-center rounded-full border border-[#c9a882]/35 bg-[#2a1810]/60 text-lg text-[#f8e9dc] transition hover:border-[#8D5524] hover:bg-[#8D5524]/25 disabled:opacity-40'
+    : 'flex h-9 w-9 items-center justify-center rounded-full border border-white/30 bg-black/50 text-lg text-white transition hover:bg-black/70 disabled:opacity-40'
 
-  return (
-    <div className={`flex flex-col items-center ${className}`}>
-      <div
-        ref={viewportRef}
-        className={`relative max-w-full touch-none overflow-hidden ${
-          isZoomed ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
-        }`}
-        style={{ maxHeight: 'min(92vh, 920px)' }}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-        onTouchCancel={onTouchEnd}
-      >
-        <img
-          src={src}
-          alt={alt}
-          draggable={false}
-          className="max-h-[min(92vh,920px)] w-auto max-w-full select-none object-contain"
-          style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
-            transformOrigin: 'center center',
-          }}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-          onClick={onImageClick}
-          onDoubleClick={(event) => {
-            event.stopPropagation()
-            toggleZoom()
-          }}
-        />
-      </div>
+  const hintText = isZoomed
+    ? 'Glissez pour déplacer · double-clic pour réinitialiser'
+    : 'Molette, pincer ou double-clic pour zoomer'
 
-      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+  const controls = (
+    <>
+      <div className="flex flex-wrap items-center justify-center gap-2">
         <button
           type="button"
           onClick={(event) => {
@@ -195,7 +180,14 @@ export function ZoomableLightboxImage({ src, alt, resetKey, className = '' }: Pr
         >
           −
         </button>
-        <span className="min-w-[3.5rem] text-center text-sm text-white/85" aria-live="polite">
+        <span
+          className={
+            isFixedBottom
+              ? 'min-w-[3.5rem] text-center text-sm font-medium text-[#f8e9dc]'
+              : 'min-w-[3.5rem] text-center text-sm text-white/85'
+          }
+          aria-live="polite"
+        >
           {Math.round(scale * 100)}%
         </span>
         <button
@@ -217,17 +209,89 @@ export function ZoomableLightboxImage({ src, alt, resetKey, className = '' }: Pr
               event.stopPropagation()
               reset()
             }}
-            className="rounded-full border border-white/30 bg-black/50 px-3 py-1.5 text-sm text-white transition hover:bg-black/70"
+            className={
+              isFixedBottom
+                ? 'rounded-full border border-[#c9a882]/35 bg-[#2a1810]/60 px-3 py-1.5 text-sm text-[#f8e9dc] transition hover:border-[#8D5524] hover:bg-[#8D5524]/25'
+                : 'rounded-full border border-white/30 bg-black/50 px-3 py-1.5 text-sm text-white transition hover:bg-black/70'
+            }
           >
             Réinitialiser
           </button>
         ) : null}
       </div>
-      <p className="mt-1 text-center text-xs text-white/60">
-        {isZoomed
-          ? 'Glissez pour déplacer · double-clic pour réinitialiser'
-          : 'Molette, pincer ou double-clic pour zoomer'}
-      </p>
+      {!isFixedBottom ? (
+        <p className="mt-1 text-center text-xs text-white/60">{hintText}</p>
+      ) : null}
+    </>
+  )
+
+  const fixedToolbar = isFixedBottom ? (
+    <div
+      className="fixed inset-x-0 bottom-0 z-[110] border-t border-[#8D5524]/40 bg-[#2a1810]/95 px-4 py-3 backdrop-blur-sm sm:px-6"
+      onClick={(event) => event.stopPropagation()}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#8D5524]/80 to-transparent"
+      />
+      <div className="mx-auto flex max-w-5xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        {toolbarMeta ? (
+          <p className="text-sm text-[#f8e9dc]/95 sm:max-w-[40%]">{toolbarMeta}</p>
+        ) : (
+          <span className="hidden sm:block sm:max-w-[40%]" aria-hidden />
+        )}
+        <div className="flex flex-col items-center gap-2 sm:flex-1">{controls}</div>
+        <p className="text-center text-xs text-[#f8e9dc]/55 sm:max-w-[40%] sm:text-right">
+          {hintText}
+        </p>
+      </div>
     </div>
+  ) : null
+
+  return (
+    <>
+      <div className={`flex flex-col items-center ${className}`}>
+        <div
+          ref={viewportRef}
+          className={`relative max-w-full touch-none overflow-hidden ${
+            isZoomed ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
+          }`}
+          style={{
+            maxHeight: isFixedBottom ? 'min(calc(100vh - 8.5rem), 920px)' : 'min(92vh, 920px)',
+          }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+          onTouchCancel={onTouchEnd}
+        >
+          <img
+            src={src}
+            alt={alt}
+            draggable={false}
+            className="max-h-[min(calc(100vh-8.5rem),920px)] w-auto max-w-full select-none object-contain sm:max-h-[min(calc(100vh-7rem),920px)]"
+            style={{
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${scale})`,
+              transformOrigin: 'center center',
+              maxHeight: isFixedBottom
+                ? 'min(calc(100vh - 8.5rem), 920px)'
+                : 'min(92vh, 920px)',
+            }}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            onClick={onImageClick}
+            onDoubleClick={(event) => {
+              event.stopPropagation()
+              toggleZoom()
+            }}
+          />
+        </div>
+
+        {!isFixedBottom ? <div className="mt-3">{controls}</div> : null}
+      </div>
+
+      {fixedToolbar}
+    </>
   )
 }

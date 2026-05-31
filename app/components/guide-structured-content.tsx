@@ -7,7 +7,6 @@ import {
 } from '@/lib/site-styles'
 import Link from 'next/link'
 
-import { CommunitySignupSection } from '@/app/components/community-signup-section'
 import type { Guide, GuideSubsection } from '@/lib/guides'
 
 function SubsectionButton({ item }: { item: GuideSubsection }) {
@@ -79,10 +78,6 @@ export function GuideStructuredContent({ guide }: Props) {
             </p>
           </li>
         ) : null}
-
-        <li className="py-8 sm:py-10">
-          <CommunitySignupSection variant="guide" />
-        </li>
       </ul>
     </>
   )

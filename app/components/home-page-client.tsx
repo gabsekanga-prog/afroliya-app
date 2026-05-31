@@ -1,132 +1,109 @@
 'use client'
 
 import Link from 'next/link'
-import { AlertCircle, CalendarCheck, Clock, MapPin, ShieldCheck, Target, Utensils } from 'lucide-react'
-import type { Guide } from '@/lib/guides'
+import { CalendarCheck, MapPin, StarIcon } from 'lucide-react'
 import {
-  siteBodyBoldClass,
   siteBodyClass,
+  siteBodyBoldClass,
   siteBodyRelaxedClass,
   siteButtonPrimaryClass,
   siteButtonPrimarySmClass,
-  siteCtaOnDarkClass,
-  siteHeading1Class,
   siteHeading2Class,
   siteHeading2LeadingClass,
   siteHeading3Class,
-  siteHeading3OnDarkClass,
-  siteHeroInnerClass,
-  siteHeroLeadOnDarkClass,
-  siteHeroSectionClass,
-  siteSectionPaddingClass,
+  siteSectionContentSecondClass,
+  siteSectionMediaFirstClass,
+  siteSectionMutedClass,
+  siteSectionWhiteClass,
 } from '@/lib/site-styles'
 
 import { CommunitySignupSection } from './community-signup-section'
+import { ExperienceCategoriesSection } from './experience-categories-section'
+import { MarketingSplitHero } from './marketing-split-hero'
 import { PlatformStatsList } from './platform-stats-list'
 import { SiteFooter } from './site-footer'
 import { SiteHeader } from './site-header'
 
 const plaisirBlocks = [
   {
-    title: 'Découvrez des adresses',
+    title: 'Restos, events, activités',
     description:
-      'Ne perdez plus du temps à chercher. Découvrez facilement des restaurants africains et antillais grâce à notre catalogue mis à jour régulièrement.',
-    icon: Utensils,
+      'Ne perdez plus de temps à chercher partout. Nous rassemblons plein d\'expériences afro au même endroit : restos, événements et activités.',
+    icon: MapPin,
   },
-
   {
-    title: 'Réservez 24h/24',
+    title: 'Sélection de qualité',
     description:
-      'Bloquez votre table en quelques clics, gratuitement, quand vous voulez, sans dépendre des horaires, et sans devoir rappeler 5x.',
+      'Nous dénichons et sélectionnons pour vous la crème de la crème des expériences afro en Belgique.',
+    icon: StarIcon,
+  },
+  {
+    title: 'Achat et réservation',
+    description:
+      'Bloquez vos tables ou sécurisez vos tickets en quelques clics, sans vous casser la tête.',
     icon: CalendarCheck,
-  },
-  {
-    title: 'Réduisez l\'attente et les ruptures de stock',
-    description:
-      'Signalez vos plats et boissons préférés à l\'avance afin de réduire au maximum l\'attente et les ruptures de stock.',
-    icon: Clock,
   }
 ]
 
-type Props = {
-  guides: Guide[]
-}
-
-export function HomePageClient({ guides }: Props) {
+export function HomePageClient() {
   return (
     <main className="min-h-screen text-neutral-900">
       <SiteHeader active="concept" />
 
-      <section className={siteHeroSectionClass}>
-        <div className="relative overflow-hidden">
-          <img
-            src="/images/Couple%20manger%20restaurant%20africain.jpg"
-            alt="Couple profitant d un repas dans un restaurant africain"
-            className="h-[420px] w-full object-cover sm:h-[500px] lg:h-[560px]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2f1d12]/80 via-[#2f1d12]/55 to-[#2f1d12]/30" />
-
-          <div className="absolute inset-0 flex items-center">
-            <div className={siteHeroInnerClass}>
-              <div>
-                <h1 className={`${siteHeading1Class} max-w-5xl`}>
-                Votre plateforme de restaurants africains à Bruxelles et autour
-                </h1>
-                <p className={siteHeroLeadOnDarkClass}>
-                  Découvrez des adresses — Réservez 24h/24 — Réduisez l'attente et les ruptures de stock
-                </p>
-                <div className="mt-8 flex flex-wrap gap-3">
-                  <Link
-                    href="/restaurants"
-                    className={`${siteButtonPrimaryClass} h-12 min-w-[230px]`}
-                  >
-                    Trouver un restaurant
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
+      <MarketingSplitHero
+        imageSrc="/images/Activités afro bruxelles et autour.webp"
+        imageAlt="Activités afro en Belgique"
+        title="La plateforme d'expériences afro en Belgique"
+        lead="Restos, events, activités | Sélection de qualité | Réservation et achat"
+      >
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            href="/trouver-une-experience"
+            className={`${siteButtonPrimaryClass} h-12 min-w-[230px]`}
+          >
+            Trouver une expérience
+          </Link>
         </div>
-      </section>
-
-      <section className={`w-full bg-[#f8f1ea] ${siteSectionPaddingClass}`}>
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
-          <div className="order-2 lg:order-2">
+      </MarketingSplitHero>
+      <section className={siteSectionWhiteClass}>
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
+          <div className={siteSectionContentSecondClass}>
             <h2 className={siteHeading2LeadingClass}>
-              Avez-vous déjà rencontré l'un de ces problèmes ?
+              Vous passez des heures à chercher des expériences afro ?
             </h2>
             <ul className={`mt-7 space-y-3 ${siteBodyClass}`}>
-              <li>✖︎ Ne pas savoir où manger</li>
-              <li>✖︎ Perdre du temps à chercher sur Google, Instagram, etc.</li>
-              <li>✖︎ Devoir rappeler 5x pour réserver une table</li>
-              <li>✖︎ Attente et ruptures de stock</li>
+              <li>✖︎ Devoir parcourir plein d'applications et plateformes</li>
+              <li>✖︎ S'abonner à des dizaines de comptes sur Instagram et TikTok</li>
+              <li>✖︎ Rejoindre des dizaines de groupes Facebook et WhatsApp</li>
             </ul>
             <p className={`mt-7 ${siteBodyBoldClass}`}>
-              Ne gâchez plus vos sorties au restaurant.
+              Afroliya vous simplifie la vie.
             </p>
             <Link
-              href="/restaurants"
+              href="/trouver-une-experience"
               className={`mt-8 ${siteButtonPrimaryClass}`}
             >
-              Trouver un restaurant
+              Trouver une expérience
             </Link>
           </div>
 
-          <div className="order-1 overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm sm:rounded-3xl lg:order-1">
+          <div
+            className={`${siteSectionMediaFirstClass} overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm sm:rounded-3xl`}
+          >
             <img
-              src="/images/Restaurant%20s%C3%A9n%C3%A9galais%20Bruxelles.webp"
-              alt="Restaurant sénégalais à Bruxelles"
+              src="/images/Food festival.webp"
+              alt="Festival de street-food afro à Bruxelles"
               className="h-[300px] w-full object-cover sm:h-[380px] lg:h-[420px]"
             />
           </div>
         </div>
       </section>
 
-      <section className={`w-full bg-white ${siteSectionPaddingClass}`}>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <section className={siteSectionMutedClass}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-8 sm:mb-10">
             <h2 className={siteHeading2Class}>
-              Mangez afro sans prises de tête avec Afroliya
+              Pourquoi passer par Afroliya ?
             </h2>
           </div>
 
@@ -151,10 +128,10 @@ export function HomePageClient({ guides }: Props) {
                   </p>
 
                   <Link
-                    href="/restaurants"
+                    href="/trouver-une-experience"
                     className={`mt-6 ${siteButtonPrimarySmClass}`}
                   >
-                    Trouver un resto
+                    Trouver une expérience
                   </Link>
                 </article>
               )
@@ -163,88 +140,38 @@ export function HomePageClient({ guides }: Props) {
         </div>
       </section>
 
-      <section className={`w-full bg-stone-100 ${siteSectionPaddingClass}`}>
-        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
-          <div className="overflow-hidden rounded-3xl border border-neutral-200/80">
+      <ExperienceCategoriesSection />
+
+      <section className={siteSectionMutedClass}>
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
+          <div
+            className={`${siteSectionMediaFirstClass} overflow-hidden rounded-3xl border border-neutral-200/80`}
+          >
             <img
-              src="/images/Gabs-restaurant-africain-africalicious-Bruxelles_edited.webp"
-              alt="Ambiance chaleureuse dans un restaurant africain partenaire"
+              src="/images/Couple manger restaurant africain.jpg"
+              alt="Couple profitant d'un repas dans un restaurant africain"
               className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[420px]"
             />
           </div>
 
-          <div>
+          <div className={siteSectionContentSecondClass}>
             <h2 className={`mt-2 ${siteHeading2LeadingClass}`}>
-              On est là pour vous simplifier la vie
+              Ils ont déjà adopté Afroliya
             </h2>
 
             <PlatformStatsList />
 
             <Link
-              href="/restaurants"
+              href="/trouver-une-experience"
               className={`mt-8 ${siteButtonPrimaryClass}`}
             >
-              Trouver un restaurant
+              Trouver une expérience
             </Link>
           </div>
         </div>
       </section>
 
-      <section className={`w-full bg-white ${siteSectionPaddingClass}`}>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
-          <div className="w-full">
-            <h2 className={siteHeading2Class}>
-              Nos guides thématiques
-            </h2>
-            <p className={`mt-4 ${siteBodyClass}`}>Explorez des restaurants afro selon vos envies</p>
-          </div>
-
-          {guides.length > 0 ? (
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-              {guides.map((guide) => (
-                <Link
-                  key={guide.slug}
-                  href={`/guides/${guide.slug}`}
-                  className="group relative flex min-h-[240px] flex-col overflow-hidden rounded-2xl border border-neutral-200 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                >
-                  <img
-                    src={guide.imageSrc}
-                    alt={guide.imageAlt}
-                    className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
-                  />
-                  <div
-                    className="absolute inset-0 bg-gradient-to-t from-[#2a1810]/99 via-[#2a1810]/62 to-[#2a1810]/28"
-                    aria-hidden
-                  />
-                  <div className="relative mt-auto p-6">
-                    <h3 className={siteHeading3OnDarkClass}>
-                      {guide.title}
-                    </h3>
-                    <span className={`${siteCtaOnDarkClass} group-hover:underline`}>
-                      Lire le guide
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <p className={`mt-8 ${siteBodyClass}`}>
-              Les guides seront bientôt en ligne.
-            </p>
-          )}
-
-          <div className="mt-10 flex justify-center sm:justify-start">
-            <Link
-              href="/guides"
-              className={siteButtonPrimaryClass}
-            >
-              Voir tous les guides
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <CommunitySignupSection />
+      <CommunitySignupSection tone="white" />
 
       <SiteFooter />
     </main>

@@ -6,6 +6,7 @@ import {
   siteFooterColumnTitleClass,
   siteFooterLabelClass,
   siteHeading2Class,
+  siteSectionBgMutedClass,
   siteSectionPaddingClass,
 } from '@/lib/site-styles'
 
@@ -15,9 +16,9 @@ export function SiteFooter() {
   return (
     <footer
       id="liens-utiles"
-      className={`scroll-mt-24 border-t border-neutral-200 bg-stone-100 ${siteSectionPaddingClass}`}
+      className={`scroll-mt-24 border-t border-neutral-200 ${siteSectionBgMutedClass} ${siteSectionPaddingClass}`}
     >
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
         <h2 className={siteHeading2Class}>Liens utiles</h2>
 
         <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -31,10 +32,15 @@ export function SiteFooter() {
               </li>
               <li>
                 <Link
-                  href="/restaurants"
+                  href="/trouver-une-experience"
                   className={footerLinkClass}
                 >
-                  Trouver un restaurant
+                  Trouver une expérience
+                </Link>
+              </li>
+              <li>
+                <Link href="/restaurants" className={footerLinkClass}>
+                  Restaurants
                 </Link>
               </li>
               <li>

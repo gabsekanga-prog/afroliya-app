@@ -19,6 +19,7 @@ export const ADMIN_TABLES: AdminTableConfig[] = [
     columns: [
       'id',
       'name',
+      'slug',
       'address',
       'created_at',
       'website_url',
@@ -27,6 +28,7 @@ export const ADMIN_TABLES: AdminTableConfig[] = [
       'bookable',
       'google_quotation',
       'google_review_total_value',
+      'google_reviews_summary',
       'city',
       'postal_code',
       'country_code',
@@ -38,6 +40,7 @@ export const ADMIN_TABLES: AdminTableConfig[] = [
       'phone',
       'email',
       'sponsored',
+      'booking_url',
       'commune',
       'active',
     ],

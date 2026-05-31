@@ -19,16 +19,19 @@ import {
   siteBodySemiboldClass,
   siteButtonPrimaryClass,
   siteButtonPrimarySmClass,
-  siteHeading1Class,
   siteHeading2Class,
   siteHeading2LeadingClass,
   siteHeading3Class,
-  siteHeroInnerClass,
-  siteHeroLeadOnDarkClass,
-  siteHeroSectionClass,
-  siteSectionPaddingClass,
+  siteSectionBgWhiteClass,
+  siteSectionContentFirstClass,
+  siteSectionContentSecondClass,
+  siteSectionMediaFirstClass,
+  siteSectionMediaSecondClass,
+  siteSectionMutedClass,
+  siteSectionWhiteClass,
 } from '@/lib/site-styles'
 
+import { MarketingSplitHero } from '../components/marketing-split-hero'
 import { PartnerApplicationForm } from '../components/partner-application-form'
 import { PlatformStatsList } from '../components/platform-stats-list'
 import { SiteFooter } from '../components/site-footer'
@@ -40,7 +43,7 @@ const benefits: {
 }[] = [
   {
     title: 'Touchez des milliers de passionnés',
-    description: 'Soyez référencé sur notre plateforme 100% afro et touchez chaque semaine des centaines de passionnés réellement intéressés par la cuisine afro et antillaise.',
+    description: 'Ne soyez plus noyé dans la masse des plateformes généralistes. Touchez chaque semaine des centaines de passionnés réellement intéressés par la cuisine afro et antillaise.',
     icon: Utensils
   },
   {
@@ -52,7 +55,7 @@ const benefits: {
   {
     title: 'Obtenez vos propres outils digitaux',
     description:
-      'Ne subissez plus la loi des plateformes tierces. Obtenez tout ce qu\'il vous faut pour attirer des clients en ligne : site web, nom de domaine, référencement, réservation, menu digital (QR code), base de données de clients, etc.',
+      'Ne subissez plus la loi des plateformes tierces. Obtenez vos propres outils pour attirer des clients en ligne : site web, nom de domaine, référencement, réservation, menu digital (QR code), base de données de clients, etc.',
     icon: GlobeIcon
   }
 ]
@@ -107,50 +110,39 @@ export default function DevenirPartenairePage() {
     <main className="min-h-screen text-neutral-900">
       <SiteHeader active="partenaire" />
 
-      <section className={siteHeroSectionClass}>
-        <div className="relative overflow-hidden">
-          <img
-            src="/images/Restauratrice%20resto%20afro%20gestion%20digital%20r%C3%A9servations%20couple%20clients.jpg"
-            alt="Restauratrice gérant les réservations digitales de son restaurant afro"
-            className="h-[420px] w-full object-cover sm:h-[500px] lg:h-[560px]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2f1d12]/80 via-[#2f1d12]/55 to-[#2f1d12]/30" />
+      <MarketingSplitHero
+        imageSrc="/images/Restauratrice%20resto%20afro%20gestion%20digital%20r%C3%A9servations%20couple%20clients.jpg"
+        imageAlt="Restauratrice gérant les réservations digitales de son restaurant afro"
+        title="Boostez l'activité de votre restaurant africain"
+        lead="Rejoignez la plateforme de restaurants, événements et activités afro en Belgique."
+        checklistItems={[
+          'Touchez des milliers de passionnés',
+          'Recevez des réservations sans commission',
+          'Obtenez vos propres outils digitaux',
+        ]}
+      >
+        <Link
+          href="#offres-partenaire"
+          className={`mt-8 ${siteButtonPrimaryClass} h-12 min-w-[230px]`}
+        >
+          Devenir partenaire
+        </Link>
+      </MarketingSplitHero>
 
-          <div className="absolute inset-0 flex items-center">
-            <div className={siteHeroInnerClass}>
-              <div>
-                <h1 className={`${siteHeading1Class} max-w-5xl`}>
-                  Le partenaire marketing de votre restaurant africain et antillais
-                </h1>
-                <p className={siteHeroLeadOnDarkClass}>
-                  Touchez des milliers de passionnés — Recevez des réservations sans commission — Obtenez vos propres outils digitaux
-                </p>
-                <Link
-                  href="#offres-partenaire"
-                  className={`mt-8 ${siteButtonPrimaryClass} h-12 min-w-[230px]`}
-                >
-                  Devenir partenaire
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className={`w-full bg-[#f8f1ea] ${siteSectionPaddingClass}`}>
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
-          <div>
+      <section className={siteSectionWhiteClass}>
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
+          <div className={siteSectionContentFirstClass}>
             <h2 className={siteHeading2Class}>
-              Votre restaurant rencontre-t-il l'un de ces problèmes ?
+              Marre des solutions marketing inefficaces ?
             </h2>
             <ul className={`mt-6 space-y-2 pl-6 ${siteBodyClass}`}>
-              <li>✖︎ Peu de nouveaux clients</li>
-              <li>✖︎ Fréquentation irrégulière</li>
-              <li>✖︎ Coûts marketing élevés</li>
-              <li>✖︎ Dépendance aux outils tiers (Uber, TheFork, etc.)</li>
+              <li>✖︎ Public généraliste et peu intéressé</li>
+              <li>✖︎ Commisions et frais abusifs</li>
+              <li>✖︎ Trop d'effort pour peu de résultats</li>
+              <li>✖︎ Dépendance aux plateformes tierces</li>
             </ul>
             <p className={`mt-6 ${siteBodySemiboldClass}`}>
-              Ne mettez plus votre activité en danger.
+              Afroliya est la solution qu'il vous faut.
             </p>
             <Link
               href="#offres-partenaire"
@@ -162,16 +154,16 @@ export default function DevenirPartenairePage() {
           <img
             src="/images/Restaurant%20s%C3%A9n%C3%A9galais%20Bruxelles.webp"
             alt="Restaurant africain tables en attente"
-            className="h-[320px] w-full rounded-2xl border border-neutral-200 object-cover shadow-sm"
+            className={`${siteSectionMediaSecondClass} h-[320px] w-full rounded-2xl border border-neutral-200 object-cover shadow-sm`}
           />
         </div>
       </section>
 
-      <section className={`w-full bg-white ${siteSectionPaddingClass}`}>
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+      <section className={siteSectionMutedClass}>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-8 sm:mb-10">
           <h2 className={siteHeading2Class}>
-            Boostez votre activité avec Afroliya
+            Comment Afroliya booste votre activité ?
           </h2>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
@@ -204,9 +196,11 @@ export default function DevenirPartenairePage() {
         </div>
       </section>
 
-      <section className={`w-full bg-stone-100 ${siteSectionPaddingClass}`}>
-        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
-          <div className="overflow-hidden rounded-3xl border border-neutral-200/80">
+      <section className={siteSectionWhiteClass}>
+        <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
+          <div
+            className={`${siteSectionMediaFirstClass} overflow-hidden rounded-3xl border border-neutral-200/80`}
+          >
             <img
               src="/images/Gabs-restaurant-africain-africalicious-Bruxelles_edited.webp"
               alt="Afroliya chez Africalicious à Bruxelles"
@@ -214,9 +208,9 @@ export default function DevenirPartenairePage() {
             />
           </div>
 
-          <div>
+          <div className={siteSectionContentSecondClass}>
             <h2 className={siteHeading2LeadingClass}>
-              Nous sommes là pour vous donner un coup de main
+              On booste déjà l'activité des restaurants africains
             </h2>
 
             <PlatformStatsList />
@@ -233,9 +227,9 @@ export default function DevenirPartenairePage() {
 
       <section
         id="offres-partenaire"
-        className={`w-full scroll-mt-24 bg-white ${siteSectionPaddingClass}`}
+        className={`w-full scroll-mt-24 ${siteSectionMutedClass}`}
       >
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <h2 className={siteHeading2Class}>
           Nos offres de partenariat
         </h2>
@@ -267,7 +261,7 @@ export default function DevenirPartenairePage() {
 
       <section
         id="form-partenaire"
-        className="w-full scroll-mt-24 bg-[#f8f1ea] py-16 pb-24 sm:py-20 sm:pb-32"
+        className={`w-full scroll-mt-24 ${siteSectionBgWhiteClass} py-16 pb-24 sm:py-20 sm:pb-32`}
       >
         <div className="mx-auto w-full max-w-2xl px-4 sm:px-6">
           <h2 className={siteHeading2Class}>

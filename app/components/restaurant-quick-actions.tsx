@@ -9,14 +9,16 @@ export type QuickActionItem = {
   id: string
   label: string
   href: string
+  external?: boolean
 }
 
 type Props = {
   actions: QuickActionItem[]
+  tone?: 'default' | 'onDark'
 }
 
 const PANEL_WIDTH = 256
-const GAP = 8
+const GAP = 4
 
 const iconClass = 'h-4 w-4 shrink-0 text-neutral-400 transition group-hover:text-[#8D5524]'
 
@@ -37,24 +39,31 @@ function QuickActionIcon({ id }: { id: string }) {
           <path d="M21 16l-5.5-5.5L6 19" />
         </svg>
       )
-    case 'infos':
-      return (
-        <svg viewBox="0 0 24 24" className={iconClass} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-          <circle cx="12" cy="12" r="9" />
-          <path d="M12 11v5M12 8h.01" />
-        </svg>
-      )
-    case 'savoir':
-      return (
-        <svg viewBox="0 0 24 24" className={iconClass} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
-          <path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z" />
-        </svg>
-      )
     case 'apropos':
       return (
         <svg viewBox="0 0 24 24" className={iconClass} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
           <path d="M3 21h18M5 21V8l7-4 7 4v13" />
           <path d="M9 21v-6h6v6" />
+        </svg>
+      )
+    case 'horaires':
+      return (
+        <svg viewBox="0 0 24 24" className={iconClass} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      )
+    case 'contact':
+      return (
+        <svg viewBox="0 0 24 24" className={iconClass} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+          <path d="M12 21s7-4.5 7-10a7 7 0 1 0-14 0c0 5.5 7 10 7 10z" />
+          <circle cx="12" cy="11" r="2.5" />
+        </svg>
+      )
+    case 'avis':
+      return (
+        <svg viewBox="0 0 24 24" className={iconClass} fill="none" stroke="currentColor" strokeWidth="1.75" aria-hidden>
+          <path d="M12 2l2.4 7.4H22l-6 4.6 2.3 7-6.3-4.6L5.7 21l2.3-7-6-4.6h7.6L12 2z" />
         </svg>
       )
     case 'reserver':
@@ -73,9 +82,38 @@ function QuickActionIcon({ id }: { id: string }) {
   }
 }
 
-export function RestaurantQuickActions({ actions }: Props) {
+function computePanelPosition(button: HTMLButtonElement): {
+  top: number
+  left: number
+  minWidth: number
+} {
+  const rect = button.getBoundingClientRect()
+  const viewportPadding = 16
+
+  let left = rect.left
+  const minWidth = Math.max(PANEL_WIDTH, rect.width)
+
+  if (left + minWidth > window.innerWidth - viewportPadding) {
+    left = window.innerWidth - minWidth - viewportPadding
+  }
+  if (left < viewportPadding) {
+    left = viewportPadding
+  }
+
+  return {
+    top: rect.bottom + GAP,
+    left,
+    minWidth,
+  }
+}
+
+export function RestaurantQuickActions({ actions, tone = 'default' }: Props) {
   const [open, setOpen] = useState(false)
-  const [position, setPosition] = useState<{ top: number; left: number } | null>(null)
+  const [position, setPosition] = useState<{
+    top: number
+    left: number
+    minWidth: number
+  } | null>(null)
   const [mounted, setMounted] = useState(false)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -83,23 +121,7 @@ export function RestaurantQuickActions({ actions }: Props) {
   const updatePosition = useCallback(() => {
     const button = buttonRef.current
     if (!button) return
-
-    const rect = button.getBoundingClientRect()
-    const viewportPadding = 16
-
-    let left = rect.right + GAP
-    let top = rect.top
-
-    if (left + PANEL_WIDTH > window.innerWidth - viewportPadding) {
-      left = rect.left - PANEL_WIDTH - GAP
-    }
-
-    const panelHeight = panelRef.current?.offsetHeight ?? 320
-    if (top + panelHeight > window.innerHeight - viewportPadding) {
-      top = Math.max(viewportPadding, window.innerHeight - panelHeight - viewportPadding)
-    }
-
-    setPosition({ top, left })
+    setPosition(computePanelPosition(button))
   }, [])
 
   useEffect(() => {
@@ -111,7 +133,7 @@ export function RestaurantQuickActions({ actions }: Props) {
 
     updatePosition()
 
-    function handlePointerDown(event: MouseEvent) {
+    function handlePointerDown(event: PointerEvent) {
       const target = event.target as Node
       if (buttonRef.current?.contains(target)) return
       if (panelRef.current?.contains(target)) return
@@ -122,34 +144,27 @@ export function RestaurantQuickActions({ actions }: Props) {
       if (event.key === 'Escape') setOpen(false)
     }
 
+    function handleReposition() {
+      updatePosition()
+    }
+
     window.addEventListener('pointerdown', handlePointerDown)
     window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('resize', updatePosition)
-    window.addEventListener('scroll', updatePosition, true)
+    window.addEventListener('resize', handleReposition)
+    window.addEventListener('scroll', handleReposition, true)
 
     return () => {
       window.removeEventListener('pointerdown', handlePointerDown)
       window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('resize', updatePosition)
-      window.removeEventListener('scroll', updatePosition, true)
+      window.removeEventListener('resize', handleReposition)
+      window.removeEventListener('scroll', handleReposition, true)
     }
   }, [open, updatePosition])
 
   function openMenu() {
     const button = buttonRef.current
     if (!button) return
-
-    const rect = button.getBoundingClientRect()
-    const viewportPadding = 16
-
-    let left = rect.right + GAP
-    let top = rect.top
-
-    if (left + PANEL_WIDTH > window.innerWidth - viewportPadding) {
-      left = rect.left - PANEL_WIDTH - GAP
-    }
-
-    setPosition({ top, left })
+    setPosition(computePanelPosition(button))
     setOpen(true)
   }
 
@@ -162,68 +177,71 @@ export function RestaurantQuickActions({ actions }: Props) {
     setOpen(false)
   }
 
-  function handleActionClick() {
-    close()
-  }
+  const triggerClass =
+    tone === 'onDark'
+      ? 'inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/50 bg-transparent px-6 text-lg font-normal text-white shadow-sm transition hover:border-white hover:bg-white/10'
+      : 'inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 text-lg font-normal text-neutral-900 shadow-sm transition hover:border-[#c9a882] hover:bg-[#faf6f2]'
+
+  const chevronClass =
+    tone === 'onDark'
+      ? `h-4 w-4 shrink-0 text-white/80 transition-transform ${open ? 'rotate-180' : ''}`
+      : `h-4 w-4 shrink-0 text-neutral-500 transition-transform ${open ? 'rotate-180' : ''}`
 
   const panel =
-    open && position && mounted
-      ? createPortal(
-          <div
-            ref={panelRef}
-            role="menu"
-            aria-labelledby="quick-actions-title"
-            style={{
-              position: 'fixed',
-              top: position.top,
-              left: position.left,
-              width: PANEL_WIDTH,
-              zIndex: 200,
-            }}
-            className="rounded-2xl border border-neutral-200 bg-white p-0 text-neutral-900 shadow-xl"
+    open && position && mounted ? (
+      <div
+        ref={panelRef}
+        role="menu"
+        aria-labelledby="quick-actions-title"
+        style={{
+          top: position.top,
+          left: position.left,
+          minWidth: position.minWidth,
+          width: PANEL_WIDTH,
+        }}
+        className="fixed z-[200] overflow-hidden rounded-xl border border-neutral-200 bg-white text-neutral-900 shadow-lg"
+      >
+        <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
+          <p id="quick-actions-title" className="text-base font-bold text-neutral-900">
+            Raccourcis
+          </p>
+          <button
+            type="button"
+            onClick={close}
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
+            aria-label="Fermer"
           >
-            <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
-              <p id="quick-actions-title" className="text-base font-bold text-neutral-900">
-                Raccourcis
-              </p>
-              <button
-                type="button"
-                onClick={close}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900"
-                aria-label="Fermer"
-              >
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-4 w-4"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  aria-hidden
-                >
-                  <path d="M6 6l12 12M18 6l-12 12" />
-                </svg>
-              </button>
-            </div>
+            <svg
+              viewBox="0 0 24 24"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden
+            >
+              <path d="M6 6l12 12M18 6l-12 12" />
+            </svg>
+          </button>
+        </div>
 
-            <ul className="flex flex-col p-1.5">
-              {actions.map((action) => (
-                <li key={action.id}>
-                  <a
-                    href={action.href}
-                    role="menuitem"
-                    onClick={handleActionClick}
-                    className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 ${restaurantPageTextLinkClass}`}
-                  >
-                    <QuickActionIcon id={action.id} />
-                    <span>{action.label}</span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>,
-          document.body,
-        )
-      : null
+        <ul className="flex max-h-[min(70vh,24rem)] flex-col overflow-y-auto p-1.5">
+          {actions.map((action) => (
+            <li key={action.id}>
+              <a
+                href={action.href}
+                role="menuitem"
+                onClick={close}
+                className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 ${restaurantPageTextLinkClass}`}
+                {...(action.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+              >
+                <QuickActionIcon id={action.id} />
+                <span>{action.label}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ) : null
 
   return (
     <>
@@ -233,13 +251,13 @@ export function RestaurantQuickActions({ actions }: Props) {
         onClick={toggle}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/50 bg-white/15 px-6 text-lg font-normal text-white shadow-lg backdrop-blur-sm transition hover:bg-white/25"
+        className={triggerClass}
       >
         Raccourcis
         <svg
           viewBox="0 0 24 24"
           aria-hidden
-          className={`h-4 w-4 shrink-0 text-white/80 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={chevronClass}
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
@@ -247,7 +265,8 @@ export function RestaurantQuickActions({ actions }: Props) {
           <path d="M6 9l6 6 6-6" />
         </svg>
       </button>
-      {panel}
+
+      {mounted && panel ? createPortal(panel, document.body) : null}
     </>
   )
 }

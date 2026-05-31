@@ -49,13 +49,49 @@ export const siteBodySemiboldClass =
 
 export const siteBodyOnDarkClass = 'text-base md:text-lg text-neutral-700'
 
-/** Hero marketing (fond sombre) */
+/** Hero plein écran image (guides — overlay sombre conservé pour ce layout) */
 export const siteHeroSectionClass = 'w-full bg-[#2a1810] pb-0'
 
-export const siteHeroInnerClass =
-  'mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6'
+/** Largeur max du contenu site — 80rem (1280px) */
+export const siteMaxWidthClass = 'max-w-7xl'
 
-export const siteHeroLeadOnDarkClass = 'mt-4 text-base md:text-lg text-[#f8e9dc]'
+export const siteHeroInnerClass =
+  `mx-auto w-full ${siteMaxWidthClass} px-4 py-8 text-white sm:px-6`
+
+/** Grille 2 colonnes — même espacement que les sections de page */
+export const siteSectionTwoColumnGridClass =
+  'grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12'
+
+/** Fond heros (clair, teinte chaude Afroliya) */
+export const siteHeroBgClass =
+  'bg-gradient-to-br from-[#edd9c4] via-[#f8f1ea] to-[#e8d4bc]'
+
+/** Hero marketing 2 col. : fond brun foncé chaud, texte + image en colonne */
+export const siteMarketingSplitHeroSectionClass =
+  'relative w-full overflow-hidden bg-gradient-to-br from-[#3d281c] via-[#322018] to-[#2a1810] py-14 sm:py-20 lg:py-24'
+
+export const siteMarketingSplitHeroGridClass = `relative z-10 mx-auto w-full ${siteMaxWidthClass} px-4 sm:px-6 ${siteSectionTwoColumnGridClass}`
+
+export const siteMarketingSplitHeroImageWrapClass =
+  'order-1 overflow-hidden rounded-2xl sm:rounded-3xl lg:order-2'
+
+export const siteMarketingSplitHeroImageClass =
+  'h-[280px] w-full object-cover sm:h-[360px] lg:h-[420px]'
+
+export const siteMarketingSplitHeroContentWrapClass =
+  'order-2 flex flex-col justify-center lg:order-1'
+
+export const siteMarketingSplitHeroContentClass = 'max-w-2xl'
+
+export const siteMarketingSplitHeroLeadClass =
+  'mt-5 text-base font-bold leading-relaxed text-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] sm:mt-6 md:text-lg'
+
+/** Sous-titre de section / hero : une ligne, segments séparés par « — » */
+export const siteSubtitleLeadClass =
+  'mt-5 text-base leading-relaxed text-neutral-600 sm:mt-6 md:text-lg font-bold'
+
+export const siteHeroLeadOnDarkClass =
+  'mt-4 max-w-3xl text-base text-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] md:text-lg'
 
 export const siteHeroBreadcrumbOnDarkClass =
   'flex flex-wrap items-center gap-x-2 text-base md:text-lg text-[#f8e9dc]'
@@ -63,26 +99,27 @@ export const siteHeroBreadcrumbOnDarkClass =
 export const siteHeroMetaOnDarkClass =
   'text-base md:text-lg text-white drop-shadow-[0_1px_10px_rgba(0,0,0,0.85)]'
 
-/** Navigation */
-export const siteNavClass = 'hidden items-center gap-2 sm:flex text-base font-normal md:text-lg'
+/** Navigation — hover et page active : souligné + couleur brand */
+export const siteNavClass =
+  'hidden items-center gap-6 sm:flex text-base font-normal md:text-lg md:gap-8'
 
 export const siteNavItemClass =
-  'rounded-full px-4 py-2 text-base text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524] md:text-lg'
+  'text-neutral-800 underline-offset-4 transition hover:text-[#8D5524] hover:underline'
 
 export const siteNavItemActiveClass =
-  'rounded-full bg-[#f5e6d9] px-4 py-2 text-base text-[#8D5524] md:text-lg'
+  'text-[#8D5524] underline decoration-2 underline-offset-4'
 
 export const siteMobileNavItemClass =
-  'block rounded-xl px-4 py-2 text-base font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524] md:text-lg'
+  'block rounded-lg px-3 py-2 text-base font-normal text-neutral-800 underline-offset-4 transition hover:text-[#8D5524] hover:underline md:text-lg'
 
 export const siteMobileNavItemActiveClass =
-  'block rounded-xl bg-[#f5e6d9] px-4 py-2 text-base font-normal text-[#8D5524] md:text-lg'
+  'block rounded-lg px-3 py-2 text-base font-normal text-[#8D5524] underline decoration-2 underline-offset-4 md:text-lg'
 
 export const siteMobileNavItemSpacedClass =
-  'mt-1 block rounded-xl px-4 py-2 text-base font-normal text-neutral-800 transition hover:bg-[#f5e6d9] hover:text-[#8D5524] md:text-lg'
+  'mt-1 block rounded-lg px-3 py-2 text-base font-normal text-neutral-800 underline-offset-4 transition hover:text-[#8D5524] hover:underline md:text-lg'
 
 export const siteMobileNavItemActiveSpacedClass =
-  'mt-1 block rounded-xl bg-[#f5e6d9] px-4 py-2 text-base font-normal text-[#8D5524] md:text-lg'
+  'mt-1 block rounded-lg px-3 py-2 text-base font-normal text-[#8D5524] underline decoration-2 underline-offset-4 md:text-lg'
 
 /** Boutons CTA (texte) */
 export const siteButtonPrimaryClass =
@@ -91,16 +128,47 @@ export const siteButtonPrimaryClass =
 export const siteButtonPrimarySmClass =
   'inline-flex items-center justify-center rounded-xl bg-[#8D5524] px-5 py-2.5 text-base font-normal text-white transition hover:bg-[#74431a] md:text-lg'
 
+/** CTA blanc sur fond brand (hero marketing) */
+export const siteButtonOnDarkClass =
+  'inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 text-base font-normal text-[#8D5524] transition hover:bg-[#f8e9dc] md:text-lg'
+
+export const siteButtonOnDarkOutlineClass =
+  'inline-flex items-center justify-center rounded-xl border border-white/50 bg-transparent px-6 py-3 text-base font-normal text-white transition hover:border-white hover:bg-white/10 md:text-lg'
+
 export const siteCtaOnDarkClass =
   'mt-3 inline-flex text-base font-semibold text-[#f8e9dc] underline-offset-4 hover:underline md:text-lg'
 
-/** Sections */
+/** Lien texte sur fond clair : text-lg, souligné, coloré au survol */
+export const siteTextLinkClass =
+  'text-lg text-neutral-900 underline underline-offset-2 transition hover:text-[#8D5524]'
+
+/** Lien texte dans une carte entièrement cliquable */
+export const siteTextLinkInCardClass =
+  'inline-flex text-lg text-neutral-900 underline underline-offset-2 transition group-hover:text-[#8D5524]'
+
+/** Sections — alternance blanc / gris pierre (le crème est réservé au hero). */
 export const siteSectionPaddingClass = 'py-14 sm:py-24'
 
-export const siteSectionInnerClass = 'mx-auto w-full max-w-6xl px-4 sm:px-6'
+export const siteSectionInnerClass = `mx-auto w-full ${siteMaxWidthClass} px-4 sm:px-6`
 
-export const siteGuideIntroSectionClass = 'w-full bg-[#f8f1ea] py-10 sm:py-14'
+/** Crème / chaud — bandeaux hero sans image (liste restos, index guides) */
+export const siteSectionBgCreamClass = siteHeroBgClass
+export const siteSectionBgWhiteClass = 'bg-white'
+export const siteSectionBgMutedClass = 'bg-stone-100'
 
-export const siteGuideListSectionClass = 'w-full bg-white py-12 sm:py-16'
+export const siteSectionWhiteClass = `w-full ${siteSectionBgWhiteClass} ${siteSectionPaddingClass}`
+export const siteSectionMutedClass = `w-full ${siteSectionBgMutedClass} ${siteSectionPaddingClass}`
+
+/** Grille 2 col. : média avant texte en mobile ; média à gauche dès lg */
+export const siteSectionMediaFirstClass = 'order-1 lg:order-1'
+export const siteSectionContentSecondClass = 'order-2 lg:order-2'
+
+/** Grille 2 col. : média avant texte en mobile ; texte à gauche dès lg */
+export const siteSectionContentFirstClass = 'order-2 lg:order-1'
+export const siteSectionMediaSecondClass = 'order-1 lg:order-2'
+
+export const siteGuideIntroSectionClass = `w-full ${siteSectionBgCreamClass} py-10 sm:py-14`
+
+export const siteGuideListSectionClass = `w-full ${siteSectionBgWhiteClass} py-12 sm:py-16`
 
 export const restaurantContentSectionClass = `scroll-mt-24 w-full border-t border-neutral-200/80 ${siteSectionPaddingClass}`

@@ -1,20 +1,12 @@
-import {
-  siteGuideIntroSectionClass,
-  siteGuideListSectionClass,
-  siteHeading1PageClass,
-  siteHeading1OnDarkClass,
-  siteHeading3OnDarkClass,
-  siteHeroBreadcrumbOnDarkClass,
-  siteHeroSectionClass,
-  siteBodyClass,
-  siteButtonPrimaryClass,
-} from '@/lib/site-styles'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { GuideStructuredContent } from '@/app/components/guide-structured-content'
+import { MarketingSplitHero } from '@/app/components/marketing-split-hero'
+import { SiteBreadcrumb } from '@/app/components/site-breadcrumb'
 import { fetchGuideBySlug, fetchPublishedGuides } from '@/lib/guides'
+import { siteButtonPrimaryClass } from '@/lib/site-styles'
 
 type Params = { slug: string }
 
@@ -53,47 +45,27 @@ export default async function GuideDetailPage({
 
   return (
     <>
-      <section className={siteHeroSectionClass}>
-        <div className="relative overflow-hidden">
-          <img
-            src={guide.imageSrc}
-            alt={guide.imageAlt}
-            className="h-[360px] w-full object-cover sm:h-[420px] lg:h-[500px]"
+      <MarketingSplitHero
+        imageSrc={guide.imageSrc}
+        imageAlt={guide.imageAlt}
+        title={guide.title}
+        breadcrumb={
+          <SiteBreadcrumb
+            tone="onDark"
+            items={[
+              { label: 'Guides thématiques', href: '/guides' },
+              { label: guide.title },
+            ]}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#2f1d12]/80 via-[#2f1d12]/55 to-[#2f1d12]/35" />
-          <div className="absolute inset-0 flex items-end">
-            <div className="mx-auto w-full max-w-6xl px-4 py-8 text-white sm:px-6 sm:py-10">
-              <nav
-                aria-label="Fil d'Ariane"
-                className={siteHeroBreadcrumbOnDarkClass}
-              >
-                <Link href="/guides" className="hover:text-white hover:underline">
-                  Guides thématiques
-                </Link>
-                <span aria-hidden className="text-white/50">
-                  /
-                </span>
-                <span className="text-white/90" aria-current="page">
-                  {guide.title}
-                </span>
-              </nav>
-              <h1 className={`mt-4 ${siteHeading1OnDarkClass}`}>
-                {guide.title}
-              </h1>
-            </div>
-          </div>
-        </div>
-      </section>
+        }
+      />
 
       <section className="w-full flex-1 bg-white pb-16 pt-6 sm:pb-20 sm:pt-10">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <GuideStructuredContent guide={guide} />
 
           <div className="mt-12 flex flex-wrap gap-4 border-t border-neutral-200 pt-10">
-            <Link
-              href="/restaurants"
-              className={siteButtonPrimaryClass}
-            >
+            <Link href="/restaurants" className={siteButtonPrimaryClass}>
               Réserver un restaurant
             </Link>
             <Link

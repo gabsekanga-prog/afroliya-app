@@ -10,6 +10,7 @@ import {
   formTextareaClassName,
 } from '@/app/components/form-fields'
 
+import { GoogleReviewsGeminiPrompt } from './google-reviews-gemini-prompt'
 import { saveRestaurantAction } from './actions'
 
 function SubmitButton({ isNew }: { isNew: boolean }) {
@@ -67,6 +68,9 @@ export function RestaurantForm({ restaurant }: Props) {
   return (
     <form action={formAction} className="max-w-2xl space-y-8">
       {!isNew ? <input type="hidden" name="id" value={restaurant!.id} /> : null}
+      {!isNew ? (
+        <input type="hidden" name="original_slug" value={restaurant!.slug ?? ''} />
+      ) : null}
 
       {state?.error ? (
         <p className="rounded-xl bg-red-50 px-3 py-2 text-lg text-red-800">{state.error}</p>
@@ -88,6 +92,19 @@ export function RestaurantForm({ restaurant }: Props) {
             className={formInputClassName}
           />
         </label>
+        <label className={formLabelClassName}>
+          Slug (URL publique)
+          <input
+            name="slug"
+            defaultValue={restaurant?.slug ?? ''}
+            className={formInputClassName}
+            placeholder="ex. le-restaurant-du-coin"
+          />
+        </label>
+        <p className="text-base text-neutral-600">
+          Laissez vide à la création pour générer automatiquement depuis le nom. Utilisé dans
+          l&apos;adresse <code className="text-sm">/restaurants/[slug]</code>.
+        </p>
         <label className={formLabelClassName}>
           Description
           <textarea
@@ -114,6 +131,20 @@ export function RestaurantForm({ restaurant }: Props) {
             defaultChecked={restaurant?.active === true}
           />
         </div>
+        <label className={formLabelClassName}>
+          Lien de réservation en ligne (booking_url)
+          <input
+            name="booking_url"
+            type="url"
+            defaultValue={restaurant?.booking_url ?? ''}
+            className={formInputClassName}
+            placeholder="https://…"
+          />
+        </label>
+        <p className="text-base text-neutral-600">
+          Pour les restaurants sponsorisés : si renseigné, le bouton « Réserver en ligne » ouvre ce
+          lien ; sinon, il mène à la section de réservation sur la fiche.
+        </p>
       </section>
 
       <section className="space-y-4">
@@ -220,6 +251,17 @@ export function RestaurantForm({ restaurant }: Props) {
             />
           </label>
         </div>
+        <label className={formLabelClassName}>
+          Résumé des avis Google
+          <textarea
+            name="google_reviews_summary"
+            rows={3}
+            defaultValue={restaurant?.google_reviews_summary ?? ''}
+            className={formTextareaClassName}
+            placeholder="Ex. Les clients apprécient l'accueil chaleureux et les plats généreux."
+          />
+        </label>
+        <GoogleReviewsGeminiPrompt restaurant={restaurant} />
       </section>
 
       <section className="space-y-4">

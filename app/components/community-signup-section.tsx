@@ -3,16 +3,28 @@
 import { useState } from 'react'
 
 import { formInputClassName, formLabelClassName } from '@/app/components/form-fields'
+import { SiteChecklist } from '@/app/components/site-checklist'
 import { supabase } from '@/lib/supabase'
-import { siteBodyRelaxedClass, siteButtonPrimaryClass, siteHeading2Class, siteSectionPaddingClass } from '@/lib/site-styles'
+import {
+  siteButtonPrimaryClass,
+  siteHeading2Class,
+  siteSubtitleLeadClass,
+  siteSectionContentFirstClass,
+  siteSectionMediaSecondClass,
+  siteSectionMutedClass,
+  siteSectionWhiteClass,
+} from '@/lib/site-styles'
 
 type CommunitySignupSectionProps = {
   /** `full` : section pleine largeur (Concept, liste des guides). `guide` : bloc aligné sur les sous-sections d’un guide. */
   variant?: 'full' | 'guide'
+  /** Fond de section (jamais crème — réservée au hero). */
+  tone?: 'white' | 'muted'
 }
 
 export function CommunitySignupSection({
   variant = 'full',
+  tone = 'muted',
 }: CommunitySignupSectionProps) {
   const [communityEmail, setCommunityEmail] = useState('')
   const [communityMessage, setCommunityMessage] = useState('')
@@ -78,29 +90,6 @@ export function CommunitySignupSection({
     setIsSubmittingCommunity(false)
   }
 
-  const benefitsList = (
-    <ul className={`mt-5 space-y-2 ${siteBodyRelaxedClass} sm:mt-6`}>
-      <li className="flex gap-2.5">
-        <span className="text-brand shrink-0 font-semibold" aria-hidden>
-          ✓
-        </span>
-        <span>Ne ratez aucune nouveauté</span>
-      </li>
-      <li className="flex gap-2.5">
-        <span className="text-brand shrink-0 font-semibold" aria-hidden>
-          ✓
-        </span>
-        <span>Gagnez des repas et promos</span>
-      </li>
-      <li className="flex gap-2.5">
-        <span className="text-brand shrink-0 font-semibold" aria-hidden>
-          ✓
-        </span>
-        <span>Participez à des événements exclusifs</span>
-      </li>
-    </ul>
-  )
-
   const formInner = (
     <form className="grid gap-4" onSubmit={handleCommunitySubmit}>
       <label className={formLabelClassName}>
@@ -143,23 +132,39 @@ export function CommunitySignupSection({
 
 
   return (
-    <section id="communaute" className={`w-full bg-[#f8f1ea] ${siteSectionPaddingClass}`}>
-      <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-10">
-        <div>
+    <section
+      id="communaute"
+      className={
+        variant === 'guide'
+          ? 'w-full scroll-mt-24 border-t border-neutral-200 pt-8 sm:pt-10'
+          : tone === 'white'
+            ? siteSectionWhiteClass
+            : siteSectionMutedClass
+      }
+    >
+      <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-10">
+        <div className={siteSectionContentFirstClass}>
           <div className="max-w-2xl">
             <h2 className={siteHeading2Class}>
-              Rejoignez la communauté Afroliya
+            Rejoignez la communauté Afroliya
             </h2>
-            {benefitsList}
+            <p className={siteSubtitleLeadClass}>
+            Nouveautés chaque semaine | Expériences gratuites à gagner | Réductions exclusives
+            </p>
+            <SiteChecklist
+              items={[]}
+            />
           </div>
 
           <div className="mt-8">{formInner}</div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-neutral-200 shadow-md">
+        <div
+          className={`${siteSectionMediaSecondClass} overflow-hidden rounded-2xl border border-neutral-200 shadow-md`}
+        >
           <img
-            src="/images/Nourriture%20congolaise.jpg"
-            alt="Plat de nourriture congolaise"
+            src="/images/Gabs-restaurant-africain-africalicious-Bruxelles_edited.webp"
+            alt="Membre de la communauté Afroliya profitant d'un repas dans un restaurant africain"
             className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[420px]"
           />
         </div>

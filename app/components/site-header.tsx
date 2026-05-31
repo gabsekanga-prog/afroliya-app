@@ -10,16 +10,19 @@ import {
   siteNavItemClass,
 } from '@/lib/site-styles'
 
-export type SiteHeaderActivePage = 'concept' | 'restaurants' | 'partenaire'
+export type SiteHeaderActivePage = 'concept' | 'experiences' | 'partenaire'
 
 type Props = {
-  active: SiteHeaderActivePage
+  /** Page courante mise en avant dans le menu ; omis = aucun lien actif */
+  active?: SiteHeaderActivePage
 }
 
 export function SiteHeader({ active }: Props) {
+  const experiencesHubIsLink = active !== 'experiences'
+
   return (
     <header className="relative z-50 border-b border-neutral-200 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link href="/" aria-label="Aller a la page Concept">
           <img
             src="/logo/Afroliya-logo-mini-rectangle.png"
@@ -35,12 +38,12 @@ export function SiteHeader({ active }: Props) {
               Concept
             </Link>
           )}
-          {active === 'restaurants' ? (
-            <span className={siteNavItemActiveClass}>Trouver un restaurant</span>
-          ) : (
-            <Link href="/restaurants" className={siteNavItemClass}>
-              Trouver un restaurant
+          {experiencesHubIsLink ? (
+            <Link href="/trouver-une-experience" className={siteNavItemClass}>
+              Trouver une expérience
             </Link>
+          ) : (
+            <span className={siteNavItemActiveClass}>Trouver une expérience</span>
           )}
           {active === 'partenaire' ? (
             <span className={siteNavItemActiveClass}>Devenir partenaire</span>
@@ -85,14 +88,17 @@ export function SiteHeader({ active }: Props) {
                 Concept
               </Link>
             )}
-            {active === 'restaurants' ? (
-              <span className={siteMobileNavItemActiveSpacedClass}>
-                Trouver un restaurant
-              </span>
-            ) : (
-              <Link href="/restaurants" className={siteMobileNavItemSpacedClass}>
-                Trouver un restaurant
+            {experiencesHubIsLink ? (
+              <Link
+                href="/trouver-une-experience"
+                className={siteMobileNavItemSpacedClass}
+              >
+                Trouver une expérience
               </Link>
+            ) : (
+              <span className={siteMobileNavItemActiveSpacedClass}>
+                Trouver une expérience
+              </span>
             )}
             {active === 'partenaire' ? (
               <span className={siteMobileNavItemActiveSpacedClass}>Devenir partenaire</span>

@@ -1,5 +1,6 @@
 'use client'
 
+import { formatOpeningSlotLabel } from '@/lib/reservation-opening-hours'
 import type { RestaurantOpeningHoursDay } from '@/lib/restaurants'
 
 type Props = {
@@ -16,7 +17,7 @@ function DayRow({
   const isClosed = dayHours.slots.length === 0
   const hoursText = isClosed
     ? 'Fermé'
-    : dayHours.slots.map((slot) => `${slot.openTime} – ${slot.closeTime}`).join(' · ')
+    : dayHours.slots.map((slot) => formatOpeningSlotLabel(slot.openTime, slot.closeTime)).join(' · ')
 
   return (
     <li
@@ -53,7 +54,7 @@ export function RestaurantOpeningHours({ days }: Props) {
   const columns = [days.slice(0, midpoint), days.slice(midpoint)]
 
   return (
-    <div className="mt-6 grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2">
+    <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-3 sm:mt-12 sm:grid-cols-2">
       {columns.map((column, columnIndex) => (
         <ul key={columnIndex} className="space-y-3 text-lg">
           {column.map((dayHours) => (

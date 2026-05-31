@@ -1,10 +1,7 @@
 import { unstable_noStore as noStore } from 'next/cache'
 
-import {
-  formatMenuDisplayText,
-  formatMenuDisplayTextRequired,
-  formatMenuPrice,
-} from '@/lib/format-menu-text'
+import { restaurantSlugFromName } from '@/lib/restaurant-slug'
+import { slugify } from '@/lib/slug'
 import { supabase } from '@/lib/supabase'
 
 export type RestaurantCuisineTag = {
@@ -17,19 +14,6 @@ export type RestaurantMenuPage = {
   imageSrc: string
   caption: string | null
   sortOrder: number
-}
-
-export type RestaurantMenuItem = {
-  id: string
-  name: string
-  description: string | null
-  price: string | null
-}
-
-export type RestaurantMenuSection = {
-  id: string
-  name: string
-  items: RestaurantMenuItem[]
 }
 
 export type RestaurantFeature = {
@@ -70,7 +54,7 @@ function formatOpeningTime(value: string | null | undefined): string {
 /** Modèle public (UI) — dérivé de la table `restaurants` + relations. */
 export type Restaurant = {
   id: string
-  /** Segment d’URL : identifiant UUID du restaurant. */
+  /** Segment d’URL : slug dérivé du nom (`slug` en base). */
   slug: string
   nom: string
   cuisine: string
@@ -92,6 +76,8 @@ export type Restaurant = {
   note: string
   /** Nombre d’avis Google (`google_review_total_value`). */
   googleReviewCount: number | null
+  /** Court résumé textuel des avis Google. */
+  googleReviewsSummary: string
   image: string
   /** Galerie : couverture en premier, puis les autres photos. */
   images: string[]
@@ -100,6 +86,8 @@ export type Restaurant = {
   tarif: string
   sponsored: boolean
   bookable: boolean
+  /** Lien externe de réservation (`booking_url`), pour les établissements sponsorisés. */
+  bookingUrl: string
 }
 
 export type RestaurantFilterOptions = {
@@ -137,6 +125,7 @@ type RestaurantImageRow = {
 type DbRestaurantRow = {
   id: string
   name: string
+  slug?: string | null
   city: string
   commune: string | null
   address: string | null
@@ -153,8 +142,10 @@ type DbRestaurantRow = {
   description: string | null
   google_quotation: number | null
   google_review_total_value: number | null
+  google_reviews_summary?: string | null
   sponsored: boolean | null
   bookable: boolean | null
+  booking_url?: string | null
   restaurant_images: RestaurantImageRow[] | RestaurantImageRow | null
   restaurant_cuisines: RestaurantCuisineRow[] | null
   restaurants_tarifs: RestaurantTarifRow[] | null
@@ -251,6 +242,24 @@ export function formatCuisineCommune(cuisine: string, commune: string): string {
   const communePart = commune.trim()
   if (cuisinePart && communePart) return `${cuisinePart} — ${communePart}`
   return cuisinePart || communePart
+}
+
+/** Ex. « 1050 Ixelles, Bruxelles ». */
+export function formatRestaurantLocationLine(
+  codePostal: string,
+  commune: string,
+  ville: string,
+): string {
+  const postal = codePostal.trim()
+  const communePart = commune.trim()
+  const villePart = ville.trim()
+  const postalCommune = [postal, communePart].filter(Boolean).join(' ')
+
+  if (villePart && communePart && villePart.toLowerCase() !== communePart.toLowerCase()) {
+    return postalCommune ? `${postalCommune}, ${villePart}` : villePart
+  }
+
+  return postalCommune || villePart
 }
 
 export function formatCuisineCommuneTarif(
@@ -384,10 +393,12 @@ export function mapDbRestaurantToPublic(row: DbRestaurantRow): Restaurant {
   const cuisine = formatCuisineLabels(cuisines)
   const commune = (row.commune ?? '').trim()
   const ville = row.city?.trim() || ''
+  const nom = row.name?.trim() || 'Restaurant'
+  const slug = (row.slug ?? '').trim() || restaurantSlugFromName(nom)
   return {
     id,
-    slug: id,
-    nom: row.name?.trim() || 'Restaurant',
+    slug,
+    nom,
     ville,
     cuisine,
     cuisines,
@@ -412,18 +423,21 @@ export function mapDbRestaurantToPublic(row: DbRestaurantRow): Restaurant {
       row.google_review_total_value != null && !Number.isNaN(Number(row.google_review_total_value))
         ? Number(row.google_review_total_value)
         : null,
+    googleReviewsSummary: (row.google_reviews_summary ?? '').trim(),
     images: buildGalleryImages(row.restaurant_images),
     image: pickCoverImage(row.restaurant_images),
     description: (row.description ?? '').trim() || 'Découvrez ce restaurant partenaire.',
     tarif: formatTarifLabels(row.restaurants_tarifs),
     sponsored: row.sponsored === true,
     bookable: row.bookable === true,
+    bookingUrl: (row.booking_url ?? '').trim(),
   }
 }
 
-const RESTAURANT_PUBLIC_SELECT = `
+const RESTAURANT_CORE_COLUMNS_BASE = `
   id,
   name,
+  slug,
   city,
   commune,
   address,
@@ -441,13 +455,50 @@ const RESTAURANT_PUBLIC_SELECT = `
   google_quotation,
   google_review_total_value,
   sponsored,
-  bookable,
+  bookable
+`
+
+const RESTAURANT_CORE_COLUMNS = `${RESTAURANT_CORE_COLUMNS_BASE},
+  booking_url
+`
+
+const RESTAURANT_CORE_COLUMNS_LEGACY = RESTAURANT_CORE_COLUMNS_BASE
+
+const RESTAURANT_PUBLIC_RELATIONS = `
   restaurant_images ( image_url, cover, created_at ),
   restaurant_cuisines ( cuisines ( key, description ) ),
   restaurants_tarifs ( tarif_key, tarifs ( key, label ) )
 `
 
-const RESTAURANT_MINIMAL_SELECT = `
+const RESTAURANT_PUBLIC_SELECT = `${RESTAURANT_CORE_COLUMNS},
+  google_reviews_summary,
+  ${RESTAURANT_PUBLIC_RELATIONS}`
+
+const RESTAURANT_PUBLIC_SELECT_LEGACY = `${RESTAURANT_CORE_COLUMNS_LEGACY},
+  ${RESTAURANT_PUBLIC_RELATIONS}`
+
+const RESTAURANT_PUBLIC_SELECT_NO_GOOGLE_SUMMARY = `${RESTAURANT_CORE_COLUMNS},
+  ${RESTAURANT_PUBLIC_RELATIONS}`
+
+const RESTAURANT_PUBLIC_SELECT_NO_BOOKING_URL = `${RESTAURANT_CORE_COLUMNS_LEGACY},
+  google_reviews_summary,
+  ${RESTAURANT_PUBLIC_RELATIONS}`
+
+const RESTAURANT_MINIMAL_SELECT = `${RESTAURANT_CORE_COLUMNS},
+  google_reviews_summary,
+  created_at`
+
+const RESTAURANT_MINIMAL_SELECT_NO_GOOGLE_SUMMARY = `${RESTAURANT_CORE_COLUMNS},
+  created_at`
+
+const RESTAURANT_MINIMAL_SELECT_NO_BOOKING_URL = `${RESTAURANT_CORE_COLUMNS_LEGACY},
+  google_reviews_summary,
+  created_at`
+
+const RESTAURANT_MINIMAL_SELECT_LEGACY = `${RESTAURANT_CORE_COLUMNS_LEGACY},
+  created_at`
+
+const RESTAURANT_CORE_COLUMNS_NO_SLUG = `
   id,
   name,
   city,
@@ -468,8 +519,70 @@ const RESTAURANT_MINIMAL_SELECT = `
   google_review_total_value,
   sponsored,
   bookable,
-  created_at
+  booking_url
 `
+
+const RESTAURANT_PUBLIC_SELECT_NO_SLUG = `${RESTAURANT_CORE_COLUMNS_NO_SLUG},
+  google_reviews_summary,
+  ${RESTAURANT_PUBLIC_RELATIONS}`
+
+const RESTAURANT_MINIMAL_SELECT_NO_SLUG = `${RESTAURANT_CORE_COLUMNS_NO_SLUG},
+  google_reviews_summary,
+  created_at`
+
+const RESTAURANT_PUBLIC_SELECT_ATTEMPTS = [
+  RESTAURANT_PUBLIC_SELECT,
+  RESTAURANT_PUBLIC_SELECT_NO_SLUG,
+  RESTAURANT_PUBLIC_SELECT_NO_BOOKING_URL,
+  RESTAURANT_PUBLIC_SELECT_NO_GOOGLE_SUMMARY,
+  RESTAURANT_PUBLIC_SELECT_LEGACY,
+] as const
+
+const RESTAURANT_MINIMAL_SELECT_ATTEMPTS = [
+  RESTAURANT_MINIMAL_SELECT,
+  RESTAURANT_MINIMAL_SELECT_NO_SLUG,
+  RESTAURANT_MINIMAL_SELECT_NO_BOOKING_URL,
+  RESTAURANT_MINIMAL_SELECT_NO_GOOGLE_SUMMARY,
+  RESTAURANT_MINIMAL_SELECT_LEGACY,
+] as const
+
+function isMissingDbColumnError(message: string, column: string): boolean {
+  return message.toLowerCase().includes(column.toLowerCase())
+}
+
+function isOptionalRestaurantColumnError(message: string): boolean {
+  return (
+    isMissingDbColumnError(message, 'google_reviews_summary') ||
+    isMissingDbColumnError(message, 'booking_url') ||
+    isMissingDbColumnError(message, 'slug')
+  )
+}
+
+type SupabaseQueryResult = {
+  data: unknown
+  error: { message: string } | null
+}
+
+async function queryWithRestaurantSelectFallback(
+  selects: readonly string[],
+  runQuery: (select: string) => Promise<SupabaseQueryResult>,
+): Promise<{ data: unknown; error: { message: string } | null; usedFallback: boolean }> {
+  let lastError: { message: string } | null = null
+
+  for (let i = 0; i < selects.length; i++) {
+    const { data, error } = await runQuery(selects[i]!)
+    if (!error) {
+      return { data, error: null, usedFallback: i > 0 }
+    }
+    lastError = error
+    if (i < selects.length - 1 && isOptionalRestaurantColumnError(error.message)) {
+      continue
+    }
+    break
+  }
+
+  return { data: null, error: lastError, usedFallback: false }
+}
 
 type DbRestaurantCore = Omit<
   DbRestaurantRow,
@@ -698,34 +811,52 @@ export async function fetchPublishedRestaurants(): Promise<Restaurant[]> {
   if (!supabase) return []
 
   let usedFallback = false
-  let { data, error } = await supabase
-    .from('restaurants')
-    .select(RESTAURANT_PUBLIC_SELECT)
-    .eq('active', true)
-    .order('created_at', { ascending: false })
+  let data: unknown = null
 
-  if (error) {
-    console.warn('[restaurants] select avec relations a échoué, repli minimal :', error.message)
-    const fb = await supabase
-      .from('restaurants')
-      .select(RESTAURANT_MINIMAL_SELECT)
-      .eq('active', true)
-      .order('created_at', { ascending: false })
-    if (fb.error) {
-      console.error('[restaurants] fetchPublishedRestaurants', fb.error.message)
+  const primary = await queryWithRestaurantSelectFallback(
+    RESTAURANT_PUBLIC_SELECT_ATTEMPTS,
+    async (select) => {
+      const { data, error } = await supabase!
+        .from('restaurants')
+        .select(select)
+        .eq('active', true)
+        .order('created_at', { ascending: false })
+      return { data, error }
+    },
+  )
+
+  if (primary.error) {
+    console.warn('[restaurants] select avec relations a échoué, repli minimal :', primary.error.message)
+    const minimal = await queryWithRestaurantSelectFallback(
+      RESTAURANT_MINIMAL_SELECT_ATTEMPTS,
+      async (select) => {
+        const { data, error } = await supabase!
+          .from('restaurants')
+          .select(select)
+          .eq('active', true)
+          .order('created_at', { ascending: false })
+        return { data, error }
+      },
+    )
+    if (minimal.error) {
+      console.error('[restaurants] fetchPublishedRestaurants', minimal.error.message)
       return []
     }
-    data = fb.data as unknown as typeof data
+    data = minimal.data
     usedFallback = true
+  } else {
+    data = primary.data
+    usedFallback = primary.usedFallback
   }
 
-  if (!data?.length) return []
+  const rows = data as DbRestaurantRow[] | DbRestaurantCore[] | null
+  if (!rows?.length) return []
 
-  const rows: DbRestaurantRow[] = usedFallback
-    ? (data as unknown as DbRestaurantCore[]).map((r) => asRowWithEmptyRelations(r))
-    : (data as unknown as DbRestaurantRow[])
+  const normalized: DbRestaurantRow[] = usedFallback
+    ? (rows as DbRestaurantCore[]).map((r) => asRowWithEmptyRelations(r))
+    : (rows as DbRestaurantRow[])
 
-  const enriched = await enrichPublishedRows(rows)
+  const enriched = await enrichPublishedRows(normalized)
   return sortRestaurantsForDisplay(enriched.map(mapDbRestaurantToPublic))
 }
 
@@ -782,6 +913,50 @@ export async function fetchRestaurantFeatures(restaurantId: string): Promise<Res
     .map(({ key, label }) => ({ key, label }))
 }
 
+export type RestaurantAfroliyaReview = {
+  id: string
+  authorName: string
+  rating: number
+  body: string
+  validatedAt: string | null
+}
+
+type AfroliyaReviewDbRow = {
+  id: string
+  author_display_name: string
+  rating: number
+  body: string
+  validated_at: string | null
+}
+
+export async function fetchRestaurantAfroliyaReviews(
+  restaurantId: string,
+): Promise<RestaurantAfroliyaReview[]> {
+  noStore()
+  if (!supabase || !UUID_RE.test(restaurantId.trim())) return []
+
+  const { data, error } = await supabase
+    .from('restaurant_afroliya_reviews')
+    .select('id, author_display_name, rating, body, validated_at')
+    .eq('restaurant_id', restaurantId.trim())
+    .order('validated_at', { ascending: false })
+
+  if (error) {
+    console.warn('[restaurants] lecture restaurant_afroliya_reviews :', error.message)
+    return []
+  }
+
+  return ((data ?? []) as AfroliyaReviewDbRow[])
+    .map((row) => ({
+      id: row.id,
+      authorName: row.author_display_name.trim() || 'Membre Afroliya',
+      rating: Math.min(5, Math.max(1, Number(row.rating) || 5)),
+      body: row.body.trim(),
+      validatedAt: row.validated_at,
+    }))
+    .filter((review) => review.body.length > 0)
+}
+
 export async function fetchRestaurantOpeningHours(
   restaurantId: string,
 ): Promise<RestaurantOpeningHoursDay[]> {
@@ -830,75 +1005,6 @@ export async function fetchRestaurantOpeningHours(
   })
 }
 
-export async function fetchRestaurantMenuSections(
-  restaurantId: string,
-): Promise<RestaurantMenuSection[]> {
-  noStore()
-  if (!supabase || !UUID_RE.test(restaurantId.trim())) return []
-
-  const rid = restaurantId.trim()
-
-  const { data: sections, error: sectionsError } = await supabase
-    .from('restaurant_menu_sections')
-    .select('id, name, sort_order')
-    .eq('restaurant_id', rid)
-    .eq('published', true)
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: true })
-
-  if (sectionsError) {
-    console.warn('[restaurants] lecture restaurant_menu_sections :', sectionsError.message)
-    return []
-  }
-
-  const sectionRows = sections ?? []
-  if (sectionRows.length === 0) return []
-
-  const sectionIds = sectionRows.map((row: { id: string }) => row.id)
-
-  const { data: items, error: itemsError } = await supabase
-    .from('restaurant_menu_items')
-    .select('id, section_id, name, description, price, sort_order')
-    .in('section_id', sectionIds)
-    .eq('published', true)
-    .order('sort_order', { ascending: true })
-    .order('created_at', { ascending: true })
-
-  if (itemsError) {
-    console.warn('[restaurants] lecture restaurant_menu_items :', itemsError.message)
-    return []
-  }
-
-  const itemsBySection = new Map<string, RestaurantMenuItem[]>()
-  for (const row of items ?? []) {
-    const typed = row as {
-      id: string
-      section_id: string
-      name: string
-      description: string | null
-      price: string | null
-    }
-    const name = typed.name?.trim() ?? ''
-    if (!name) continue
-    const list = itemsBySection.get(typed.section_id) ?? []
-    list.push({
-      id: typed.id,
-      name: formatMenuDisplayTextRequired(name),
-      description: formatMenuDisplayText(typed.description?.trim() || null),
-      price: formatMenuPrice(typed.price?.trim() || null),
-    })
-    itemsBySection.set(typed.section_id, list)
-  }
-
-  return sectionRows
-    .map((row: { id: string; name: string }) => ({
-      id: row.id,
-      name: formatMenuDisplayTextRequired((row.name ?? '').trim()),
-      items: itemsBySection.get(row.id) ?? [],
-    }))
-    .filter((section) => section.name.length > 0)
-}
-
 export async function fetchRestaurantMenuPages(restaurantId: string): Promise<RestaurantMenuPage[]> {
   noStore()
   if (!supabase || !UUID_RE.test(restaurantId.trim())) return []
@@ -931,45 +1037,76 @@ export async function fetchRestaurantMenuPages(restaurantId: string): Promise<Re
     .filter((page) => Boolean(page.imageSrc))
 }
 
-export async function fetchRestaurantBySlug(slug: string): Promise<Restaurant | null> {
-  noStore()
-  if (!supabase) return null
-  if (!UUID_RE.test(slug.trim())) return null
-
-  const id = slug.trim()
+async function fetchPublishedRestaurantRowByLookup(
+  field: 'slug' | 'id',
+  value: string,
+): Promise<Restaurant | null> {
+  if (!supabase || !value.trim()) return null
 
   let usedFallback = false
-  let { data, error } = await supabase
-    .from('restaurants')
-    .select(RESTAURANT_PUBLIC_SELECT)
-    .eq('id', id)
-    .eq('active', true)
-    .maybeSingle()
+  let data: unknown = null
 
-  if (error) {
-    console.warn('[restaurants] detail avec relations a échoué, repli minimal :', error.message)
-    const fb = await supabase
-      .from('restaurants')
-      .select(RESTAURANT_MINIMAL_SELECT)
-      .eq('id', id)
-      .eq('active', true)
-      .maybeSingle()
-    if (fb.error) {
-      console.error('[restaurants] fetchRestaurantBySlug', fb.error.message)
+  const primary = await queryWithRestaurantSelectFallback(
+    RESTAURANT_PUBLIC_SELECT_ATTEMPTS,
+    async (select) => {
+      const { data, error } = await supabase!
+        .from('restaurants')
+        .select(select)
+        .eq(field, value.trim())
+        .eq('active', true)
+        .maybeSingle()
+      return { data, error }
+    },
+  )
+
+  if (primary.error) {
+    console.warn('[restaurants] detail avec relations a échoué, repli minimal :', primary.error.message)
+    const minimal = await queryWithRestaurantSelectFallback(
+      RESTAURANT_MINIMAL_SELECT_ATTEMPTS,
+      async (select) => {
+        const { data, error } = await supabase!
+          .from('restaurants')
+          .select(select)
+          .eq(field, value.trim())
+          .eq('active', true)
+          .maybeSingle()
+        return { data, error }
+      },
+    )
+    if (minimal.error) {
+      console.error('[restaurants] fetchPublishedRestaurantRowByLookup', minimal.error.message)
       return null
     }
-    data = fb.data as unknown as typeof data
+    data = minimal.data
     usedFallback = true
+  } else {
+    data = primary.data
+    usedFallback = primary.usedFallback
   }
 
   if (!data) return null
 
   const row: DbRestaurantRow = usedFallback
-    ? asRowWithEmptyRelations(data as unknown as DbRestaurantCore)
-    : (data as unknown as DbRestaurantRow)
+    ? asRowWithEmptyRelations(data as DbRestaurantCore)
+    : (data as DbRestaurantRow)
 
   const [enriched] = await enrichPublishedRows([row])
   return mapDbRestaurantToPublic(enriched)
+}
+
+export async function fetchRestaurantBySlug(slugParam: string): Promise<Restaurant | null> {
+  noStore()
+  const slug = decodeURIComponent(slugParam.trim())
+  if (!slug) return null
+
+  const bySlug = await fetchPublishedRestaurantRowByLookup('slug', slug)
+  if (bySlug) return bySlug
+
+  if (UUID_RE.test(slug)) {
+    return fetchPublishedRestaurantRowByLookup('id', slug)
+  }
+
+  return null
 }
 
 /** Jusqu’à `limit` restaurants sponsorisés actifs, ordre aléatoire (hors restaurant courant). */
@@ -989,15 +1126,26 @@ export async function fetchPublishedRestaurantSlugs(): Promise<string[]> {
   noStore()
   if (!supabase) return []
 
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from('restaurants')
-    .select('id')
+    .select('slug, id, name')
     .eq('active', true)
+
+  if (error && isMissingDbColumnError(error.message, 'slug')) {
+    const legacy = await supabase.from('restaurants').select('id, name').eq('active', true)
+    data = legacy.data as unknown as typeof data
+    error = legacy.error
+  }
 
   if (error) {
     console.error('[restaurants] fetchPublishedRestaurantSlugs', error.message)
     return []
   }
 
-  return (data ?? []).map((row: { id: string }) => row.id)
+  return (data ?? []).map((row: { slug?: string | null; id: string; name?: string | null }) => {
+    const fromDb = (row.slug ?? '').trim()
+    if (fromDb) return fromDb
+    const name = (row.name ?? '').trim()
+    return name ? slugify(name) : row.id
+  })
 }

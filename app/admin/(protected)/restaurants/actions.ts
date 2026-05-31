@@ -6,12 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 import { requireAdmin } from '@/lib/admin-session'
-import {
-  formatMenuDisplayText,
-  formatMenuDisplayTextRequired,
-  formatMenuPrice,
-} from '@/lib/format-menu-text'
-import { parseMenuCsv, type MenuCsvRow } from '@/lib/restaurant-menu-csv'
+import { resolveRestaurantSlug } from '@/lib/restaurant-slug'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 function emptyToNull(s: string): string | null {
@@ -58,6 +53,8 @@ export async function saveRestaurantAction(
   const id = idRaw ? String(idRaw).trim() : ''
 
   const name = String(formData.get('name') ?? '').trim()
+  const slugRaw = String(formData.get('slug') ?? '').trim()
+  const originalSlug = String(formData.get('original_slug') ?? '').trim()
   const city = String(formData.get('city') ?? '').trim()
   const description = emptyToNull(String(formData.get('description') ?? ''))
   const bookable = formData.has('bookable')
@@ -67,6 +64,7 @@ export async function saveRestaurantAction(
   const google_review_total_value = parseOptionalNonNegativeInt(
     String(formData.get('google_review_total_value') ?? ''),
   )
+  const google_reviews_summary = emptyToNull(String(formData.get('google_reviews_summary') ?? ''))
   const website_url = emptyToNull(String(formData.get('website_url') ?? ''))
   const phone = emptyToNull(String(formData.get('phone') ?? ''))
   const email = emptyToNull(String(formData.get('email') ?? ''))
@@ -80,13 +78,18 @@ export async function saveRestaurantAction(
   const instagram_url = emptyToNull(String(formData.get('instagram_url') ?? ''))
   const facebook_url = emptyToNull(String(formData.get('facebook_url') ?? ''))
   const whatsapp_phone = emptyToNull(String(formData.get('whatsapp_phone') ?? ''))
+  const booking_url = emptyToNull(String(formData.get('booking_url') ?? ''))
 
   if (!name || !city) {
     return { error: 'Le nom et la ville sont obligatoires.' }
   }
 
+  const restaurantId = id && UUID_RE.test(id) ? id : undefined
+  const slug = await resolveRestaurantSlug(admin, slugRaw || name, name, restaurantId)
+
   const row = {
     name,
+    slug,
     city,
     description,
     bookable,
@@ -94,6 +97,7 @@ export async function saveRestaurantAction(
     active,
     google_quotation,
     google_review_total_value,
+    google_reviews_summary,
     website_url,
     phone,
     email,
@@ -107,12 +111,63 @@ export async function saveRestaurantAction(
     instagram_url,
     facebook_url,
     whatsapp_phone,
+    booking_url,
+  }
+
+  function isMissingDbColumnError(message: string, column: string): boolean {
+    return message.toLowerCase().includes(column.toLowerCase())
+  }
+
+  const rowWithoutGoogleSummary = { ...row }
+  delete (rowWithoutGoogleSummary as { google_reviews_summary?: string | null })
+    .google_reviews_summary
+
+  const rowWithoutBookingUrl = { ...row }
+  delete (rowWithoutBookingUrl as { booking_url?: string | null }).booking_url
+
+  const rowWithoutSlug = { ...row }
+  delete (rowWithoutSlug as { slug?: string | null }).slug
+
+  const rowLegacy = { ...rowWithoutGoogleSummary }
+  delete (rowLegacy as { booking_url?: string | null }).booking_url
+  delete (rowLegacy as { slug?: string | null }).slug
+
+  async function saveRow(payload: typeof row) {
+    if (id && UUID_RE.test(id)) {
+      return admin!.from('restaurants').update(payload).eq('id', id)
+    }
+    return admin!.from('restaurants').insert(payload).select('id').single()
+  }
+
+  const saveAttempts = [
+    row,
+    rowWithoutGoogleSummary,
+    rowWithoutBookingUrl,
+    rowWithoutSlug,
+    rowLegacy,
+  ]
+
+  let result = await saveRow(saveAttempts[0]!)
+  for (let i = 1; i < saveAttempts.length; i++) {
+    if (!result.error) break
+    const message = result.error.message
+    if (
+      !isMissingDbColumnError(message, 'google_reviews_summary') &&
+      !isMissingDbColumnError(message, 'booking_url') &&
+      !isMissingDbColumnError(message, 'slug')
+    ) {
+      break
+    }
+    result = await saveRow(saveAttempts[i]!)
   }
 
   if (id && UUID_RE.test(id)) {
-    const { error } = await admin.from('restaurants').update(row).eq('id', id)
-    if (error) return { error: error.message }
+    if (result.error) return { error: result.error.message }
     revalidatePath('/restaurants', 'page')
+    revalidatePath(`/restaurants/${slug}`, 'page')
+    if (originalSlug && originalSlug !== slug) {
+      revalidatePath(`/restaurants/${originalSlug}`, 'page')
+    }
     revalidatePath(`/restaurants/${id}`, 'page')
     revalidatePath('/admin/restaurants')
     revalidatePath(`/admin/restaurants/${id}`)
@@ -120,13 +175,9 @@ export async function saveRestaurantAction(
     return { ok: true, id }
   }
 
-  const { data: inserted, error } = await admin
-    .from('restaurants')
-    .insert(row)
-    .select('id')
-    .single()
-  if (error) return { error: error.message }
+  if (result.error) return { error: result.error.message }
 
+  const inserted = 'data' in result ? result.data : null
   revalidatePath('/restaurants', 'page')
   revalidatePath('/admin/restaurants')
   revalidatePath('/', 'layout')
@@ -136,12 +187,26 @@ export async function saveRestaurantAction(
   return { error: 'Création sans identifiant retourné' }
 }
 
-function revalidateRestaurantPublicAndAdmin(restaurantId: string) {
+async function revalidateRestaurantPublicAndAdmin(restaurantId: string) {
+  const admin = getSupabaseAdmin()
   revalidatePath('/restaurants', 'page')
-  revalidatePath(`/restaurants/${restaurantId}`, 'page')
   revalidatePath('/admin/restaurants')
   revalidatePath(`/admin/restaurants/${restaurantId}`)
   revalidatePath('/', 'layout')
+
+  if (admin) {
+    const { data } = await admin
+      .from('restaurants')
+      .select('slug')
+      .eq('id', restaurantId)
+      .maybeSingle()
+    const slug = (data as { slug?: string | null } | null)?.slug?.trim()
+    if (slug) {
+      revalidatePath(`/restaurants/${slug}`, 'page')
+    }
+  }
+
+  revalidatePath(`/restaurants/${restaurantId}`, 'page')
 }
 
 export async function addRestaurantImageAction(
@@ -499,316 +564,6 @@ export async function deleteRestaurantFeatureLinkAction(
   return { ok: true }
 }
 
-async function clearRestaurantMenuData(
-  admin: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
-  restaurantId: string,
-) {
-  const { data: sections } = await admin
-    .from('restaurant_menu_sections')
-    .select('id')
-    .eq('restaurant_id', restaurantId)
-
-  const sectionIds = (sections ?? []).map((row: { id: string }) => row.id)
-  if (sectionIds.length > 0) {
-    const { error: itemsError } = await admin
-      .from('restaurant_menu_items')
-      .delete()
-      .in('section_id', sectionIds)
-    if (itemsError) throw new Error(itemsError.message)
-  }
-
-  const { error: sectionsError } = await admin
-    .from('restaurant_menu_sections')
-    .delete()
-    .eq('restaurant_id', restaurantId)
-  if (sectionsError) throw new Error(sectionsError.message)
-}
-
-async function importMenuRows(
-  admin: NonNullable<ReturnType<typeof getSupabaseAdmin>>,
-  restaurantId: string,
-  rows: MenuCsvRow[],
-  mode: 'replace' | 'append',
-) {
-  if (mode === 'replace') {
-    await clearRestaurantMenuData(admin, restaurantId)
-  }
-
-  const { data: existingSections } = await admin
-    .from('restaurant_menu_sections')
-    .select('id, name, sort_order')
-    .eq('restaurant_id', restaurantId)
-
-  const sectionByName = new Map<string, { id: string; sort_order: number | null }>()
-  for (const section of existingSections ?? []) {
-    sectionByName.set(formatMenuDisplayTextRequired(String(section.name).trim()), {
-      id: section.id,
-      sort_order: section.sort_order,
-    })
-  }
-
-  let nextSectionSort =
-    (existingSections ?? []).reduce(
-      (max, section) => Math.max(max, Number(section.sort_order) || 0),
-      -1,
-    ) + 1
-
-  const categoryOrder: string[] = []
-  const byCategory = new Map<string, MenuCsvRow[]>()
-  for (const row of rows) {
-    const category = formatMenuDisplayTextRequired(row.category)
-    const normalized: MenuCsvRow = {
-      category,
-      name: formatMenuDisplayTextRequired(row.name),
-      description: formatMenuDisplayText(row.description),
-      price: formatMenuPrice(row.price),
-    }
-    if (!byCategory.has(category)) {
-      categoryOrder.push(category)
-      byCategory.set(category, [])
-    }
-    byCategory.get(category)!.push(normalized)
-  }
-
-  for (const category of categoryOrder) {
-    let sectionId = sectionByName.get(category)?.id
-    if (!sectionId) {
-      sectionId = randomUUID()
-      const { error: sectionError } = await admin.from('restaurant_menu_sections').insert({
-        id: sectionId,
-        restaurant_id: restaurantId,
-        name: category,
-        sort_order: nextSectionSort,
-        published: true,
-      })
-      if (sectionError) throw new Error(sectionError.message)
-      sectionByName.set(category, { id: sectionId, sort_order: nextSectionSort })
-      nextSectionSort += 1
-    }
-
-    const { data: existingItems } = await admin
-      .from('restaurant_menu_items')
-      .select('sort_order')
-      .eq('section_id', sectionId)
-
-    let itemSort =
-      (existingItems ?? []).reduce(
-        (max, item) => Math.max(max, Number(item.sort_order) || 0),
-        -1,
-      ) + 1
-
-    for (const item of byCategory.get(category) ?? []) {
-      const { error: itemError } = await admin.from('restaurant_menu_items').insert({
-        id: randomUUID(),
-        section_id: sectionId,
-        name: item.name,
-        description: item.description,
-        price: item.price,
-        sort_order: itemSort,
-        published: true,
-      })
-      if (itemError) throw new Error(itemError.message)
-      itemSort += 1
-    }
-  }
-}
-
-export async function importRestaurantMenuCsvAction(
-  _prev: { error?: string; ok?: boolean; imported?: number } | undefined,
-  formData: FormData,
-): Promise<{ error?: string; ok?: boolean; imported?: number }> {
-  await requireAdmin()
-  const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
-
-  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
-  if (!UUID_RE.test(restaurantId)) return { error: 'Restaurant invalide.' }
-
-  const file = formData.get('csv_file')
-  if (!(file instanceof File) || file.size === 0) {
-    return { error: 'Sélectionnez un fichier CSV.' }
-  }
-
-  const maxBytes = 512 * 1024
-  if (file.size > maxBytes) {
-    return { error: 'Le fichier CSV ne doit pas dépasser 512 Ko.' }
-  }
-
-  const csvText = await file.text()
-  const parsed = parseMenuCsv(csvText)
-  if (!parsed.ok) return { error: parsed.error }
-
-  const replace = formData.get('menu_import_mode') === 'replace'
-
-  try {
-    await importMenuRows(admin, restaurantId, parsed.rows, replace ? 'replace' : 'append')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Import impossible.'
-    return { error: message }
-  }
-
-  revalidateRestaurantPublicAndAdmin(restaurantId)
-  return { ok: true, imported: parsed.rows.length }
-}
-
-export async function addRestaurantMenuSectionAction(
-  _prev: { error?: string; ok?: boolean } | undefined,
-  formData: FormData,
-): Promise<{ error?: string; ok?: boolean }> {
-  await requireAdmin()
-  const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
-
-  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
-  const nameRaw = String(formData.get('section_name') ?? '').trim()
-  const name = formatMenuDisplayTextRequired(nameRaw)
-  if (!UUID_RE.test(restaurantId) || !nameRaw) {
-    return { error: 'Restaurant et nom de section obligatoires.' }
-  }
-
-  const sort_order = Number(formData.get('section_sort_order') ?? 0) || 0
-  const published = formData.has('section_published')
-
-  const { error } = await admin.from('restaurant_menu_sections').insert({
-    id: randomUUID(),
-    restaurant_id: restaurantId,
-    name,
-    sort_order,
-    published,
-  })
-  if (error) return { error: error.message }
-
-  revalidateRestaurantPublicAndAdmin(restaurantId)
-  return { ok: true }
-}
-
-export async function addRestaurantMenuItemAction(
-  _prev: { error?: string; ok?: boolean } | undefined,
-  formData: FormData,
-): Promise<{ error?: string; ok?: boolean }> {
-  await requireAdmin()
-  const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
-
-  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
-  const sectionId = String(formData.get('section_id') ?? '').trim()
-  const nameRaw = String(formData.get('item_name') ?? '').trim()
-  const name = formatMenuDisplayTextRequired(nameRaw)
-  if (!UUID_RE.test(restaurantId) || !UUID_RE.test(sectionId) || !nameRaw) {
-    return { error: 'Paramètres invalides.' }
-  }
-
-  const { data: section } = await admin
-    .from('restaurant_menu_sections')
-    .select('id')
-    .eq('id', sectionId)
-    .eq('restaurant_id', restaurantId)
-    .maybeSingle()
-  if (!section) return { error: 'Section introuvable pour ce restaurant.' }
-
-  const description = formatMenuDisplayText(String(formData.get('item_description') ?? ''))
-  const price = formatMenuPrice(String(formData.get('item_price') ?? ''))
-  const sort_order = Number(formData.get('item_sort_order') ?? 0) || 0
-  const published = formData.has('item_published')
-
-  const { error } = await admin.from('restaurant_menu_items').insert({
-    id: randomUUID(),
-    section_id: sectionId,
-    name,
-    description,
-    price,
-    sort_order,
-    published,
-  })
-  if (error) return { error: error.message }
-
-  revalidateRestaurantPublicAndAdmin(restaurantId)
-  return { ok: true }
-}
-
-export async function deleteRestaurantMenuSectionAction(
-  _prev: { error?: string; ok?: boolean } | undefined,
-  formData: FormData,
-): Promise<{ error?: string; ok?: boolean }> {
-  await requireAdmin()
-  const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
-
-  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
-  const sectionId = String(formData.get('section_id') ?? '').trim()
-  if (!UUID_RE.test(restaurantId) || !UUID_RE.test(sectionId)) {
-    return { error: 'Paramètres invalides.' }
-  }
-
-  const { error: itemsError } = await admin
-    .from('restaurant_menu_items')
-    .delete()
-    .eq('section_id', sectionId)
-  if (itemsError) return { error: itemsError.message }
-
-  const { error } = await admin
-    .from('restaurant_menu_sections')
-    .delete()
-    .eq('id', sectionId)
-    .eq('restaurant_id', restaurantId)
-  if (error) return { error: error.message }
-
-  revalidateRestaurantPublicAndAdmin(restaurantId)
-  return { ok: true }
-}
-
-export async function deleteRestaurantMenuItemAction(
-  _prev: { error?: string; ok?: boolean } | undefined,
-  formData: FormData,
-): Promise<{ error?: string; ok?: boolean }> {
-  await requireAdmin()
-  const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
-
-  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
-  const itemId = String(formData.get('item_id') ?? '').trim()
-  const sectionId = String(formData.get('section_id') ?? '').trim()
-  if (!UUID_RE.test(restaurantId) || !UUID_RE.test(itemId) || !UUID_RE.test(sectionId)) {
-    return { error: 'Paramètres invalides.' }
-  }
-
-  const { data: section } = await admin
-    .from('restaurant_menu_sections')
-    .select('id')
-    .eq('id', sectionId)
-    .eq('restaurant_id', restaurantId)
-    .maybeSingle()
-  if (!section) return { error: 'Section introuvable.' }
-
-  const { error } = await admin.from('restaurant_menu_items').delete().eq('id', itemId).eq('section_id', sectionId)
-  if (error) return { error: error.message }
-
-  revalidateRestaurantPublicAndAdmin(restaurantId)
-  return { ok: true }
-}
-
-export async function clearRestaurantMenuAction(
-  _prev: { error?: string; ok?: boolean } | undefined,
-  formData: FormData,
-): Promise<{ error?: string; ok?: boolean }> {
-  await requireAdmin()
-  const admin = getSupabaseAdmin()
-  if (!admin) return { error: 'SUPABASE_SERVICE_ROLE_KEY manquant' }
-
-  const restaurantId = String(formData.get('restaurant_id') ?? '').trim()
-  if (!UUID_RE.test(restaurantId)) return { error: 'Restaurant invalide.' }
-
-  try {
-    await clearRestaurantMenuData(admin, restaurantId)
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Suppression impossible.'
-    return { error: message }
-  }
-
-  revalidateRestaurantPublicAndAdmin(restaurantId)
-  return { ok: true }
-}
-
 export async function addRestaurantPhotoMenuAction(
   _prev: { error?: string; ok?: boolean } | undefined,
   formData: FormData,
@@ -872,15 +627,6 @@ export async function deleteRestaurantAction(formData: FormData): Promise<void> 
   const id = String(formData.get('id') ?? '').trim()
   if (!UUID_RE.test(id)) throw new Error('Identifiant invalide')
 
-  const { data: menuSections } = await admin
-    .from('restaurant_menu_sections')
-    .select('id')
-    .eq('restaurant_id', id)
-  const menuSectionIds = (menuSections ?? []).map((row: { id: string }) => row.id)
-  if (menuSectionIds.length > 0) {
-    await admin.from('restaurant_menu_items').delete().in('section_id', menuSectionIds)
-  }
-  await admin.from('restaurant_menu_sections').delete().eq('restaurant_id', id)
   await admin.from('restaurant_photos_menu').delete().eq('restaurant_id', id)
   await admin.from('restaurant_feature_links').delete().eq('restaurant_id', id)
   await admin.from('restaurant_deals').delete().eq('restaurant_id', id)
