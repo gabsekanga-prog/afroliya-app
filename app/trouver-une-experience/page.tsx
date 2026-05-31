@@ -11,12 +11,12 @@ import {
 } from '@/lib/experiences'
 import { fetchPublishedRestaurants } from '@/lib/restaurants'
 import {
-  siteHeading1PageClass,
+  siteHeading1OnDarkClass,
   siteHeroBgClass,
   siteSectionBgMutedClass,
   siteSectionBgWhiteClass,
   siteSectionInnerClass,
-  siteSubtitleLeadClass,
+  siteSubtitleLeadOnDarkClass,
 } from '@/lib/site-styles'
 
 export const dynamic = 'force-dynamic'
@@ -38,10 +38,10 @@ export default async function TrouverUneExperiencePage() {
 
       <section className={`w-full ${siteHeroBgClass} py-10 sm:py-14 lg:py-16`}>
         <div className={siteSectionInnerClass}>
-          <h1 className={siteHeading1PageClass}>
+          <h1 className={siteHeading1OnDarkClass}>
             Des expériences afro à faire en Belgique
           </h1>
-          <p className={siteSubtitleLeadClass}>
+          <p className={siteSubtitleLeadOnDarkClass}>
             Choisissez la catégorie qui vous intéresse.
           </p>
           <ExperienceCategoriesGrid className="mt-10 sm:mt-12" />

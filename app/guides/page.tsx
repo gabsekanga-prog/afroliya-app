@@ -5,9 +5,10 @@ import { fetchPublishedGuides } from '@/lib/guides'
 import {
   siteGuideIntroSectionClass,
   siteGuideListSectionClass,
-  siteHeading1PageClass,
+  siteHeading1OnDarkClass,
   siteHeading3OnDarkClass,
   siteBodyClass,
+  siteSubtitleLeadOnDarkClass,
 } from '@/lib/site-styles'
 
 export const revalidate = 120
@@ -25,10 +26,10 @@ export default async function GuidesIndexPage() {
     <>
       <section className={siteGuideIntroSectionClass}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h1 className={siteHeading1PageClass}>
+          <h1 className={siteHeading1OnDarkClass}>
             Guides thématiques
           </h1>
-          <p className="mt-3 max-w-7xl text-base text-neutral-600 md:text-lg">
+          <p className={`max-w-7xl ${siteSubtitleLeadOnDarkClass}`}>
             Savourez l'Afrique selon vos envies : spécialités, quartiers, ambiance et plus.
           </p>
         </div>

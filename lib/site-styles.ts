@@ -49,8 +49,12 @@ export const siteBodySemiboldClass =
 
 export const siteBodyOnDarkClass = 'text-base md:text-lg text-neutral-700'
 
+/** Fond brun foncé chaud — tous les heros du site */
+export const siteHeroDarkBgClass =
+  'bg-gradient-to-br from-[#3d281c] via-[#322018] to-[#2a1810]'
+
 /** Hero plein écran image (guides — overlay sombre conservé pour ce layout) */
-export const siteHeroSectionClass = 'w-full bg-[#2a1810] pb-0'
+export const siteHeroSectionClass = `w-full ${siteHeroDarkBgClass} pb-0`
 
 /** Largeur max du contenu site — 80rem (1280px) */
 export const siteMaxWidthClass = 'max-w-7xl'
@@ -62,13 +66,12 @@ export const siteHeroInnerClass =
 export const siteSectionTwoColumnGridClass =
   'grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-12'
 
-/** Fond heros (clair, teinte chaude Afroliya) */
-export const siteHeroBgClass =
-  'bg-gradient-to-br from-[#edd9c4] via-[#f8f1ea] to-[#e8d4bc]'
+/** Fond heros (bandeau page liste, hub expériences, etc.) */
+export const siteHeroBgClass = siteHeroDarkBgClass
 
 /** Hero marketing 2 col. : fond brun foncé chaud, texte + image en colonne */
 export const siteMarketingSplitHeroSectionClass =
-  'relative w-full overflow-hidden bg-gradient-to-br from-[#3d281c] via-[#322018] to-[#2a1810] py-14 sm:py-20 lg:py-24'
+  `relative w-full overflow-hidden ${siteHeroDarkBgClass} py-14 sm:py-20 lg:py-24`
 
 export const siteMarketingSplitHeroGridClass = `relative z-10 mx-auto w-full ${siteMaxWidthClass} px-4 sm:px-6 ${siteSectionTwoColumnGridClass}`
 
@@ -89,6 +92,9 @@ export const siteMarketingSplitHeroLeadClass =
 /** Sous-titre de section / hero : une ligne, segments séparés par « — » */
 export const siteSubtitleLeadClass =
   'mt-5 text-base leading-relaxed text-neutral-600 sm:mt-6 md:text-lg font-bold'
+
+export const siteSubtitleLeadOnDarkClass =
+  'mt-5 text-base font-bold leading-relaxed text-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] sm:mt-6 md:text-lg'
 
 export const siteHeroLeadOnDarkClass =
   'mt-4 max-w-3xl text-base text-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] md:text-lg'
@@ -151,8 +157,11 @@ export const siteSectionPaddingClass = 'py-14 sm:py-24'
 
 export const siteSectionInnerClass = `mx-auto w-full ${siteMaxWidthClass} px-4 sm:px-6`
 
-/** Crème / chaud — bandeaux hero sans image (liste restos, index guides) */
-export const siteSectionBgCreamClass = siteHeroBgClass
+/** Bandeau hero de page (listes, filtres) */
+export const sitePageHeroSectionClass = `w-full ${siteHeroDarkBgClass} py-8 sm:py-12`
+
+/** @deprecated Préférer sitePageHeroSectionClass ou siteHeroDarkBgClass */
+export const siteSectionBgCreamClass = siteHeroDarkBgClass
 export const siteSectionBgWhiteClass = 'bg-white'
 export const siteSectionBgMutedClass = 'bg-stone-100'
 
@@ -167,7 +176,7 @@ export const siteSectionContentSecondClass = 'order-2 lg:order-2'
 export const siteSectionContentFirstClass = 'order-2 lg:order-1'
 export const siteSectionMediaSecondClass = 'order-1 lg:order-2'
 
-export const siteGuideIntroSectionClass = `w-full ${siteSectionBgCreamClass} py-10 sm:py-14`
+export const siteGuideIntroSectionClass = `w-full ${siteHeroDarkBgClass} py-10 sm:py-14`
 
 export const siteGuideListSectionClass = `w-full ${siteSectionBgWhiteClass} py-12 sm:py-16`
 

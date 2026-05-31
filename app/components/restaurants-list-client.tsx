@@ -4,11 +4,11 @@ import { useEffect, useMemo, useState } from 'react'
 
 import {
   siteBodyClass,
-  siteHeading1PageClass,
+  siteHeading1OnDarkClass,
   siteHeading2Class,
-  siteSectionBgCreamClass,
+  sitePageHeroSectionClass,
   siteSectionBgWhiteClass,
-  siteSubtitleLeadClass,
+  siteSubtitleLeadOnDarkClass,
 } from '@/lib/site-styles'
 
 import { ExperienceBreadcrumb } from '@/app/components/experience-breadcrumb'
@@ -63,12 +63,12 @@ export function RestaurantsListClient({
 
   return (
     <>
-      <section className={`w-full ${siteSectionBgCreamClass} py-8 sm:py-12`}>
+      <section className={sitePageHeroSectionClass}>
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
           <div className="max-w-4xl">
-            <ExperienceBreadcrumb currentLabel="Restaurants" />
-            <h1 className={siteHeading1PageClass}>{pageTitle}</h1>
-            <p className={siteSubtitleLeadClass}>{pageLead}</p>
+            <ExperienceBreadcrumb currentLabel="Restaurants" tone="onDark" />
+            <h1 className={siteHeading1OnDarkClass}>{pageTitle}</h1>
+            <p className={siteSubtitleLeadOnDarkClass}>{pageLead}</p>
           </div>
 
           <div className="mt-8 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm sm:p-6">
