@@ -1,5 +1,6 @@
 import { CalendarCheck, Phone } from 'lucide-react'
 
+import { RestaurantReservationVote } from '@/app/components/restaurant-reservation-vote'
 import {
   RestaurantReservationWidget,
   reservationPanelClassName,
@@ -11,7 +12,14 @@ import {
   getRestaurantReservationMode,
 } from '@/lib/restaurant-reservation-cta'
 import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
-import { siteBodyClass, siteButtonPrimaryClass } from '@/lib/site-styles'
+import {
+  restaurantDetailPanelClass,
+  siteBodyClass,
+  communityActionButtonClass,
+  siteButtonPrimaryClass,
+  siteHeading3Class,
+  siteSectionTwoColumnGridClass,
+} from '@/lib/site-styles'
 
 type Props = {
   restaurant: Pick<
@@ -19,34 +27,53 @@ type Props = {
     'id' | 'nom' | 'sponsored' | 'bookingUrl' | 'telephone'
   >
   openingHours: RestaurantOpeningHoursDay[]
+  reservationVoteCount?: number
 }
 
-function PhoneReservationBlock({ telephone }: { telephone: string }) {
+function PhoneReservationBlock({
+  telephone,
+  restaurantId,
+  reservationVoteCount,
+}: {
+  telephone: string
+  restaurantId: string
+  reservationVoteCount: number
+}) {
   const phone = telephone.trim()
   const displayPhone = formatBelgianPhoneDisplay(phone)
   const telHref = phone ? formatBelgianPhoneTelHref(phone) : ''
 
-  if (!phone) {
-    return (
-      <p className={`mt-6 ${siteBodyClass}`}>
-        Numéro non renseigné pour le moment. Consultez la section{' '}
-        <a href="#contact-acces" className={restaurantPageTextLinkClass}>
-          Contact et accès
-        </a>
-        .
-      </p>
-    )
-  }
-
   return (
-    <div className={reservationPanelClassName}>
-      <p className="flex items-center gap-3 text-2xl font-bold tracking-tight text-neutral-900">
-        <Phone className="h-7 w-7 shrink-0 text-[#8D5524]" strokeWidth={1.75} aria-hidden />
-        {displayPhone}
-      </p>
-      <a href={telHref} className={`mt-6 inline-flex ${siteButtonPrimaryClass}`}>
-        Appeler
-      </a>
+    <div className={`mt-6 ${siteSectionTwoColumnGridClass} lg:items-start`}>
+      <div className="min-w-0">
+        <div className={restaurantDetailPanelClass}>
+          {phone ? (
+            <>
+              <h3 className={`flex items-center gap-3 ${siteHeading3Class}`}>
+                {displayPhone}
+              </h3>
+              <a href={telHref} className={`mt-6 ${communityActionButtonClass}`}>
+                <Phone className="h-5 w-5 text-[#8D5524]" strokeWidth={1.75} aria-hidden />
+                Appeler
+              </a>
+            </>
+          ) : (
+            <p className={siteBodyClass}>
+              Numéro non renseigné pour le moment. Consultez la section{' '}
+              <a href="#contact-acces" className={restaurantPageTextLinkClass}>
+                Contact et accès
+              </a>
+              .
+            </p>
+          )}
+        </div>
+      </div>
+
+      <RestaurantReservationVote
+        restaurantId={restaurantId}
+        initialVoteCount={reservationVoteCount}
+        embedded
+      />
     </div>
   )
 }
@@ -89,8 +116,16 @@ function FormReservationBlock({
   )
 }
 
-export function RestaurantReservationContent({ restaurant, openingHours }: Props) {
+export function RestaurantReservationContent({
+  restaurant,
+  openingHours,
+  reservationVoteCount,
+}: Props) {
   const mode = getRestaurantReservationMode(restaurant)
+  const normalizedReservationVoteCount = Math.max(
+    0,
+    Number(reservationVoteCount) || 0,
+  )
 
   if (mode === 'phone') {
     return (
@@ -98,7 +133,11 @@ export function RestaurantReservationContent({ restaurant, openingHours }: Props
         <p className={`mt-2 ${siteBodyClass}`}>
           Pour ce restaurant, les réservations se font par téléphone.
         </p>
-        <PhoneReservationBlock telephone={restaurant.telephone} />
+        <PhoneReservationBlock
+          telephone={restaurant.telephone}
+          restaurantId={restaurant.id}
+          reservationVoteCount={normalizedReservationVoteCount}
+        />
       </>
     )
   }

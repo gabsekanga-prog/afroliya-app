@@ -20,7 +20,7 @@ export function ExperienceBreadcrumb({
   tone = 'default',
 }: Props) {
   const items = [
-    { label: 'Trouver une expérience', href: '/trouver-une-experience' },
+    { label: 'Accueil', href: '/' },
     ...(parent ? [{ label: parent.label, href: parent.href }] : []),
     { label: currentLabel },
   ]

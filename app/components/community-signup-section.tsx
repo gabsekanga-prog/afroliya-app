@@ -11,20 +11,18 @@ import {
   siteSubtitleLeadClass,
   siteSectionContentFirstClass,
   siteSectionMediaSecondClass,
-  siteSectionMutedClass,
-  siteSectionWhiteClass,
+  communitySignupSectionClass,
+  communitySignupSectionInnerClass,
+  siteSectionInnerClass,
 } from '@/lib/site-styles'
 
 type CommunitySignupSectionProps = {
-  /** `full` : section pleine largeur (Concept, liste des guides). `guide` : bloc aligné sur les sous-sections d’un guide. */
+  /** `full` : section pleine largeur. `guide` : bloc aligné sur les sous-sections d’un guide. */
   variant?: 'full' | 'guide'
-  /** Fond de section (jamais crème — réservée au hero). */
-  tone?: 'white' | 'muted'
 }
 
 export function CommunitySignupSection({
   variant = 'full',
-  tone = 'muted',
 }: CommunitySignupSectionProps) {
   const [communityEmail, setCommunityEmail] = useState('')
   const [communityMessage, setCommunityMessage] = useState('')
@@ -136,20 +134,24 @@ export function CommunitySignupSection({
       id="communaute"
       className={
         variant === 'guide'
-          ? 'w-full scroll-mt-24 border-t border-neutral-200 pt-8 sm:pt-10'
-          : tone === 'white'
-            ? siteSectionWhiteClass
-            : siteSectionMutedClass
+          ? `${communitySignupSectionClass} scroll-mt-24`
+          : communitySignupSectionClass
       }
     >
-      <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-10">
+      <div
+        className={
+          variant === 'guide'
+            ? `${siteSectionInnerClass} grid items-center gap-8 pt-8 sm:pt-10 lg:grid-cols-2 lg:gap-10`
+            : `${communitySignupSectionInnerClass} grid items-center gap-8 lg:grid-cols-2 lg:gap-10`
+        }
+      >
         <div className={siteSectionContentFirstClass}>
           <div className="max-w-2xl">
             <h2 className={siteHeading2Class}>
             Rejoignez la communauté Afroliya
             </h2>
             <p className={siteSubtitleLeadClass}>
-            Nouveautés chaque semaine | Expériences gratuites à gagner | Réductions exclusives
+            Découvertes chaque semaine | Repas gratuits à gagner | Réductions exclusives
             </p>
             <SiteChecklist
               items={[]}

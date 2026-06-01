@@ -3,9 +3,9 @@ import Link from 'next/link'
 import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
 import {
   siteBodyClass,
-  siteFooterColumnTitleClass,
   siteFooterLabelClass,
   siteHeading2Class,
+  siteHeading3Class,
   siteSectionBgMutedClass,
   siteSectionPaddingClass,
 } from '@/lib/site-styles'
@@ -23,7 +23,7 @@ export function SiteFooter() {
 
         <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <h3 className={siteFooterColumnTitleClass}>La plateforme</h3>
+            <h3 className={siteHeading3Class}>La plateforme</h3>
             <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
                 <Link href="/" className={footerLinkClass}>
@@ -31,23 +31,17 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/trouver-une-experience"
-                  className={footerLinkClass}
-                >
-                  Trouver une expérience
-                </Link>
-              </li>
-              <li>
                 <Link href="/restaurants" className={footerLinkClass}>
-                  Restaurants
+                  Trouver un restaurant
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/guides"
-                  className={footerLinkClass}
-                >
+                <Link href="/on-mange-quoi" className={footerLinkClass}>
+                  On mange quoi ?
+                </Link>
+              </li>
+              <li>
+                <Link href="/guides" className={footerLinkClass}>
                   Guides thématiques
                 </Link>
               </li>
@@ -68,7 +62,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h3 className={siteFooterColumnTitleClass}>Partenaires</h3>
+            <h3 className={siteHeading3Class}>Partenaires</h3>
             <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
                 <Link
@@ -92,7 +86,7 @@ export function SiteFooter() {
           </div>
 
           <div>
-            <h3 className={siteFooterColumnTitleClass}>À propos</h3>
+            <h3 className={siteHeading3Class}>À propos</h3>
             <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
                 <Link href="#" className={footerLinkClass}>

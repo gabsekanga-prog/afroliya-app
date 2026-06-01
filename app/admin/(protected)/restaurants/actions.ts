@@ -79,6 +79,12 @@ export async function saveRestaurantAction(
   const facebook_url = emptyToNull(String(formData.get('facebook_url') ?? ''))
   const whatsapp_phone = emptyToNull(String(formData.get('whatsapp_phone') ?? ''))
   const booking_url = emptyToNull(String(formData.get('booking_url') ?? ''))
+  const afroliya_instagram_post_url = emptyToNull(
+    String(formData.get('afroliya_instagram_post_url') ?? ''),
+  )
+  const afroliya_instagram_thumbnail_url = emptyToNull(
+    String(formData.get('afroliya_instagram_thumbnail_url') ?? ''),
+  )
 
   if (!name || !city) {
     return { error: 'Le nom et la ville sont obligatoires.' }
@@ -112,6 +118,8 @@ export async function saveRestaurantAction(
     facebook_url,
     whatsapp_phone,
     booking_url,
+    afroliya_instagram_post_url,
+    afroliya_instagram_thumbnail_url,
   }
 
   function isMissingDbColumnError(message: string, column: string): boolean {
@@ -124,6 +132,16 @@ export async function saveRestaurantAction(
 
   const rowWithoutBookingUrl = { ...row }
   delete (rowWithoutBookingUrl as { booking_url?: string | null }).booking_url
+
+  const rowWithoutAfroliyaInstagram = { ...row }
+  delete (rowWithoutAfroliyaInstagram as { afroliya_instagram_post_url?: string | null })
+    .afroliya_instagram_post_url
+  delete (rowWithoutAfroliyaInstagram as { afroliya_instagram_thumbnail_url?: string | null })
+    .afroliya_instagram_thumbnail_url
+
+  const rowWithoutAfroliyaThumbnail = { ...row }
+  delete (rowWithoutAfroliyaThumbnail as { afroliya_instagram_thumbnail_url?: string | null })
+    .afroliya_instagram_thumbnail_url
 
   const rowWithoutSlug = { ...row }
   delete (rowWithoutSlug as { slug?: string | null }).slug
@@ -142,6 +160,8 @@ export async function saveRestaurantAction(
   const saveAttempts = [
     row,
     rowWithoutGoogleSummary,
+    rowWithoutAfroliyaThumbnail,
+    rowWithoutAfroliyaInstagram,
     rowWithoutBookingUrl,
     rowWithoutSlug,
     rowLegacy,
@@ -154,6 +174,8 @@ export async function saveRestaurantAction(
     if (
       !isMissingDbColumnError(message, 'google_reviews_summary') &&
       !isMissingDbColumnError(message, 'booking_url') &&
+      !isMissingDbColumnError(message, 'afroliya_instagram_post_url') &&
+      !isMissingDbColumnError(message, 'afroliya_instagram_thumbnail_url') &&
       !isMissingDbColumnError(message, 'slug')
     ) {
       break

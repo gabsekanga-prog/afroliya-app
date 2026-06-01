@@ -1,6 +1,7 @@
 import { siteHeading3Class } from '@/lib/site-styles'
 import Link from 'next/link'
 
+import { RestaurantCardReservationHint } from '@/app/components/restaurant-card-reservation-hint'
 import { RestaurantCuisineLocation } from '@/app/components/restaurant-cuisine-location'
 import type { Restaurant } from '@/lib/restaurants'
 
@@ -32,8 +33,9 @@ export function RestaurantCard({ restaurant, openInNewTab = false }: Props) {
           </span>
         </div>
         <RestaurantCuisineLocation restaurant={restaurant} />
+        <RestaurantCardReservationHint restaurant={restaurant} />
         {restaurant.tarif ? (
-          <p className="text-sm font-medium text-[#8D5524]">{restaurant.tarif}</p>
+          <p className="text-sm font-medium text-neutral-600">{restaurant.tarif}</p>
         ) : null}
       </div>
     </Link>

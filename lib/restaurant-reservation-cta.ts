@@ -21,6 +21,15 @@ export function getRestaurantReservationMode(
   return 'form'
 }
 
+/** Libellé court pour listes et cartes restaurant. */
+export function getRestaurantReservationChannelLabel(
+  restaurant: Pick<Restaurant, 'sponsored' | 'bookingUrl'>,
+): 'Réservable en ligne' | 'Réservable par téléphone' {
+  return getRestaurantReservationMode(restaurant) === 'phone'
+    ? 'Réservable par téléphone'
+    : 'Réservable en ligne'
+}
+
 export function getRestaurantReservationCta(
   restaurant: Pick<Restaurant, 'sponsored' | 'bookingUrl' | 'telephone'>,
 ): RestaurantReservationCta {

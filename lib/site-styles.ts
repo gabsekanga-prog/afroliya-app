@@ -7,7 +7,7 @@
 export const siteHeading1Class = 'text-4xl font-bold leading-tight lg:text-5xl'
 
 export const siteHeading1OnDarkClass =
-  'text-4xl font-bold leading-tight text-white drop-shadow-[0_2px_18px_rgba(0,0,0,0.9)] lg:text-5xl'
+  'text-4xl font-bold leading-tight text-white lg:text-5xl'
 
 /** H1 de page (bandeau clair) — PC text-4xl, mobile/tablette text-3xl */
 export const siteHeading1PageClass =
@@ -22,14 +22,14 @@ export const siteHeading2LeadingClass =
 /** H3 — PC text-2xl, mobile/tablette text-xl */
 export const siteHeading3Class = 'text-xl font-bold text-neutral-900 lg:text-2xl'
 
+/** @deprecated Utiliser {@link siteHeading3Class} */
+export const siteFooterColumnTitleClass = siteHeading3Class
+
 /** Titre sur fond sombre (cartes guides) — PC text-xl, mobile/tablette text-lg */
 export const siteHeading3OnDarkClass =
   'text-lg font-bold leading-snug text-white lg:text-xl'
 
 /** Colonnes footer / labels de groupe — PC text-lg, mobile/tablette text-base */
-export const siteFooterColumnTitleClass =
-  'text-base font-semibold uppercase tracking-wide text-neutral-800 md:text-lg'
-
 export const siteFooterLabelClass =
   'text-base font-semibold text-neutral-800 md:text-lg'
 
@@ -49,9 +49,8 @@ export const siteBodySemiboldClass =
 
 export const siteBodyOnDarkClass = 'text-base md:text-lg text-neutral-700'
 
-/** Fond brun foncé chaud — tous les heros du site */
-export const siteHeroDarkBgClass =
-  'bg-gradient-to-br from-[#3d281c] via-[#322018] to-[#2a1810]'
+/** Fond hero — couleur principale Afroliya (#8D5524) */
+export const siteHeroDarkBgClass = 'bg-[#8D5524]'
 
 /** Hero plein écran image (guides — overlay sombre conservé pour ce layout) */
 export const siteHeroSectionClass = `w-full ${siteHeroDarkBgClass} pb-0`
@@ -69,7 +68,7 @@ export const siteSectionTwoColumnGridClass =
 /** Fond heros (bandeau page liste, hub expériences, etc.) */
 export const siteHeroBgClass = siteHeroDarkBgClass
 
-/** Hero marketing 2 col. : fond brun foncé chaud, texte + image en colonne */
+/** Hero marketing 2 col. : fond brand, texte + image en colonne */
 export const siteMarketingSplitHeroSectionClass =
   `relative w-full overflow-hidden ${siteHeroDarkBgClass} py-14 sm:py-20 lg:py-24`
 
@@ -87,23 +86,23 @@ export const siteMarketingSplitHeroContentWrapClass =
 export const siteMarketingSplitHeroContentClass = 'max-w-2xl'
 
 export const siteMarketingSplitHeroLeadClass =
-  'mt-5 text-base font-bold leading-relaxed text-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] sm:mt-6 md:text-lg'
+  'mt-5 text-base font-bold leading-relaxed text-white sm:mt-6 md:text-lg'
 
 /** Sous-titre de section / hero : une ligne, segments séparés par « — » */
 export const siteSubtitleLeadClass =
   'mt-5 text-base leading-relaxed text-neutral-600 sm:mt-6 md:text-lg font-bold'
 
 export const siteSubtitleLeadOnDarkClass =
-  'mt-5 text-base font-bold leading-relaxed text-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] sm:mt-6 md:text-lg'
+  'mt-5 text-base font-bold leading-relaxed text-white sm:mt-6 md:text-lg'
 
 export const siteHeroLeadOnDarkClass =
-  'mt-4 max-w-3xl text-base text-white drop-shadow-[0_1px_12px_rgba(0,0,0,0.9)] md:text-lg'
+  'mt-4 max-w-3xl text-base text-white md:text-lg'
 
 export const siteHeroBreadcrumbOnDarkClass =
   'flex flex-wrap items-center gap-x-2 text-base md:text-lg text-[#f8e9dc]'
 
 export const siteHeroMetaOnDarkClass =
-  'text-base md:text-lg text-white drop-shadow-[0_1px_10px_rgba(0,0,0,0.85)]'
+  'text-base md:text-lg text-white'
 
 /** Navigation — hover et page active : souligné + couleur brand */
 export const siteNavClass =
@@ -155,6 +154,12 @@ export const siteTextLinkInCardClass =
 /** Sections — alternance blanc / gris pierre (le crème est réservé au hero). */
 export const siteSectionPaddingClass = 'py-14 sm:py-24'
 
+/** Espacement vertical des sections de fiche (restaurant, événement, activité). */
+export const detailPageSectionPaddingClass = 'py-10 sm:py-14'
+
+/** Séparateur léger entre sections de contenu (sous le hero). */
+export const siteSectionDividerClass = 'border-t border-neutral-200/80'
+
 export const siteSectionInnerClass = `mx-auto w-full ${siteMaxWidthClass} px-4 sm:px-6`
 
 /** Bandeau hero de page (listes, filtres) */
@@ -164,6 +169,11 @@ export const sitePageHeroSectionClass = `w-full ${siteHeroDarkBgClass} py-8 sm:p
 export const siteSectionBgCreamClass = siteHeroDarkBgClass
 export const siteSectionBgWhiteClass = 'bg-white'
 export const siteSectionBgMutedClass = 'bg-stone-100'
+
+/** Teaser guides sous le hero (liste restaurants) — moins d’air en bas. */
+export const guidesTeaserBelowHeroSectionClass = `w-full ${siteSectionBgMutedClass} pt-10 sm:pt-14 pb-6 sm:pb-8`
+/** Fond clair teinté brand (#8D5524) — communauté, accents secondaires. */
+export const siteSectionBgBrandTintClass = 'bg-[#f8f1ea]'
 
 export const siteSectionWhiteClass = `w-full ${siteSectionBgWhiteClass} ${siteSectionPaddingClass}`
 export const siteSectionMutedClass = `w-full ${siteSectionBgMutedClass} ${siteSectionPaddingClass}`
@@ -178,6 +188,52 @@ export const siteSectionMediaSecondClass = 'order-1 lg:order-2'
 
 export const siteGuideIntroSectionClass = `w-full ${siteHeroDarkBgClass} py-10 sm:py-14`
 
-export const siteGuideListSectionClass = `w-full ${siteSectionBgWhiteClass} py-12 sm:py-16`
+/** Largeur du contenu guides sous le hero (plus étroit que max-w-7xl). */
+export const siteGuideContentMaxWidthClass = 'max-w-4xl'
 
-export const restaurantContentSectionClass = `scroll-mt-24 w-full border-t border-neutral-200/80 ${siteSectionPaddingClass}`
+export const siteGuideContentInnerClass = `mx-auto w-full ${siteGuideContentMaxWidthClass} px-4 sm:px-6`
+
+/** Titres des sous-sections dans le contenu d'un guide (sous le hero). */
+export const siteGuideContentHeadingClass = siteHeading2Class
+
+export const siteGuideListSectionClass = `w-full ${siteSectionBgMutedClass} py-12 sm:py-16`
+
+/** Contenu liste /guides — pleine largeur site (comme le hero). */
+export const siteGuideListInnerClass = siteSectionInnerClass
+
+export const siteGuideDetailContentSectionClass =
+  'w-full flex-1 bg-white pb-16 pt-6 sm:pb-20 sm:pt-10'
+
+/** Contenu interne d'une section de fiche — séparateur aligné sur max-w-7xl. */
+export const detailPageSectionInnerClass = `${siteSectionInnerClass} ${siteSectionDividerClass} ${detailPageSectionPaddingClass}`
+
+/** Contenu interne « Rejoindre la communauté ». */
+export const communitySignupSectionInnerClass = `${siteSectionInnerClass} ${detailPageSectionPaddingClass}`
+
+/** Contenu sous le hero des pages liste (restos, events, activités). */
+export const sitePageContentSectionClass = `w-full ${siteSectionBgWhiteClass} py-12 sm:pb-20`
+
+export const sitePageContentSectionInnerClass = `${siteSectionInnerClass} ${siteSectionDividerClass} py-12 sm:pb-20`
+
+/** Liste restaurants — padding sur le conteneur interne uniquement (évite le double espace en bas). */
+export const restaurantsListContentSectionClass = `w-full ${siteSectionBgMutedClass}`
+
+export const restaurantsListContentInnerClass = `${siteSectionInnerClass} ${siteSectionDividerClass} pt-8 pb-10 sm:pt-10 sm:pb-12`
+
+/** Sections de fiche restaurant — fond gris pour faire ressortir les cartes blanches. */
+export const restaurantContentSectionClass = `scroll-mt-24 w-full ${siteSectionBgMutedClass}`
+
+/** Panneau blanc sur section fiche restaurant (avis, réservation, etc.). */
+export const restaurantDetailPanelClass =
+  'rounded-2xl border border-neutral-200/90 bg-white p-6 shadow-md shadow-neutral-900/[0.06] sm:p-8'
+
+/** Bouton d’action communauté (réactions, vote réservation, appeler). */
+export const communityActionButtonClass =
+  'inline-flex items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-stone-50 px-5 py-4 text-center font-semibold text-neutral-900 transition hover:border-[#c9a882]/60 hover:bg-[#faf6f2] disabled:cursor-default disabled:opacity-70'
+
+/** Pastille / tag sur section fiche restaurant. */
+export const restaurantDetailChipClass =
+  'rounded-md border border-neutral-200/90 bg-white px-3 py-1 text-base text-neutral-700 shadow-sm'
+
+/** Bloc « Rejoindre la communauté » — teinte brand légère. */
+export const communitySignupSectionClass = `w-full ${siteSectionBgBrandTintClass}`

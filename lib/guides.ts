@@ -57,6 +57,30 @@ export async function fetchPublishedGuides(): Promise<Guide[]> {
   return (data as GuideRow[]).map(mapRow)
 }
 
+/** Guides publiés les plus récemment mis à jour (accueil, teasers). */
+export async function fetchLatestPublishedGuides(
+  limit: number,
+): Promise<Guide[]> {
+  noStore()
+  if (!supabase || limit < 1) return []
+
+  const { data, error } = await supabase
+    .from('guides')
+    .select('slug, title, image_src, image_alt, intro, subsections')
+    .eq('published', true)
+    .order('updated_at', { ascending: false })
+    .limit(limit)
+
+  if (error) {
+    console.error('[guides] fetchLatestPublishedGuides', error.message)
+    return []
+  }
+
+  if (!data?.length) return []
+
+  return (data as GuideRow[]).map(mapRow)
+}
+
 export async function fetchGuideBySlug(slug: string): Promise<Guide | null> {
   noStore()
   if (!supabase) return null

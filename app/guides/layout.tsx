@@ -11,7 +11,7 @@ export default function GuidesLayout({ children }: { children: ReactNode }) {
 
       <main className="flex-1">{children}</main>
 
-      <CommunitySignupSection tone="muted" />
+      <CommunitySignupSection />
 
       <SiteFooter />
     </div>

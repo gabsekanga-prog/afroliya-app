@@ -5,7 +5,7 @@ export default function AdminDashboardPage() {
     <div>
       <h1 className="text-3xl font-bold text-neutral-900">Tableau de bord</h1>
       <p className="mt-2 text-lg text-neutral-600">
-        Gérez les fiches restaurants et les guides thématiques publiés sur Afroliya.
+        Gérez les restaurants et guides publiés sur Afroliya.
       </p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2">

@@ -54,7 +54,7 @@ export function RestaurantOpeningHours({ days }: Props) {
   const columns = [days.slice(0, midpoint), days.slice(midpoint)]
 
   return (
-    <div className="mt-10 grid grid-cols-1 gap-x-10 gap-y-3 sm:mt-12 sm:grid-cols-2">
+    <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2">
       {columns.map((column, columnIndex) => (
         <ul key={columnIndex} className="space-y-3 text-lg">
           {column.map((dayHours) => (

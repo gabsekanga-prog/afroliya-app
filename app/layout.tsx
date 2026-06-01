@@ -18,8 +18,8 @@ const baloo = Baloo_2({
 });
 
 export const metadata: Metadata = {
-  title: "Afroliya - Restaurants africains en Belgique",
-  description: "Reservez des restaurants africains en Belgique.",
+  title: "Afroliya - Restaurants africains à Bruxelles et alentours",
+  description: "Trouvez et réservez des restaurants africains à Bruxelles et alentours.",
 };
 
 export default function RootLayout({

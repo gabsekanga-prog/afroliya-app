@@ -3,7 +3,7 @@ import {
   siteBodyOnDarkClass,
   siteBodyRelaxedClass,
   siteButtonPrimarySmClass,
-  siteHeading3Class,
+  siteGuideContentHeadingClass,
 } from '@/lib/site-styles'
 import Link from 'next/link'
 
@@ -23,14 +23,14 @@ function SubsectionButton({ item }: { item: GuideSubsection }) {
         target="_blank"
         rel="noopener noreferrer"
       >
-        {item.buttonLabel}
+        Voir le restaurant
       </a>
     )
   }
 
   return (
     <Link href={item.href} className={className}>
-      {item.buttonLabel}
+      Voir le restaurant
     </Link>
   )
 }
@@ -51,7 +51,7 @@ export function GuideStructuredContent({ guide }: Props) {
       <ul className="mt-10 list-none divide-y divide-neutral-200 border-t border-neutral-200 p-0 sm:mt-12">
         {guide.subsections.map((item, index) => (
           <li key={`${item.title}-${index}`} className="py-8 sm:py-10">
-            <h2 className={siteHeading3Class}>
+            <h2 className={siteGuideContentHeadingClass}>
               {item.title}
             </h2>
 

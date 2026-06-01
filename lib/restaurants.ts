@@ -88,6 +88,10 @@ export type Restaurant = {
   bookable: boolean
   /** Lien externe de réservation (`booking_url`), pour les établissements sponsorisés. */
   bookingUrl: string
+  /** Post ou reel Instagram « La touche Afroliya ». */
+  afroliyaInstagramPostUrl: string
+  /** Vignette carte vidéo Instagram (admin) ; sinon photo de couverture. */
+  afroliyaInstagramThumbnailUrl: string
 }
 
 export type RestaurantFilterOptions = {
@@ -146,6 +150,8 @@ type DbRestaurantRow = {
   sponsored: boolean | null
   bookable: boolean | null
   booking_url?: string | null
+  afroliya_instagram_post_url?: string | null
+  afroliya_instagram_thumbnail_url?: string | null
   restaurant_images: RestaurantImageRow[] | RestaurantImageRow | null
   restaurant_cuisines: RestaurantCuisineRow[] | null
   restaurants_tarifs: RestaurantTarifRow[] | null
@@ -387,6 +393,17 @@ export function filterRestaurants(
   })
 }
 
+/** Tirage aléatoire en favorisant les restaurants sponsorisés s’il y en a. */
+export function pickRandomRestaurantPreferringSponsored(
+  restaurants: Restaurant[],
+): Restaurant | null {
+  if (restaurants.length === 0) return null
+
+  const sponsored = restaurants.filter((restaurant) => restaurant.sponsored)
+  const pool = sponsored.length > 0 ? sponsored : restaurants
+  return pool[Math.floor(Math.random() * pool.length)] ?? null
+}
+
 export function mapDbRestaurantToPublic(row: DbRestaurantRow): Restaurant {
   const id = row.id
   const cuisines = parseCuisineEntries(row.restaurant_cuisines)
@@ -431,6 +448,8 @@ export function mapDbRestaurantToPublic(row: DbRestaurantRow): Restaurant {
     sponsored: row.sponsored === true,
     bookable: row.bookable === true,
     bookingUrl: (row.booking_url ?? '').trim(),
+    afroliyaInstagramPostUrl: (row.afroliya_instagram_post_url ?? '').trim(),
+    afroliyaInstagramThumbnailUrl: (row.afroliya_instagram_thumbnail_url ?? '').trim(),
   }
 }
 
@@ -459,7 +478,9 @@ const RESTAURANT_CORE_COLUMNS_BASE = `
 `
 
 const RESTAURANT_CORE_COLUMNS = `${RESTAURANT_CORE_COLUMNS_BASE},
-  booking_url
+  booking_url,
+  afroliya_instagram_post_url,
+  afroliya_instagram_thumbnail_url
 `
 
 const RESTAURANT_CORE_COLUMNS_LEGACY = RESTAURANT_CORE_COLUMNS_BASE
@@ -478,6 +499,17 @@ const RESTAURANT_PUBLIC_SELECT_LEGACY = `${RESTAURANT_CORE_COLUMNS_LEGACY},
   ${RESTAURANT_PUBLIC_RELATIONS}`
 
 const RESTAURANT_PUBLIC_SELECT_NO_GOOGLE_SUMMARY = `${RESTAURANT_CORE_COLUMNS},
+  ${RESTAURANT_PUBLIC_RELATIONS}`
+
+const RESTAURANT_PUBLIC_SELECT_NO_AFROLIYA_THUMBNAIL = `${RESTAURANT_CORE_COLUMNS_BASE},
+  booking_url,
+  afroliya_instagram_post_url,
+  google_reviews_summary,
+  ${RESTAURANT_PUBLIC_RELATIONS}`
+
+const RESTAURANT_PUBLIC_SELECT_NO_AFROLIYA_INSTAGRAM = `${RESTAURANT_CORE_COLUMNS_BASE},
+  booking_url,
+  google_reviews_summary,
   ${RESTAURANT_PUBLIC_RELATIONS}`
 
 const RESTAURANT_PUBLIC_SELECT_NO_BOOKING_URL = `${RESTAURANT_CORE_COLUMNS_LEGACY},
@@ -533,6 +565,8 @@ const RESTAURANT_MINIMAL_SELECT_NO_SLUG = `${RESTAURANT_CORE_COLUMNS_NO_SLUG},
 const RESTAURANT_PUBLIC_SELECT_ATTEMPTS = [
   RESTAURANT_PUBLIC_SELECT,
   RESTAURANT_PUBLIC_SELECT_NO_SLUG,
+  RESTAURANT_PUBLIC_SELECT_NO_AFROLIYA_THUMBNAIL,
+  RESTAURANT_PUBLIC_SELECT_NO_AFROLIYA_INSTAGRAM,
   RESTAURANT_PUBLIC_SELECT_NO_BOOKING_URL,
   RESTAURANT_PUBLIC_SELECT_NO_GOOGLE_SUMMARY,
   RESTAURANT_PUBLIC_SELECT_LEGACY,
@@ -554,6 +588,8 @@ function isOptionalRestaurantColumnError(message: string): boolean {
   return (
     isMissingDbColumnError(message, 'google_reviews_summary') ||
     isMissingDbColumnError(message, 'booking_url') ||
+    isMissingDbColumnError(message, 'afroliya_instagram_post_url') ||
+    isMissingDbColumnError(message, 'afroliya_instagram_thumbnail_url') ||
     isMissingDbColumnError(message, 'slug')
   )
 }

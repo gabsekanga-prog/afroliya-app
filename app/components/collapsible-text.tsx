@@ -19,14 +19,14 @@ export function CollapsibleText({ text, collapsedLines = 2, className = '' }: Pr
 
   const trimmed = text.trim()
 
-  const clampClass =
-    collapsedLines === 2
-      ? 'line-clamp-2'
-      : collapsedLines === 3
-        ? 'line-clamp-3'
-        : collapsedLines === 4
-          ? 'line-clamp-4'
-          : 'line-clamp-2'
+  const clampStyle = expanded
+    ? undefined
+    : {
+        display: '-webkit-box',
+        WebkitLineClamp: collapsedLines,
+        WebkitBoxOrient: 'vertical' as const,
+        overflow: 'hidden',
+      }
 
   useEffect(() => {
     if (!trimmed || expanded) return
@@ -42,7 +42,7 @@ export function CollapsibleText({ text, collapsedLines = 2, className = '' }: Pr
     const observer = new ResizeObserver(measure)
     observer.observe(el)
     return () => observer.disconnect()
-  }, [trimmed, expanded, clampClass])
+  }, [trimmed, expanded, collapsedLines])
 
   if (!trimmed) return null
 
@@ -51,7 +51,8 @@ export function CollapsibleText({ text, collapsedLines = 2, className = '' }: Pr
       <p
         ref={contentRef}
         id="restaurant-presentation-text"
-        className={`${siteBodyClass} ${expanded ? '' : clampClass}`}
+        style={clampStyle}
+        className={`${siteBodyClass} whitespace-pre-line`}
       >
         {trimmed}
       </p>

@@ -9,9 +9,9 @@ type Props = {
   coverIndex?: number
 }
 
-/** Plus de vignettes visibles = cartes plus compactes (~1,8 mobile/tablette, ~3 PC). */
+/** Moins de vignettes visibles = cartes plus larges (~1,1 mobile, ~2,5 PC). */
 const SLIDE_CLASS =
-  'w-[calc((100%-1.25rem)/1.35)] shrink-0 snap-start sm:w-[calc((100%-1.25rem)/2.2)] md:w-[calc((100%-1.25rem)/2.8)] lg:w-[calc((100%-1.25rem)/3.2)]'
+  'w-[calc((100%-1.25rem)/1.1)] shrink-0 snap-start sm:w-[calc((100%-1.25rem)/1.75)] md:w-[calc((100%-1.25rem)/2.2)] lg:w-[calc((100%-1.25rem)/2.5)]'
 
 const TRACK_GAP_PX = 16
 
@@ -126,7 +126,7 @@ export function RestaurantPhotoGallery({ images, alt, coverIndex }: Props) {
               <img
                 src={src}
                 alt={photoAlt(alt, index, coverIndex)}
-                className="aspect-[4/3] min-h-[140px] w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:min-h-[160px] lg:min-h-[180px]"
+                className="h-[195px] w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:h-[220px] lg:h-[255px]"
                 loading="lazy"
                 draggable={false}
               />

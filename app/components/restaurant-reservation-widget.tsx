@@ -15,7 +15,11 @@ import {
   isBookableBookingDate,
 } from '@/lib/reservation-opening-hours'
 import type { RestaurantOpeningHoursDay } from '@/lib/restaurants'
-import { siteBodyClass, siteButtonPrimaryClass } from '@/lib/site-styles'
+import {
+  restaurantDetailPanelClass,
+  siteBodyClass,
+  siteButtonPrimaryClass,
+} from '@/lib/site-styles'
 
 type Props = {
   restaurantId: string
@@ -43,13 +47,12 @@ const initialForm: FormState = {
   clientPhone: '',
 }
 
-const reservationWidgetShellClass =
-  'mt-6 max-w-lg rounded-2xl border border-[#c9a882]/50 bg-gradient-to-br from-white via-[#fdfaf7] to-[#f8f1ea] p-6 shadow-md shadow-[#8D5524]/10 ring-1 ring-[#8D5524]/10 sm:p-8'
+const reservationWidgetShellClass = `mt-6 max-w-lg ${restaurantDetailPanelClass}`
 
 export const reservationPanelClassName = reservationWidgetShellClass
 
 const reservationWidgetSuccessClass =
-  'mt-6 max-w-lg rounded-2xl border border-green-200 bg-gradient-to-br from-green-50 via-white to-[#f8f1ea] p-6 shadow-md shadow-green-900/5 ring-1 ring-green-200/80 sm:p-8'
+  'mt-6 max-w-lg rounded-2xl border border-green-200/90 bg-white p-6 shadow-md shadow-neutral-900/[0.06] sm:p-8'
 
 export function RestaurantReservationWidget({
   restaurantId,

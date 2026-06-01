@@ -290,6 +290,36 @@ export function RestaurantForm({ restaurant }: Props) {
       </section>
 
       <section className="space-y-4">
+        <SectionTitle>La touche Afroliya (fiche publique)</SectionTitle>
+        <label className={formLabelClassName}>
+          Lien post ou reel Instagram
+          <input
+            name="afroliya_instagram_post_url"
+            type="url"
+            defaultValue={restaurant?.afroliya_instagram_post_url ?? ''}
+            className={formInputClassName}
+            placeholder="https://www.instagram.com/p/… ou /reel/…"
+          />
+        </label>
+        <label className={formLabelClassName}>
+          Image de la vignette (URL)
+          <input
+            name="afroliya_instagram_thumbnail_url"
+            type="url"
+            defaultValue={restaurant?.afroliya_instagram_thumbnail_url ?? ''}
+            className={formInputClassName}
+            placeholder="https://… (capture du reel ou photo du restaurant)"
+          />
+        </label>
+        <p className="text-base text-neutral-600">
+          Affiché dans la section « La touche Afroliya » sur la fiche restaurant (Notre
+          test). Instagram ne fournit plus la miniature automatiquement : renseignez une
+          image ici, ou la photo de couverture du restaurant sera utilisée. Laissez le lien
+          Instagram vide pour masquer le bloc.
+        </p>
+      </section>
+
+      <section className="space-y-4">
         <SectionTitle>Web et réseaux</SectionTitle>
         <label className={formLabelClassName}>
           Site web

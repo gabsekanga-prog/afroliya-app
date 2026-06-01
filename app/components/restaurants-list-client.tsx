@@ -1,13 +1,18 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import { BookOpen, UtensilsCrossed } from 'lucide-react'
 
 import {
   siteBodyClass,
+  siteButtonOnDarkOutlineClass,
   siteHeading1OnDarkClass,
   siteHeading2Class,
+  siteHeroLeadOnDarkClass,
   sitePageHeroSectionClass,
-  siteSectionBgWhiteClass,
+  restaurantsListContentInnerClass,
+  restaurantsListContentSectionClass,
   siteSubtitleLeadOnDarkClass,
 } from '@/lib/site-styles'
 
@@ -123,11 +128,31 @@ export function RestaurantsListClient({
               </FormSelect>
             </div>
           </div>
+
+          <div className="mt-8 max-w-4xl">
+            <p className={siteHeroLeadOnDarkClass}>Besoin d&apos;inspiration ?</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href="/guides"
+                className={`inline-flex items-center justify-center gap-2 ${siteButtonOnDarkOutlineClass}`}
+              >
+                <BookOpen className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                Nos guides thématiques
+              </Link>
+              <Link
+                href="/on-mange-quoi"
+                className={`inline-flex items-center justify-center gap-2 ${siteButtonOnDarkOutlineClass}`}
+              >
+                <UtensilsCrossed className="h-5 w-5 shrink-0" strokeWidth={1.75} aria-hidden />
+                On mange quoi ?
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className={`w-full ${siteSectionBgWhiteClass} py-12 sm:pb-20`}>
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+      <section className={restaurantsListContentSectionClass}>
+        <div className={restaurantsListContentInnerClass}>
           <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
             <h2 className={siteHeading2Class}>
               {hasActiveFilters
@@ -138,7 +163,7 @@ export function RestaurantsListClient({
               <button
                 type="button"
                 onClick={resetFilters}
-                className="text-lg font-semibold text-neutral-800 hover:text-[#8D5524] hover:underline"
+                className="text-lg font-normal text-neutral-800 underline underline-offset-2 hover:text-[#8D5524]"
               >
                 Réinitialiser les filtres
               </button>

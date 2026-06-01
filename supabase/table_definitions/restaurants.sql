@@ -23,6 +23,8 @@ create table public.restaurants (
   email text null,
   sponsored boolean null,
   booking_url text null,
+  afroliya_instagram_post_url text null,
+  afroliya_instagram_thumbnail_url text null,
   commune text null,
   active boolean null default false,
   constraint restaurants_pkey primary key (id)

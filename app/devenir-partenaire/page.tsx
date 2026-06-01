@@ -17,6 +17,7 @@ import {
   siteBodyClass,
   siteBodyRelaxedClass,
   siteBodySemiboldClass,
+  siteButtonOnDarkClass,
   siteButtonPrimaryClass,
   siteButtonPrimarySmClass,
   siteHeading2Class,
@@ -114,7 +115,7 @@ export default function DevenirPartenairePage() {
         imageSrc="/images/Restauratrice%20resto%20afro%20gestion%20digital%20r%C3%A9servations%20couple%20clients.jpg"
         imageAlt="Restauratrice gérant les réservations digitales de son restaurant afro"
         title="Boostez l'activité de votre restaurant africain"
-        lead="Rejoignez la plateforme de restaurants, événements et activités afro en Belgique."
+        lead="Rejoignez la plateforme de restaurants africains à Bruxelles et alentours."
         checklistItems={[
           'Touchez des milliers de passionnés',
           'Recevez des réservations sans commission',
@@ -123,7 +124,7 @@ export default function DevenirPartenairePage() {
       >
         <Link
           href="#offres-partenaire"
-          className={`mt-8 ${siteButtonPrimaryClass} h-12 min-w-[230px]`}
+          className={`mt-8 ${siteButtonOnDarkClass} h-12 min-w-[230px]`}
         >
           Devenir partenaire
         </Link>

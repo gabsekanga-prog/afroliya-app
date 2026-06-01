@@ -9,13 +9,43 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/trouver-une-experience',
+        destination: '/restaurants',
+        permanent: true,
+      },
+      {
         source: '/trouver-une-activite',
-        destination: '/trouver-une-experience',
+        destination: '/restaurants',
+        permanent: true,
+      },
+      {
+        source: '/evenements',
+        destination: '/restaurants',
+        permanent: true,
+      },
+      {
+        source: '/evenements/:path*',
+        destination: '/restaurants',
+        permanent: true,
+      },
+      {
+        source: '/activites',
+        destination: '/restaurants',
+        permanent: true,
+      },
+      {
+        source: '/activites/:path*',
+        destination: '/restaurants',
         permanent: true,
       },
       {
         source: '/cours',
-        destination: '/activites',
+        destination: '/restaurants',
+        permanent: true,
+      },
+      {
+        source: '/cours/:path*',
+        destination: '/restaurants',
         permanent: true,
       },
     ]

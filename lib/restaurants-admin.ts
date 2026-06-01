@@ -28,6 +28,8 @@ export type RestaurantAdmin = {
   commune: string | null
   active: boolean | null
   booking_url?: string | null
+  afroliya_instagram_post_url?: string | null
+  afroliya_instagram_thumbnail_url?: string | null
 }
 
 const ADMIN_CORE_COLUMNS_BASE = `
@@ -58,7 +60,9 @@ const ADMIN_CORE_COLUMNS_BASE = `
 `
 
 const ADMIN_CORE_COLUMNS = `${ADMIN_CORE_COLUMNS_BASE},
-  booking_url`
+  booking_url,
+  afroliya_instagram_post_url,
+  afroliya_instagram_thumbnail_url`
 
 const ADMIN_SELECT = `${ADMIN_CORE_COLUMNS},
   google_reviews_summary`
@@ -100,9 +104,20 @@ const ADMIN_CORE_COLUMNS_NO_SLUG = `
 const ADMIN_SELECT_NO_SLUG = `${ADMIN_CORE_COLUMNS_NO_SLUG},
   google_reviews_summary`
 
+const ADMIN_SELECT_NO_AFROLIYA_THUMBNAIL = `${ADMIN_CORE_COLUMNS_BASE},
+  booking_url,
+  afroliya_instagram_post_url,
+  google_reviews_summary`
+
+const ADMIN_SELECT_NO_AFROLIYA_INSTAGRAM = `${ADMIN_CORE_COLUMNS_BASE},
+  booking_url,
+  google_reviews_summary`
+
 const ADMIN_SELECT_ATTEMPTS = [
   ADMIN_SELECT,
   ADMIN_SELECT_NO_SLUG,
+  ADMIN_SELECT_NO_AFROLIYA_THUMBNAIL,
+  ADMIN_SELECT_NO_AFROLIYA_INSTAGRAM,
   ADMIN_SELECT_NO_BOOKING_URL,
   ADMIN_SELECT_NO_GOOGLE_SUMMARY,
   ADMIN_SELECT_LEGACY,
@@ -116,6 +131,8 @@ function isOptionalAdminColumnError(message: string): boolean {
   return (
     isMissingDbColumnError(message, 'google_reviews_summary') ||
     isMissingDbColumnError(message, 'booking_url') ||
+    isMissingDbColumnError(message, 'afroliya_instagram_post_url') ||
+    isMissingDbColumnError(message, 'afroliya_instagram_thumbnail_url') ||
     isMissingDbColumnError(message, 'slug')
   )
 }

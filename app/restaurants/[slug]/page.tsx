@@ -29,14 +29,18 @@ import {
   fetchRestaurantOpeningHours,
   formatRestaurantHeroRatingLine,
 } from '@/lib/restaurants'
+import { fetchRestaurantCommunityStats } from '@/lib/restaurant-community'
 import { getRestaurantReservationCta } from '@/lib/restaurant-reservation-cta'
 import {
+  detailPageSectionInnerClass,
   restaurantContentSectionClass,
-  siteBodyBoldClass,
+  restaurantDetailChipClass,
   siteBodyClass,
+  siteButtonOnDarkClass,
   siteButtonPrimaryClass,
   siteHeading2Class,
   siteHeading3Class,
+  siteHeroMetaOnDarkClass,
 } from '@/lib/site-styles'
 
 type Params = {
@@ -71,6 +75,7 @@ export default async function RestaurantDetailPage({
   const hasMenuContent = hasMenuPhotos
   const features = await fetchRestaurantFeatures(restaurant.id)
   const openingHours = await fetchRestaurantOpeningHours(restaurant.id)
+  const communityStats = await fetchRestaurantCommunityStats(restaurant.id)
   const sponsoredSuggestions = await fetchRandomSponsoredRestaurants(restaurant.id, 3)
 
   const coverImage = restaurant.image
@@ -85,14 +90,14 @@ export default async function RestaurantDetailPage({
   )
   const reservationCta = getRestaurantReservationCta(restaurant)
   const quickActions: QuickActionItem[] = [
-    { id: 'carte', label: 'La carte', href: '#carte' },
     ...(showPhotoGallery
       ? [{ id: 'photos', label: 'Photos', href: '#photos' }]
       : []),
+    { id: 'carte', label: 'La carte', href: '#carte' },
     { id: 'apropos', label: 'À propos', href: '#a-propos' },
+    { id: 'avis', label: 'Avis et retours', href: '#avis' },
     { id: 'horaires', label: 'Horaires', href: '#horaires' },
     { id: 'contact', label: 'Contact et accès', href: '#contact-acces' },
-    { id: 'avis', label: 'Avis', href: '#avis' },
     {
       id: 'reserver',
       label: reservationCta.label,
@@ -120,13 +125,13 @@ export default async function RestaurantDetailPage({
           <div className="mt-5 space-y-3 sm:mt-6">
             <RestaurantCuisineLocation
               restaurant={restaurant}
-              className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-base font-bold text-white/95 drop-shadow-[0_1px_10px_rgba(0,0,0,0.85)] md:text-lg"
+              className={`flex flex-wrap items-center gap-x-1.5 gap-y-0.5 font-bold text-white/95 ${siteHeroMetaOnDarkClass}`}
               cuisineIconClassName="h-3.5 w-3.5 shrink-0 text-white/80"
               locationIconClassName="h-3.5 w-3.5 shrink-0 text-white/80"
               separatorClassName="text-white/60"
             />
             {heroRatingLine ? (
-              <p className="text-base text-white/90 drop-shadow-[0_1px_10px_rgba(0,0,0,0.85)] md:text-lg">
+              <p className={`text-white/90 ${siteHeroMetaOnDarkClass}`}>
                 {heroRatingLine}
               </p>
             ) : null}
@@ -136,7 +141,7 @@ export default async function RestaurantDetailPage({
         <div className="mt-8 flex flex-wrap gap-3">
           <RestaurantReservationLink
             restaurant={restaurant}
-            className={`${siteButtonPrimaryClass} h-12`}
+            className={`${siteButtonOnDarkClass} h-12`}
           />
           <RestaurantQuickActions actions={quickActions} tone="onDark" />
         </div>
@@ -145,10 +150,10 @@ export default async function RestaurantDetailPage({
       {showPhotoGallery ? (
         <section
           id="photos"
-          className={`${restaurantContentSectionClass} bg-white`}
+          className={restaurantContentSectionClass}
           aria-labelledby="restaurant-photos-heading"
         >
-          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+          <div className={detailPageSectionInnerClass}>
             <h2
               id="restaurant-photos-heading"
               className={siteHeading2Class}
@@ -179,10 +184,10 @@ export default async function RestaurantDetailPage({
 
       <section
         id="carte"
-        className={`${restaurantContentSectionClass} bg-stone-100`}
+        className={restaurantContentSectionClass}
         aria-labelledby="restaurant-carte-heading"
       >
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className={detailPageSectionInnerClass}>
           <h2
             id="restaurant-carte-heading"
             className={siteHeading2Class}
@@ -202,7 +207,7 @@ export default async function RestaurantDetailPage({
                 </span>
               </p>
               {hasMenuPhotos ? (
-                <div className="mt-10 sm:mt-12">
+                <div className="mt-8">
                   <RestaurantMenuGallery pages={menuPages} alt={restaurant.nom} />
                 </div>
               ) : null}
@@ -214,20 +219,28 @@ export default async function RestaurantDetailPage({
               </div>
             </>
           ) : (
-            <p className={`mt-10 sm:mt-12 ${siteBodyClass}`}>
-              Le menu de ce restaurant sera bientôt disponible en ligne. En attendant, contactez
-              l&apos;établissement ou réservez une table pour découvrir les plats du jour.
-            </p>
+            <>
+              <p className={`mt-8 ${siteBodyClass}`}>
+                Le menu de ce restaurant sera bientôt disponible en ligne. En attendant, contactez
+                l&apos;établissement ou réservez une table pour découvrir les plats du jour.
+              </p>
+              <div className="mt-8">
+                <RestaurantReservationLink
+                  restaurant={restaurant}
+                  className={siteButtonPrimaryClass}
+                />
+              </div>
+            </>
           )}
         </div>
       </section>
 
       <section
         id="a-propos"
-        className={`${restaurantContentSectionClass} bg-white`}
+        className={restaurantContentSectionClass}
         aria-labelledby="restaurant-about-heading"
       >
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className={detailPageSectionInnerClass}>
           <h2
             id="restaurant-about-heading"
             className={siteHeading2Class}
@@ -242,7 +255,7 @@ export default async function RestaurantDetailPage({
                 {features.map((feature) => (
                   <li
                     key={feature.key}
-                    className="rounded-md border border-neutral-200 bg-white px-3 py-1 text-base text-neutral-700"
+                    className={restaurantDetailChipClass}
                   >
                     {feature.label}
                   </li>
@@ -250,15 +263,26 @@ export default async function RestaurantDetailPage({
               </ul>
             </div>
           ) : null}
+          <div className="mt-8">
+            <RestaurantReservationLink
+              restaurant={restaurant}
+              className={siteButtonPrimaryClass}
+            />
+          </div>
         </div>
       </section>
 
+      <RestaurantReviewsSection
+        restaurant={restaurant}
+        communityStats={communityStats}
+      />
+
       <section
         id="horaires"
-        className={`${restaurantContentSectionClass} bg-stone-100`}
+        className={restaurantContentSectionClass}
         aria-labelledby="restaurant-horaires-heading"
       >
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className={detailPageSectionInnerClass}>
           <h2
             id="restaurant-horaires-heading"
             className={siteHeading2Class}
@@ -276,7 +300,7 @@ export default async function RestaurantDetailPage({
           {openingHours.length > 0 ? (
             <RestaurantOpeningHours days={openingHours} />
           ) : (
-            <p className={`mt-10 sm:mt-12 ${siteBodyClass}`}>
+            <p className={`mt-8 ${siteBodyClass}`}>
               Horaires non renseignés pour le moment.
             </p>
           )}
@@ -291,10 +315,10 @@ export default async function RestaurantDetailPage({
 
       <section
         id="contact-acces"
-        className={`${restaurantContentSectionClass} bg-white`}
+        className={restaurantContentSectionClass}
         aria-labelledby="restaurant-contact-heading"
       >
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className={detailPageSectionInnerClass}>
           <h2
             id="restaurant-contact-heading"
             className={siteHeading2Class}
@@ -305,30 +329,32 @@ export default async function RestaurantDetailPage({
         </div>
       </section>
 
-      <RestaurantReviewsSection restaurant={restaurant} />
-
       <section
         id="reserver"
-        className={`${restaurantContentSectionClass} scroll-mt-24 bg-white`}
+        className={`${restaurantContentSectionClass} scroll-mt-24`}
         aria-labelledby="restaurant-reserver-heading"
       >
-        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+        <div className={detailPageSectionInnerClass}>
           <h2
             id="restaurant-reserver-heading"
             className={siteHeading2Class}
           >
             {reservationCta.label}
           </h2>
-          <RestaurantReservationContent restaurant={restaurant} openingHours={openingHours} />
+          <RestaurantReservationContent
+            restaurant={restaurant}
+            openingHours={openingHours}
+            reservationVoteCount={communityStats.reservationVoteCount}
+          />
         </div>
       </section>
 
       {sponsoredSuggestions.length > 0 ? (
         <section
-          className={`${restaurantContentSectionClass} bg-white`}
+          className={restaurantContentSectionClass}
           aria-labelledby="restaurant-discover-heading"
         >
-          <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
+          <div className={detailPageSectionInnerClass}>
             <h2
               id="restaurant-discover-heading"
               className={siteHeading2Class}
@@ -344,7 +370,7 @@ export default async function RestaurantDetailPage({
         </section>
       ) : null}
 
-      <CommunitySignupSection tone="muted" />
+      <CommunitySignupSection />
 
       <SiteFooter />
     </main>

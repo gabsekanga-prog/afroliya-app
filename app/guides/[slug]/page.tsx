@@ -3,10 +3,15 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
 import { GuideStructuredContent } from '@/app/components/guide-structured-content'
+import { SuggestAddressSection } from '@/app/components/suggest-address-section'
 import { MarketingSplitHero } from '@/app/components/marketing-split-hero'
 import { SiteBreadcrumb } from '@/app/components/site-breadcrumb'
 import { fetchGuideBySlug, fetchPublishedGuides } from '@/lib/guides'
-import { siteButtonPrimaryClass } from '@/lib/site-styles'
+import {
+  siteButtonPrimaryClass,
+  siteGuideContentInnerClass,
+  siteGuideDetailContentSectionClass,
+} from '@/lib/site-styles'
 
 type Params = { slug: string }
 
@@ -60,19 +65,21 @@ export default async function GuideDetailPage({
         }
       />
 
-      <section className="w-full flex-1 bg-white pb-16 pt-6 sm:pb-20 sm:pt-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6">
+      <section className={siteGuideDetailContentSectionClass}>
+        <div className={siteGuideContentInnerClass}>
           <GuideStructuredContent guide={guide} />
+
+          <SuggestAddressSection guideSlug={guide.slug} />
 
           <div className="mt-12 flex flex-wrap gap-4 border-t border-neutral-200 pt-10">
             <Link href="/restaurants" className={siteButtonPrimaryClass}>
-              Réserver un restaurant
+              Trouver un restaurant
             </Link>
             <Link
               href="/guides"
               className="inline-flex rounded-xl border border-neutral-300 bg-white px-6 py-3 text-lg font-normal text-neutral-800 transition hover:bg-neutral-50"
             >
-              Tous les guides
+              Voir tous les guides
             </Link>
           </div>
         </div>
