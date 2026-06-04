@@ -1,4 +1,4 @@
-import { siteHeading3Class } from '@/lib/site-styles'
+import { siteCardThumbnailImageClass, siteHeading3Class } from '@/lib/site-styles'
 import Link from 'next/link'
 
 import { RestaurantCardReservationHint } from '@/app/components/restaurant-card-reservation-hint'
@@ -22,7 +22,7 @@ export function RestaurantCard({ restaurant, openInNewTab = false }: Props) {
       <img
         src={restaurant.image}
         alt={`Photo de couverture — ${restaurant.nom}`}
-        className="aspect-[16/10] h-auto w-full object-cover"
+        className={siteCardThumbnailImageClass}
         loading="lazy"
       />
       <div className="space-y-3 p-5">

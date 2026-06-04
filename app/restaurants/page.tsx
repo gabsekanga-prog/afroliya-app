@@ -20,7 +20,7 @@ export default async function ReserverUnRestaurantPage() {
         restaurants={restaurants}
         filterOptions={filterOptions}
         pageTitle="Restaurants afro à Bruxelles et autour"
-        pageLead="Plein d'adresses à tester | Sélection de qualité | Réservation en ligne"
+        pageLead=""
       />
 
       <CommunitySignupSection />

@@ -13,6 +13,8 @@ import {
   siteHeading2LeadingClass,
   siteHeading3Class,
   siteSectionContentSecondClass,
+  siteSectionColumnImageClass,
+  siteSectionColumnImageTallSmClass,
   siteSectionMediaFirstClass,
   siteSectionMutedClass,
   siteSectionWhiteClass,
@@ -108,7 +110,7 @@ export function HomePageClient({ latestGuides }: Props) {
             <img
               src="/images/Restaurant sénégalais Bruxelles.webp"
               alt="Restaurant africains à Bruxelles"
-              className="h-[300px] w-full object-cover sm:h-[380px] lg:h-[420px]"
+              className={siteSectionColumnImageTallSmClass}
             />
           </div>
         </div>
@@ -163,7 +165,7 @@ export function HomePageClient({ latestGuides }: Props) {
             <img
               src="/images/famille restaurant.webp"
               alt="Famille profitant d'un repas dans un restaurant africain à Bruxelles"
-              className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[420px]"
+              className={siteSectionColumnImageClass}
             />
           </div>
 

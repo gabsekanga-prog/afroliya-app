@@ -3,12 +3,10 @@ import {
   BadgeEuro,
   CalendarClock,
   Computer,
-  GlobeIcon,
+  CogIcon,
   LaptopIcon,
   Layers,
-  Megaphone,
-  Target,
-  TargetIcon,
+  MegaphoneIcon,
   Utensils,
   type LucideIcon,
 } from 'lucide-react'
@@ -26,6 +24,7 @@ import {
   siteSectionBgWhiteClass,
   siteSectionContentFirstClass,
   siteSectionContentSecondClass,
+  siteSectionColumnImageClass,
   siteSectionMediaFirstClass,
   siteSectionMediaSecondClass,
   siteSectionMutedClass,
@@ -43,67 +42,51 @@ const benefits: {
   icon: LucideIcon
 }[] = [
   {
-    title: 'Touchez des milliers de passionnés',
-    description: 'Ne soyez plus noyé dans la masse des plateformes généralistes. Touchez chaque semaine des centaines de passionnés réellement intéressés par la cuisine afro et antillaise.',
-    icon: Utensils
+    title: 'Visibilité ciblée',
+    description: 'Ne payez plus pour atteindre un public généraliste. Touchez chaque semaine des centaines de passionnés de cuisine afro.',
+    icon: MegaphoneIcon
   },
   {
-    title: 'Recevez des réservations sans commission',
+    title: 'Réservation sans commission',
     description:
-      "Soyez réservable en ligne 24h/24. Ne ratez plus aucune réservation, même en plein rush ou quand vous êtes fermé. Protégez vos marges, loin des frais abusifs de certaines plateformes.",
+      "Recevez des réservations 24h/24, même en plein rush ou quand vous êtes fermé. Le tout sans commission pour protéger vos marges.",
     icon: CalendarClock
   },
   {
-    title: 'Obtenez vos propres outils digitaux',
+    title: 'On s\'occupe de tout',
     description:
-      'Ne subissez plus la loi des plateformes tierces. Obtenez vos propres outils pour attirer des clients en ligne : site web, nom de domaine, référencement, réservation, menu digital (QR code), base de données de clients, etc.',
-    icon: GlobeIcon
+      'Nous gérons tout, de la création de votre fiche dédiée à la mise en avant dans nos guides, newsletters et réseaux sociaux. Ça ne vous demande aucun effort.',
+    icon: CogIcon
   }
 ]
 
 const offers = [
   {
-    name: 'Basique - Gratuit',
-    subtitle: 'Pour une visibilité de base',
+    name: 'Standard - Gratuit',
+    subtitle: 'Soyez visible sur Afroliya',
     cta: 'Inscrire votre resto',
     points: [
-      'Référencement sur la plateforme',
-      'Page vitrine professionnelle (infos, photos, menu, etc.)',
-      'Touchez des centaines de passionnés chaque semaine',
-      'Réservation par téléphone (sur votre numéro)',
+      'Référencement complet sur la plateforme',
+      'Page vitrine dédiée (infos, photos, menu, etc.)',
+      'Visibilité auprès de centaines de passionnés chaque semaine',
+      'Réservation par téléphone (bouton d\'appel direct)',
+      'Rapport de statistiques mensuel',
       'Sans engagement : arrêtez quand vous voulez',
     ],
   },
   {
-    name: 'Standard - 29€/mois',
-    subtitle: 'Pour booster votre visibilité',
-    cta: 'Choisir l\'offre',
-    points: [
-      'Tout le pack Basique',
-      'Réservation en ligne, 24h/24, sans commission',
-      'Widget de réservation pour votre site web',
-      'Liens de réservation sur Google, Instagram, Facebook, etc.',
-      'Mise en avant dans les résultats de recherche sur la plateforme',
-      'Mise en avant régulière sur nos guides et newsletters',
-      'Publications régulières sur nos réseaux sociaux'
-    ],
-  },
-  {
-    name: 'Premium - 59€/mois',
-    subtitle: 'Pour une présence en ligne optimale',
+    name: 'Premium - 29€/mois',
+    subtitle: 'Boostez votre visibilité et recevez des réservations',
     cta: 'Choisir l\'offre',
     points: [
       'Tout le pack Standard',
-      'Site web et nom de domaine',
-      'Hébergement et référencement (SEO)',
-      'Design optimisé pour les smartphones',
-      'Menu digital + QR codes sur vos tables',
-      'Base de données de clients',
-      'Optimisation de la fiche Google My Business',
-      'Gestion clé en main : on s\'occupe de tout le côté technique',
-      'Maintenance et support 7j/7',
+      'Priorité dans les résultats de recherche sur la plateforme',
+      'Mise en avant dans nos guides thématiques et newsletters',
+      'Création de contenus sur nos réseaux sociaux', 
+      'Module de réservation en ligne, sans commission',
+      'Possibilité de transfert vers votre système (Zenchef, TheFork, etc.)'
     ],
-  },
+  }
 ]
 
 export default function DevenirPartenairePage() {
@@ -114,12 +97,9 @@ export default function DevenirPartenairePage() {
       <MarketingSplitHero
         imageSrc="/images/Restauratrice%20resto%20afro%20gestion%20digital%20r%C3%A9servations%20couple%20clients.jpg"
         imageAlt="Restauratrice gérant les réservations digitales de son restaurant afro"
-        title="Boostez l'activité de votre restaurant africain"
-        lead="Rejoignez la plateforme de restaurants africains à Bruxelles et alentours."
+        title="Le partenaire marketing de votre restaurant africain"
+        lead="Visibilité ciblée | Réservation sans commission | On s'occupe de tout"
         checklistItems={[
-          'Touchez des milliers de passionnés',
-          'Recevez des réservations sans commission',
-          'Obtenez vos propres outils digitaux',
         ]}
       >
         <Link
@@ -138,9 +118,8 @@ export default function DevenirPartenairePage() {
             </h2>
             <ul className={`mt-6 space-y-2 pl-6 ${siteBodyClass}`}>
               <li>✖︎ Public généraliste et peu intéressé</li>
-              <li>✖︎ Commisions et frais abusifs</li>
-              <li>✖︎ Trop d'effort pour peu de résultats</li>
-              <li>✖︎ Dépendance aux plateformes tierces</li>
+              <li>✖︎ Coûts élevés et commissions abusives</li>
+              <li>✖︎ Trop d'efforts pour peu de résultats</li>
             </ul>
             <p className={`mt-6 ${siteBodySemiboldClass}`}>
               Afroliya est la solution qu'il vous faut.
@@ -155,7 +134,7 @@ export default function DevenirPartenairePage() {
           <img
             src="/images/Restaurant%20s%C3%A9n%C3%A9galais%20Bruxelles.webp"
             alt="Restaurant africain tables en attente"
-            className={`${siteSectionMediaSecondClass} h-[320px] w-full rounded-2xl border border-neutral-200 object-cover shadow-sm`}
+            className={`${siteSectionMediaSecondClass} ${siteSectionColumnImageClass} rounded-2xl border border-neutral-200 shadow-sm`}
           />
         </div>
       </section>
@@ -164,7 +143,7 @@ export default function DevenirPartenairePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-8 sm:mb-10">
           <h2 className={siteHeading2Class}>
-            Comment Afroliya booste votre activité ?
+            Pourquoi choisir Afroliya ?
           </h2>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">
@@ -205,13 +184,13 @@ export default function DevenirPartenairePage() {
             <img
               src="/images/Gabs-restaurant-africain-africalicious-Bruxelles_edited.webp"
               alt="Afroliya chez Africalicious à Bruxelles"
-              className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[420px]"
+              className={siteSectionColumnImageClass}
             />
           </div>
 
           <div className={siteSectionContentSecondClass}>
             <h2 className={siteHeading2LeadingClass}>
-              On booste déjà l'activité des restaurants africains
+              Une solution qui génère déjà des résultats
             </h2>
 
             <PlatformStatsList />
@@ -234,7 +213,7 @@ export default function DevenirPartenairePage() {
         <h2 className={siteHeading2Class}>
           Nos offres de partenariat
         </h2>
-        <div className="mt-8 grid gap-5 lg:grid-cols-3">
+        <div className="mt-8 grid gap-5 lg:grid-cols-2">
           {offers.map((offer) => (
             <article
               key={offer.name}

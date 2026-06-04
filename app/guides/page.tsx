@@ -30,7 +30,7 @@ export default async function GuidesIndexPage() {
             Guides thématiques
           </h1>
           <p className={`max-w-7xl ${siteSubtitleLeadOnDarkClass}`}>
-            Savourez l'Afrique selon vos envies : spécialités, quartiers, ambiance et plus.
+            Trouvez l'adresse parfaite selon vos envies : spécialités, quartiers, ambiance et plus.
           </p>
         </div>
       </section>

@@ -13,6 +13,7 @@ import {
   siteSectionMediaSecondClass,
   communitySignupSectionClass,
   communitySignupSectionInnerClass,
+  siteSectionColumnImageClass,
   siteSectionInnerClass,
 } from '@/lib/site-styles'
 
@@ -167,7 +168,7 @@ export function CommunitySignupSection({
           <img
             src="/images/Gabs-restaurant-africain-africalicious-Bruxelles_edited.webp"
             alt="Membre de la communauté Afroliya profitant d'un repas dans un restaurant africain"
-            className="h-[300px] w-full object-cover sm:h-[360px] lg:h-[420px]"
+            className={siteSectionColumnImageClass}
           />
         </div>
       </div>

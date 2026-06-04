@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { EmailConfigurationError, EmailDeliveryError } from '@/lib/email/resend'
+import { EmailConfigurationError, EmailDeliveryError } from '@/lib/email/sendgrid'
 import { sendEmailVerificationCode } from '@/lib/reservation-notifications'
 import { generateEmailVerificationCode } from '@/lib/reservations'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'

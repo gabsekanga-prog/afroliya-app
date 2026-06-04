@@ -1,7 +1,12 @@
-import { sendTransactionalEmail } from '@/lib/email/resend'
+import { buildReservationEmailTemplateData } from '@/lib/email/reservation-email-data'
 import {
-  formatReservationDateFr,
-  formatReservationTimeFr,
+  getAdminNotificationEmails,
+  sendSimpleTemplateEmail,
+  sendTemplateEmail,
+} from '@/lib/email/sendgrid'
+import { SENDGRID_TEMPLATE_IDS } from '@/lib/email/sendgrid-templates'
+import {
+  reservationClientUrl,
   reservationManageUrl,
   type ReservationRecord,
 } from '@/lib/reservations'
@@ -13,70 +18,58 @@ type RestaurantContact = {
   whatsappPhone: string | null
 }
 
-function reservationSummaryLines(reservation: ReservationRecord, restaurantName: string) {
-  const date = formatReservationDateFr(reservation.booking_date)
-  const time = formatReservationTimeFr(reservation.booking_time)
-  return {
-    date,
-    time,
-    textBlock: [
-      `Restaurant : ${restaurantName}`,
-      `Client : ${reservation.client_name}`,
-      `E-mail : ${reservation.client_email}`,
-      reservation.client_phone ? `Téléphone : ${reservation.client_phone}` : null,
-      `Date : ${date}`,
-      `Heure : ${time}`,
-      `Personnes : ${reservation.group_size}`,
-      reservation.remarks ? `Remarques : ${reservation.remarks}` : null,
-    ]
-      .filter(Boolean)
-      .join('\n'),
-  }
-}
-
 export async function notifyNewReservation(
   reservation: ReservationRecord,
   restaurant: RestaurantContact,
 ): Promise<void> {
   const manageUrl = reservationManageUrl(reservation.public_code)
-  const { textBlock, date, time } = reservationSummaryLines(reservation, restaurant.name)
+  const clientUrl = reservationClientUrl(reservation.public_code)
+  const templateData = await buildReservationEmailTemplateData(reservation, restaurant.name, {
+    managementUrl: clientUrl,
+  })
+
+  const restaurantMailData = {
+    ...templateData,
+    managementUrl: manageUrl,
+  }
 
   const tasks: Promise<void>[] = []
 
   const restaurantEmail = restaurant.email?.trim()
   if (restaurantEmail) {
     tasks.push(
-      sendTransactionalEmail({
+      sendTemplateEmail({
         to: restaurantEmail,
-        subject: `[Afroliya] Nouvelle demande de réservation`,
-        text: `${textBlock}\n\nGérer la demande : ${manageUrl}`,
-        html: `
-        <p>Nouvelle demande de réservation reçue via Afroliya.</p>
-        <pre style="font-family:sans-serif;white-space:pre-wrap">${textBlock}</pre>
-        <p><a href="${manageUrl}">Accepter ou refuser la demande</a></p>
-      `,
+        templateId: SENDGRID_TEMPLATE_IDS.reservationNewRestaurant,
+        dynamicTemplateData: restaurantMailData,
+      }),
+    )
+  }
+
+  const adminEmails = getAdminNotificationEmails().filter(
+    (email) => email.toLowerCase() !== restaurantEmail?.toLowerCase(),
+  )
+  if (adminEmails.length > 0) {
+    tasks.push(
+      sendTemplateEmail({
+        to: adminEmails,
+        templateId: SENDGRID_TEMPLATE_IDS.reservationNewRestaurant,
+        dynamicTemplateData: restaurantMailData,
       }),
     )
   }
 
   tasks.push(
-    sendTransactionalEmail({
+    sendTemplateEmail({
       to: reservation.client_email,
-      subject: `Votre demande de réservation — ${restaurant.name}`,
-      text: `Bonjour ${reservation.client_name},\n\nVotre demande de réservation a bien été transmise au restaurant ${restaurant.name}.\n\n${textBlock}\n\nLe restaurant vous confirmera sa disponibilité prochainement.\n\n— Afroliya`,
-      html: `
-      <p>Bonjour ${reservation.client_name},</p>
-      <p>Votre demande de réservation a bien été transmise au restaurant <strong>${restaurant.name}</strong>.</p>
-      <pre style="font-family:sans-serif;white-space:pre-wrap">${textBlock}</pre>
-      <p>Le restaurant vous confirmera sa disponibilité prochainement.</p>
-      <p>— Afroliya</p>
-    `,
+      templateId: SENDGRID_TEMPLATE_IDS.reservationRequestClient,
+      dynamicTemplateData: templateData,
     }),
   )
 
   const smsPhone = restaurant.whatsappPhone?.trim()
   if (smsPhone) {
-    const smsBody = `Afroliya : Nouvelle reservation - ${reservation.client_name}, ${reservation.group_size} pers., le ${date}, ${time}. Acceptez ou annulez ici : ${manageUrl}`
+    const smsBody = `Afroliya : Nouvelle reservation - ${reservation.client_name}, ${reservation.group_size} pers., le ${templateData.date}, ${templateData.hour}. Acceptez ou annulez ici : ${manageUrl}`
     tasks.push(
       sendSpryngSms({
         recipients: [smsPhone],
@@ -99,28 +92,69 @@ export async function notifyReservationStatusChange(
   restaurant: RestaurantContact,
   status: 'confirmed' | 'declined',
 ): Promise<void> {
-  const { textBlock } = reservationSummaryLines(reservation, restaurant.name)
-  const isConfirmed = status === 'confirmed'
+  const clientUrl = reservationClientUrl(reservation.public_code)
+  const templateData = await buildReservationEmailTemplateData(reservation, restaurant.name, {
+    managementUrl: clientUrl,
+  })
 
-  await sendTransactionalEmail({
+  if (status === 'confirmed') {
+    await sendTemplateEmail({
+      to: reservation.client_email,
+      templateId: SENDGRID_TEMPLATE_IDS.reservationConfirmedClient,
+      dynamicTemplateData: templateData,
+    })
+    return
+  }
+
+  await sendTemplateEmail({
     to: reservation.client_email,
-    subject: isConfirmed
-      ? `Réservation confirmée — ${restaurant.name}`
-      : `Réservation refusée — ${restaurant.name}`,
-    text: isConfirmed
-      ? `Bonjour ${reservation.client_name},\n\nBonne nouvelle ! ${restaurant.name} a confirmé votre réservation.\n\n${textBlock}\n\n— Afroliya`
-      : `Bonjour ${reservation.client_name},\n\n${restaurant.name} n'a malheureusement pas pu accepter votre demande de réservation.\n\n${textBlock}\n\n— Afroliya`,
-    html: isConfirmed
-      ? `<p>Bonjour ${reservation.client_name},</p><p>Bonne nouvelle ! <strong>${restaurant.name}</strong> a confirmé votre réservation.</p><pre style="font-family:sans-serif;white-space:pre-wrap">${textBlock}</pre><p>— Afroliya</p>`
-      : `<p>Bonjour ${reservation.client_name},</p><p><strong>${restaurant.name}</strong> n'a malheureusement pas pu accepter votre demande.</p><pre style="font-family:sans-serif;white-space:pre-wrap">${textBlock}</pre><p>— Afroliya</p>`,
+    templateId: SENDGRID_TEMPLATE_IDS.reservationCancelledByRestaurantClient,
+    dynamicTemplateData: templateData,
+  })
+}
+
+/** Annulation initiée par le client — notification au restaurant (templates 4 & 6). */
+export async function notifyRestaurantReservationCancelledByClient(
+  reservation: ReservationRecord,
+  restaurant: RestaurantContact,
+  clientMessage?: string | null,
+): Promise<void> {
+  const restaurantEmail = restaurant.email?.trim()
+  if (!restaurantEmail) return
+
+  const manageUrl = reservationManageUrl(reservation.public_code)
+  const templateData = await buildReservationEmailTemplateData(reservation, restaurant.name, {
+    managementUrl: manageUrl,
+    clientMessage,
+    includeClientMessage: clientMessage === undefined,
+  })
+
+  await sendTemplateEmail({
+    to: restaurantEmail,
+    templateId: SENDGRID_TEMPLATE_IDS.reservationCancelledRestaurant,
+    dynamicTemplateData: templateData,
+  })
+}
+
+/** Annulation initiée par le restaurant — notification au client (template 5). */
+export async function notifyClientReservationCancelledByRestaurant(
+  reservation: ReservationRecord,
+  restaurant: RestaurantContact,
+): Promise<void> {
+  const templateData = await buildReservationEmailTemplateData(reservation, restaurant.name)
+
+  await sendTemplateEmail({
+    to: reservation.client_email,
+    templateId: SENDGRID_TEMPLATE_IDS.reservationCancelledByRestaurantClient,
+    dynamicTemplateData: templateData,
   })
 }
 
 export async function sendEmailVerificationCode(email: string, code: string): Promise<void> {
-  await sendTransactionalEmail({
-    to: email,
-    subject: 'Votre code de vérification Afroliya',
-    text: `Votre code de vérification Afroliya : ${code}\n\nIl expire dans 15 minutes.`,
-    html: `<p>Votre code de vérification Afroliya :</p><p style="font-size:24px;font-weight:bold;letter-spacing:4px">${code}</p><p>Il expire dans 15 minutes.</p>`,
+  await sendSimpleTemplateEmail(email, {
+    intro:
+      'Voici votre code de validation pour finaliser votre action sur Afroliya :',
+    important: code,
+    subject: `Votre code de validation : ${code}`,
   })
 }

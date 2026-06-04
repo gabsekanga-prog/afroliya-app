@@ -81,7 +81,7 @@ export function InstagramPostVideoCard({
         className={`group relative block w-full max-w-[300px] overflow-hidden rounded-2xl border border-neutral-200 bg-stone-100 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524] ${compactTop ? 'mt-4' : 'mt-6'}`}
         aria-label="Lire la vidéo Afroliya sur Instagram"
       >
-        <div className="relative aspect-[4/5] w-full">
+        <div className="relative h-[200px] w-full sm:aspect-[4/5] sm:h-auto">
           {previewUrl ? (
             <img
               src={previewUrl}
@@ -109,7 +109,7 @@ export function InstagramPostVideoCard({
 
           <span className="absolute bottom-0 left-0 right-0 p-4">
             <span className="text-sm font-semibold text-white drop-shadow-sm">
-              Notre visite
+              Contenu d'Afroliya
             </span>
             <span className="mt-1 block text-xs text-white/90">Appuyer pour lire</span>
           </span>

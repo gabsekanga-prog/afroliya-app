@@ -47,6 +47,17 @@ export function formatReservationDateFr(isoDate: string): string {
   })
 }
 
+/** Format court pour les templates SendGrid (ex. 10/08/2025). */
+export function formatReservationDateShortFr(isoDate: string): string {
+  const date = new Date(`${isoDate}T12:00:00`)
+  if (Number.isNaN(date.getTime())) return isoDate
+  return date.toLocaleDateString('fr-BE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  })
+}
+
 export function formatReservationTimeFr(time: string): string {
   const raw = time.trim()
   if (/^\d{2}:\d{2}/.test(raw)) return raw.slice(0, 5)
@@ -126,4 +137,50 @@ export function getSiteBaseUrl(): string {
 
 export function reservationManageUrl(publicCode: string): string {
   return `${getSiteBaseUrl()}/reservations/gestion/${publicCode}`
+}
+
+/** Lien envoyé au client pour consulter ou annuler sa demande. */
+export function reservationClientUrl(publicCode: string): string {
+  return `${getSiteBaseUrl()}/reservations/suivi/${publicCode}`
+}
+
+const RESERVATION_LINK_VALIDITY_MS = 48 * 60 * 60 * 1000
+
+export const reservationLinkExpiredMessage =
+  'Ce lien n’est plus actif : l’accès expire 48 h après la date et l’heure de la réservation.'
+
+function normalizeBookingTimeForExpiry(time: string): string {
+  const match = time.trim().match(/^(\d{2}):(\d{2})/)
+  return match ? `${match[1]}:${match[2]}` : '12:00'
+}
+
+/** Fin de validité des liens suivi / gestion : 48 h après le créneau réservé. */
+export function getReservationLinkExpiresAt(
+  bookingDate: string,
+  bookingTime: string,
+): Date | null {
+  const date = bookingDate.trim()
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return null
+
+  const bookingAt = new Date(`${date}T${normalizeBookingTimeForExpiry(bookingTime)}:00`)
+  if (Number.isNaN(bookingAt.getTime())) return null
+
+  return new Date(bookingAt.getTime() + RESERVATION_LINK_VALIDITY_MS)
+}
+
+export function isReservationLinkExpired(bookingDate: string, bookingTime: string): boolean {
+  const expiresAt = getReservationLinkExpiresAt(bookingDate, bookingTime)
+  if (!expiresAt) return false
+  return Date.now() > expiresAt.getTime()
+}
+
+export function isReservationLinkExpiredFromRecord(
+  reservation: Pick<ReservationRecord, 'booking_date' | 'booking_time'>,
+): boolean {
+  return isReservationLinkExpired(reservation.booking_date, reservation.booking_time)
+}
+
+export function computePublicCodeExpiresAt(bookingDate: string, bookingTime: string): string {
+  const expiresAt = getReservationLinkExpiresAt(bookingDate, bookingTime)
+  return (expiresAt ?? new Date(Date.now() + RESERVATION_LINK_VALIDITY_MS)).toISOString()
 }

@@ -8,9 +8,8 @@ import {
   formLabelClassName,
   formTextareaClassName,
 } from '@/app/components/form-fields'
-import { supabase } from '@/lib/supabase'
 
-const OFFERS = ['basique', 'standard', 'premium'] as const
+const OFFERS = ['standard', 'premium'] as const
 type Offer = (typeof OFFERS)[number]
 
 function isOffer(value: string): value is Offer {
@@ -56,35 +55,28 @@ export function PartnerApplicationForm() {
     setMessage('')
     setMessageType(null)
 
-    if (!supabase) {
-      setMessage(
-        'Supabase n’est pas configuré : renseignez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local.',
-      )
-      setMessageType('error')
-      setIsSubmitting(false)
-      return
-    }
-
-    const { error: insertError } = await supabase.from('partner_applications').insert({
-      restaurant,
-      restaurant_details: restaurantDetails || null,
-      offer: offerRaw,
-      contact_name: contactName,
-      phone,
-      email,
+    const response = await fetch('/api/partner-applications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        restaurant,
+        restaurant_details: restaurantDetails || null,
+        offer: offerRaw,
+        contact_name: contactName,
+        phone,
+        email,
+      }),
     })
 
-    if (insertError) {
-      if (
-        insertError.code === '42501' ||
-        insertError.message.toLowerCase().includes('row-level security')
-      ) {
-        setMessage(
-          "Configuration Supabase requise : autorisez l'insertion anonyme dans la table partner_applications.",
-        )
-      } else {
-        setMessage('Une erreur est survenue. Merci de réessayer.')
+    if (!response.ok) {
+      let errorMessage = 'Une erreur est survenue. Merci de réessayer.'
+      try {
+        const payload = (await response.json()) as { error?: string }
+        if (payload.error) errorMessage = payload.error
+      } catch {
+        // ignore
       }
+      setMessage(errorMessage)
       setMessageType('error')
       setIsSubmitting(false)
       return
@@ -126,7 +118,6 @@ export function PartnerApplicationForm() {
       <label className={formLabelClassName}>
         Offre souhaitée
         <FormSelect name="offer" required defaultValue="basique">
-          <option value="basique">Basique</option>
           <option value="standard">Standard</option>
           <option value="premium">Premium</option>
         </FormSelect>

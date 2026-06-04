@@ -12,7 +12,7 @@ CREATE TABLE public.reservations (
   status USER-DEFINED NOT NULL DEFAULT 'pending'::reservation_status,
   updated_at timestamp with time zone DEFAULT now(),
   public_code text NOT NULL UNIQUE CHECK (public_code ~ '^[A-Za-z0-9]{8}$'::text),
-  public_code_expires_at timestamp with time zone NOT NULL DEFAULT (now() + '24:00:00'::interval),
+  public_code_expires_at timestamp with time zone NOT NULL,
   CONSTRAINT reservations_pkey PRIMARY KEY (id),
   CONSTRAINT reservations_restaurant_id_fkey FOREIGN KEY (restaurant_id) REFERENCES public.restaurants(id)
 );

@@ -77,8 +77,34 @@ export const siteMarketingSplitHeroGridClass = `relative z-10 mx-auto w-full ${s
 export const siteMarketingSplitHeroImageWrapClass =
   'order-1 overflow-hidden rounded-2xl sm:rounded-3xl lg:order-2'
 
-export const siteMarketingSplitHeroImageClass =
-  'h-[280px] w-full object-cover sm:h-[360px] lg:h-[420px]'
+/** Hauteur images sur mobile (< sm) — référence unique pour tout le site. */
+export const siteMobileImageHeightClass = 'h-[200px]'
+
+/** Image colonne (grilles 2 col., communauté, etc.) */
+export const siteSectionColumnImageClass =
+  `${siteMobileImageHeightClass} w-full object-cover sm:h-[360px] lg:h-[420px]`
+
+/** Variante avec palier sm à 380px (accueil, section « recherche »). */
+export const siteSectionColumnImageTallSmClass =
+  `${siteMobileImageHeightClass} w-full object-cover sm:h-[380px] lg:h-[420px]`
+
+export const siteMarketingSplitHeroImageClass = siteSectionColumnImageClass
+
+/** Vignettes galerie Photos (fiche restaurant). */
+export const siteRestaurantPhotoGalleryImageClass =
+  `${siteMobileImageHeightClass} w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:h-[220px] lg:h-[255px]`
+
+/** Aperçu menu « La carte » (fiche restaurant). */
+export const siteRestaurantMenuGalleryImageClass =
+  `mx-auto ${siteMobileImageHeightClass} w-full bg-white object-contain object-center sm:h-auto sm:max-h-[min(72vh,560px)]`
+
+/** Vignette carte (liste restaurants, teaser guides) — ratio dès sm. */
+export const siteCardThumbnailImageClass =
+  `${siteMobileImageHeightClass} w-full object-cover sm:aspect-[16/10] sm:h-auto`
+
+/** Image pleine largeur dans un guide (sous-section). */
+export const siteGuideSubsectionImageClass =
+  `${siteMobileImageHeightClass} w-full object-cover sm:h-72 md:h-80`
 
 export const siteMarketingSplitHeroContentWrapClass =
   'order-2 flex flex-col justify-center lg:order-1'
@@ -172,8 +198,14 @@ export const siteSectionBgMutedClass = 'bg-stone-100'
 
 /** Teaser guides sous le hero (liste restaurants) — moins d’air en bas. */
 export const guidesTeaserBelowHeroSectionClass = `w-full ${siteSectionBgMutedClass} pt-10 sm:pt-14 pb-6 sm:pb-8`
-/** Fond clair teinté brand (#8D5524) — communauté, accents secondaires. */
+/** Fond clair teinté brand — accents secondaires. */
 export const siteSectionBgBrandTintClass = 'bg-[#f8f1ea]'
+
+/** Fond bandeau bas (communauté + footer), gris distinct du blanc et du stone-100. */
+export const siteCommunityFooterBgClass = 'bg-stone-200'
+
+/** Surface pleine largeur — inscription communauté. */
+export const siteCommunityFooterSurfaceClass = `w-full ${siteCommunityFooterBgClass}`
 
 export const siteSectionWhiteClass = `w-full ${siteSectionBgWhiteClass} ${siteSectionPaddingClass}`
 export const siteSectionMutedClass = `w-full ${siteSectionBgMutedClass} ${siteSectionPaddingClass}`
@@ -235,5 +267,8 @@ export const communityActionButtonClass =
 export const restaurantDetailChipClass =
   'rounded-md border border-neutral-200/90 bg-white px-3 py-1 text-base text-neutral-700 shadow-sm'
 
-/** Bloc « Rejoindre la communauté » — teinte brand légère. */
-export const communitySignupSectionClass = `w-full ${siteSectionBgBrandTintClass}`
+/** Bloc « Rejoindre la communauté ». */
+export const communitySignupSectionClass = siteCommunityFooterSurfaceClass
+
+/** Pied de page — même fond, séparé de la communauté par une bordure. */
+export const siteFooterSectionClass = `${siteCommunityFooterSurfaceClass} scroll-mt-24 border-t border-neutral-300/80 ${siteSectionPaddingClass}`

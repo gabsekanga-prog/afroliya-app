@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { ZoomableLightboxImage } from '@/app/components/zoomable-lightbox-image'
 import type { RestaurantMenuPage } from '@/lib/restaurants'
+import { siteRestaurantMenuGalleryImageClass } from '@/lib/site-styles'
 
 type Props = {
   pages: RestaurantMenuPage[]
@@ -86,13 +87,13 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
         <button
           type="button"
           onClick={openLightbox}
-          className="group block w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white px-4 py-8 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524] sm:px-6 sm:py-10"
+          className="group block w-full overflow-hidden rounded-2xl border border-neutral-200 bg-white px-3 py-3 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524] sm:px-6 sm:py-10"
           aria-label={`Agrandir la page ${index + 1} du menu`}
         >
           <img
             src={current.imageSrc}
             alt={pageLabel(alt, index, current.caption)}
-            className="mx-auto max-h-[min(72vh,560px)] w-full bg-white object-contain object-center"
+            className={siteRestaurantMenuGalleryImageClass}
             loading="lazy"
             draggable={false}
           />

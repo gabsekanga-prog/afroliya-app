@@ -6,18 +6,14 @@ import {
   siteFooterLabelClass,
   siteHeading2Class,
   siteHeading3Class,
-  siteSectionBgMutedClass,
-  siteSectionPaddingClass,
+  siteFooterSectionClass,
 } from '@/lib/site-styles'
 
 const footerLinkClass = restaurantPageTextLinkClass
 
 export function SiteFooter() {
   return (
-    <footer
-      id="liens-utiles"
-      className={`scroll-mt-24 border-t border-neutral-200 ${siteSectionBgMutedClass} ${siteSectionPaddingClass}`}
-    >
+    <footer id="liens-utiles" className={siteFooterSectionClass}>
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6">
         <h2 className={siteHeading2Class}>Liens utiles</h2>
 

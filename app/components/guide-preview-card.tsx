@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Guide } from '@/lib/guides'
 import {
   siteHeading3Class,
+  siteCardThumbnailImageClass,
   siteTextLinkInCardClass,
 } from '@/lib/site-styles'
 
@@ -21,7 +22,7 @@ export function GuidePreviewCard({ guide, className = '' }: Props) {
         <img
           src={guide.imageSrc}
           alt={guide.imageAlt}
-          className="aspect-[16/10] h-auto w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+          className={`${siteCardThumbnailImageClass} transition duration-300 group-hover:scale-[1.03]`}
           loading="lazy"
         />
       </div>

@@ -96,11 +96,11 @@ function AddressMap({
   if (!embedSrc) return null
 
   return (
-    <div className="flex h-full min-h-[min(420px,70vh)] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 shadow-sm lg:min-h-[min(480px,75vh)]">
+    <div className="flex h-full min-h-[200px] flex-col overflow-hidden rounded-xl border border-neutral-200 bg-neutral-100 shadow-sm sm:min-h-[min(360px,55vh)] lg:min-h-[min(480px,75vh)]">
       <iframe
         title={`Carte — ${restaurant.nom}`}
         src={embedSrc}
-        className="min-h-[min(420px,70vh)] w-full flex-1 border-0 lg:min-h-[min(480px,75vh)]"
+        className="min-h-[200px] w-full flex-1 border-0 sm:min-h-[min(360px,55vh)] lg:min-h-[min(480px,75vh)]"
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
         allowFullScreen

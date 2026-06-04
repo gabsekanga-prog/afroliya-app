@@ -6,6 +6,7 @@ import {
   validateBookingAgainstOpeningHours,
 } from '@/lib/reservation-opening-hours'
 import {
+  computePublicCodeExpiresAt,
   generateReservationPublicCode,
   validateCreateReservationPayload,
   type ReservationRecord,
@@ -113,6 +114,10 @@ export async function POST(request: Request, context: RouteContext) {
         remarks: parsed.data.remarks ?? null,
         status: 'pending',
         public_code: publicCode,
+        public_code_expires_at: computePublicCodeExpiresAt(
+          parsed.data.bookingDate,
+          parsed.data.bookingTime,
+        ),
       })
       .select('*')
       .single()

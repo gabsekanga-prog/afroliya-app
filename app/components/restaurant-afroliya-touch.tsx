@@ -36,7 +36,7 @@ export async function RestaurantAfroliyaTouch({
   return (
     <div aria-labelledby="notre-visite-heading">
       <h3 id="notre-visite-heading" className={siteHeading3Class}>
-        Notre visite
+        Contenu d'Afroliya
       </h3>
 
       <InstagramPostVideoCard

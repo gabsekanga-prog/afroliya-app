@@ -25,7 +25,7 @@ export async function RestaurantAfroliyaCommunityColumn({
 
   return (
     <div className="min-w-0">
-      <h3 className={siteHeading3Class}>Retours Afroliya</h3>
+      <h3 className={siteHeading3Class}>La touche Afroliya</h3>
 
       <div className={`mt-6 ${communityBoxClass}`} id="communaute-reactions">
         {showNotreVisite ? (

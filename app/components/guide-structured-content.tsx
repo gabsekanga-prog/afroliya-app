@@ -4,6 +4,7 @@ import {
   siteBodyRelaxedClass,
   siteButtonPrimarySmClass,
   siteGuideContentHeadingClass,
+  siteGuideSubsectionImageClass,
 } from '@/lib/site-styles'
 import Link from 'next/link'
 
@@ -59,7 +60,7 @@ export function GuideStructuredContent({ guide }: Props) {
               <img
                 src={item.imageSrc}
                 alt={item.imageAlt}
-                className="h-56 w-full object-cover sm:h-72 md:h-80"
+                className={siteGuideSubsectionImageClass}
               />
             </div>
 

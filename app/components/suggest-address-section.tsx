@@ -3,11 +3,11 @@
 import { useState } from 'react'
 
 import { formInputClassName, formLabelClassName, formTextareaClassName } from '@/app/components/form-fields'
-import { supabase } from '@/lib/supabase'
 import {
   siteBodyClass,
   siteButtonPrimarySmClass,
   siteGuideContentHeadingClass,
+  siteSectionDividerClass,
 } from '@/lib/site-styles'
 
 type Props = {
@@ -35,25 +35,23 @@ export function SuggestAddressSection({ guideSlug }: Props) {
       return
     }
 
-    if (!supabase) {
-      setMessage('Service temporairement indisponible.')
-      setMessageType('error')
-      return
-    }
-
     setPending(true)
     setMessage('')
     setMessageType(null)
 
-    const { error } = await supabase.from('address_suggestions').insert({
-      guide_slug: guideSlug?.trim() || null,
-      restaurant_name: name,
-      commune: area,
-      details: details.trim() || null,
-      email: email.trim() || null,
+    const response = await fetch('/api/address-suggestions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        guide_slug: guideSlug?.trim() || null,
+        restaurant_name: name,
+        commune: area,
+        details: details.trim() || null,
+        email: email.trim() || null,
+      }),
     })
 
-    if (error) {
+    if (!response.ok) {
       setMessage('Une erreur est survenue. Merci de réessayer.')
       setMessageType('error')
       setPending(false)
@@ -70,11 +68,16 @@ export function SuggestAddressSection({ guideSlug }: Props) {
   }
 
   return (
-    <aside className="mt-12 rounded-2xl border border-neutral-200/90 bg-stone-50 p-6 sm:p-8">
-      <h2 className={siteGuideContentHeadingClass}>Suggérer une adresse</h2>
+    <aside
+      className={`mt-12 ${siteSectionDividerClass} pt-12`}
+      aria-labelledby="suggest-address-heading"
+    >
+      <div className="rounded-2xl border border-neutral-200/90 bg-stone-50 p-6 sm:p-8">
+      <h2 id="suggest-address-heading" className={siteGuideContentHeadingClass}>
+        Suggérer une adresse
+      </h2>
       <p className={`mt-3 ${siteBodyClass}`}>
-        Une pépite cachée à Bruxelles ou aux alentours ? Partagez-la avec la
-        communauté Afroliya.
+        Vous connaissez une pépite qui n'est pas encore sur Afroliya ?
       </p>
 
       <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
@@ -93,7 +96,7 @@ export function SuggestAddressSection({ guideSlug }: Props) {
         </label>
 
         <label className={formLabelClassName}>
-          Quartier / commune
+          Lieu (ville, commune, etc.)
           <input
             type="text"
             name="commune"
@@ -152,6 +155,7 @@ export function SuggestAddressSection({ guideSlug }: Props) {
           </p>
         ) : null}
       </form>
+      </div>
     </aside>
   )
 }

@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { siteRestaurantPhotoGalleryImageClass } from '@/lib/site-styles'
+
 type Props = {
   images: string[]
   alt: string
@@ -126,7 +128,7 @@ export function RestaurantPhotoGallery({ images, alt, coverIndex }: Props) {
               <img
                 src={src}
                 alt={photoAlt(alt, index, coverIndex)}
-                className="h-[195px] w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:h-[220px] lg:h-[255px]"
+                className={siteRestaurantPhotoGalleryImageClass}
                 loading="lazy"
                 draggable={false}
               />

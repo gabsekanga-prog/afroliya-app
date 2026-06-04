@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useMemo, useState } from 'react'
 
 import {
@@ -62,6 +63,7 @@ export function RestaurantReservationWidget({
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1)
   const [form, setForm] = useState<FormState>(initialForm)
   const [verificationCode, setVerificationCode] = useState('')
+  const [submittedPublicCode, setSubmittedPublicCode] = useState('')
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
 
@@ -149,11 +151,14 @@ export function RestaurantReservationWidget({
         remarks: form.remarks,
       }),
     })
-    const data = (await response.json()) as { error?: string }
+    const data = (await response.json()) as { error?: string; publicCode?: string }
     setPending(false)
     if (!response.ok) {
       setError(data.error ?? 'Envoi impossible.')
       return false
+    }
+    if (data.publicCode) {
+      setSubmittedPublicCode(data.publicCode)
     }
     setStep(5)
     return true
@@ -216,6 +221,10 @@ export function RestaurantReservationWidget({
   }
 
   if (step === 5) {
+    const suiviHref = submittedPublicCode
+      ? `/reservations/suivi/${submittedPublicCode}`
+      : null
+
     return (
       <div className={reservationWidgetSuccessClass}>
         <h3 className="text-xl font-bold text-green-950">Demande envoyée</h3>
@@ -223,6 +232,16 @@ export function RestaurantReservationWidget({
           Votre demande a bien été envoyée au restaurant <strong>{restaurantName}</strong>.
           Vous recevrez une confirmation par e-mail dès que le restaurant aura répondu.
         </p>
+        {suiviHref ? (
+          <Link href={suiviHref} className={`mt-6 inline-flex ${siteButtonPrimaryClass}`}>
+            Voir ma réservation
+          </Link>
+        ) : null}
+        {suiviHref ? (
+          <p className={`mt-3 ${siteBodyClass}`}>
+            Vous pourrez aussi annuler votre demande depuis cette page si vos plans changent.
+          </p>
+        ) : null}
       </div>
     )
   }

@@ -10,13 +10,13 @@ import { restaurantSlugFromName } from '@/lib/restaurant-slug'
 
 import { ReservationSecureLinkNotice } from '@/app/reservations/reservation-secure-link-notice'
 
-import { ReservationManagePanel } from './reservation-manage-panel'
+import { ReservationClientPanel } from './reservation-client-panel'
 
 const CODE_RE = /^[A-Za-z0-9]{8}$/
 
 type Params = { code: string }
 
-export default async function ReservationManagePage({
+export default async function ReservationClientPage({
   params,
 }: {
   params: Promise<Params>
@@ -30,7 +30,7 @@ export default async function ReservationManagePage({
   const { data: reservation } = await admin
     .from('reservations')
     .select(
-      'client_name, client_email, client_phone, booking_date, booking_time, group_size, remarks, status, restaurant_id',
+      'client_name, booking_date, booking_time, group_size, remarks, status, restaurant_id',
     )
     .eq('public_code', code)
     .maybeSingle()
@@ -39,7 +39,7 @@ export default async function ReservationManagePage({
 
   const { data: restaurant } = await admin
     .from('restaurants')
-    .select('name, slug')
+    .select('name, slug, phone, address, google_maps_link')
     .eq('id', reservation.restaurant_id)
     .maybeSingle()
 
@@ -56,18 +56,22 @@ export default async function ReservationManagePage({
     <main className="min-h-screen bg-stone-50 text-neutral-900">
       <SiteHeader />
       <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
-        <h1 className={siteHeading1Class}>Gérer la réservation</h1>
+        <h1 className={siteHeading1Class}>Votre réservation</h1>
         <p className="mt-2 text-lg text-neutral-800">
-          <span className="font-semibold">Restaurant : </span>
-          {restaurantName}
+          <span className="font-semibold">Nom : </span>
+          {reservation.client_name}
         </p>
-        <ReservationManagePanel
+        <ReservationClientPanel
             publicCode={code}
-            restaurantSlug={restaurantSlug}
+            restaurantName={restaurantName}
+            restaurant={{
+              slug: restaurantSlug,
+              phone: restaurant?.phone ?? null,
+              address: restaurant?.address ?? null,
+              googleMapsLink: restaurant?.google_maps_link ?? null,
+            }}
             reservation={{
               client_name: reservation.client_name,
-              client_email: reservation.client_email,
-              client_phone: reservation.client_phone,
               booking_date: reservation.booking_date,
               booking_time: reservation.booking_time,
               group_size: Number(reservation.group_size),
