@@ -2,11 +2,13 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+import { GuidePageStatsTracker } from '@/app/components/guide-page-stats-tracker'
 import { GuideStructuredContent } from '@/app/components/guide-structured-content'
 import { SuggestAddressSection } from '@/app/components/suggest-address-section'
 import { MarketingSplitHero } from '@/app/components/marketing-split-hero'
 import { SiteBreadcrumb } from '@/app/components/site-breadcrumb'
 import { fetchGuideBySlug, fetchPublishedGuides } from '@/lib/guides'
+import { truncateMetaDescription } from '@/lib/site-metadata'
 import {
   siteButtonPrimaryClass,
   siteGuideContentInnerClass,
@@ -29,10 +31,21 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params
   const guide = await fetchGuideBySlug(slug)
-  if (!guide) return { title: 'Guide | Afroliya' }
+  if (!guide) return { title: 'Guide introuvable' }
+  const description = guide.intro?.trim()
+    ? truncateMetaDescription(guide.intro)
+    : truncateMetaDescription(
+        `Découvrez notre guide « ${guide.title} » : sélection de restaurants afro à Bruxelles et alentours.`,
+      )
   return {
-    title: `${guide.title} | Afroliya`,
-    description: guide.intro?.trim() || guide.title,
+    title: guide.title,
+    description,
+    openGraph: {
+      title: guide.title,
+      description,
+      type: 'article',
+      images: guide.imageSrc ? [{ url: guide.imageSrc, alt: guide.imageAlt }] : undefined,
+    },
   }
 }
 
@@ -50,13 +63,17 @@ export default async function GuideDetailPage({
 
   return (
     <>
+      <GuidePageStatsTracker
+        guideId={guide.id}
+        pagePath={`/guides/${guide.slug}`}
+      />
+
       <MarketingSplitHero
         imageSrc={guide.imageSrc}
         imageAlt={guide.imageAlt}
         title={guide.title}
         breadcrumb={
           <SiteBreadcrumb
-            tone="onDark"
             items={[
               { label: 'Guides thématiques', href: '/guides' },
               { label: guide.title },

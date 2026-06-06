@@ -4,12 +4,16 @@ import { useCallback, useEffect, useState } from 'react'
 import { Play } from 'lucide-react'
 
 import { InstagramPostEmbed } from '@/app/components/instagram-post-embed'
+import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
+import { trackRestaurantEvent } from '@/lib/restaurant-stats-client'
+import { siteMobileImageHeightClass } from '@/lib/site-styles'
 
 type Props = {
   postUrl: string
   permalink: string
   thumbnailUrl: string | null
   compactTop?: boolean
+  trackingRestaurantId?: string
 }
 
 export function InstagramPostVideoCard({
@@ -17,6 +21,7 @@ export function InstagramPostVideoCard({
   permalink,
   thumbnailUrl,
   compactTop = false,
+  trackingRestaurantId,
 }: Props) {
   const [open, setOpen] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(thumbnailUrl)
@@ -77,11 +82,20 @@ export function InstagramPostVideoCard({
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (trackingRestaurantId) {
+            void trackRestaurantEvent({
+              restaurantId: trackingRestaurantId,
+              eventType: 'click',
+              eventKey: RESTAURANT_STATS_CLICK_LABELS.instagram,
+            })
+          }
+          setOpen(true)
+        }}
         className={`group relative block w-full max-w-[300px] overflow-hidden rounded-2xl border border-neutral-200 bg-stone-100 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524] ${compactTop ? 'mt-4' : 'mt-6'}`}
         aria-label="Lire la vidéo Afroliya sur Instagram"
       >
-        <div className="relative h-[200px] w-full sm:aspect-[4/5] sm:h-auto">
+        <div className={`relative ${siteMobileImageHeightClass} w-full sm:aspect-[4/5] sm:h-auto`}>
           {previewUrl ? (
             <img
               src={previewUrl}
@@ -146,6 +160,14 @@ export function InstagramPostVideoCard({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="font-semibold text-[#8D5524] underline-offset-2 hover:underline"
+                onClick={() => {
+                  if (!trackingRestaurantId) return
+                  void trackRestaurantEvent({
+                    restaurantId: trackingRestaurantId,
+                    eventType: 'click',
+                    eventKey: RESTAURANT_STATS_CLICK_LABELS.instagram,
+                  })
+                }}
               >
                 Ouvrir sur Instagram
               </a>

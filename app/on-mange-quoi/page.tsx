@@ -11,7 +11,7 @@ import {
 export const revalidate = 120
 
 export const metadata: Metadata = {
-  title: 'On mange quoi ? | Afroliya',
+  title: 'On mange quoi ?',
   description:
     'Choisissez votre commune et votre envie culinaire : Afroliya vous propose un restaurant afro au hasard à Bruxelles.',
 }

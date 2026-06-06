@@ -4,11 +4,14 @@ import { useCallback, useEffect, useState } from 'react'
 
 import { ZoomableLightboxImage } from '@/app/components/zoomable-lightbox-image'
 import type { RestaurantMenuPage } from '@/lib/restaurants'
+import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
+import { trackRestaurantEvent } from '@/lib/restaurant-stats-client'
 import { siteRestaurantMenuGalleryImageClass } from '@/lib/site-styles'
 
 type Props = {
   pages: RestaurantMenuPage[]
   alt: string
+  trackingRestaurantId?: string
 }
 
 function ChevronIcon({ direction }: { direction: 'left' | 'right' }) {
@@ -35,7 +38,7 @@ function pageLabel(alt: string, index: number, caption: string | null): string {
   return caption ? `${base} — ${caption}` : base
 }
 
-export function RestaurantMenuGallery({ pages, alt }: Props) {
+export function RestaurantMenuGallery({ pages, alt, trackingRestaurantId }: Props) {
   const [index, setIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const count = pages.length
@@ -50,8 +53,15 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
   }, [count])
 
   const openLightbox = useCallback(() => {
+    if (trackingRestaurantId) {
+      void trackRestaurantEvent({
+        restaurantId: trackingRestaurantId,
+        eventType: 'click',
+        eventKey: RESTAURANT_STATS_CLICK_LABELS.viewMenu,
+      })
+    }
     setLightboxOpen(true)
-  }, [])
+  }, [trackingRestaurantId])
 
   const closeLightbox = useCallback(() => setLightboxOpen(false), [])
 
@@ -77,7 +87,7 @@ export function RestaurantMenuGallery({ pages, alt }: Props) {
   return (
     <>
       <div className="relative w-full max-w-3xl">
-        <p className="mb-3 text-left text-sm text-neutral-600">
+        <p className="mb-3 text-left text-base text-neutral-600">
           Page {index + 1} / {count}
           {current.caption ? ` — ${current.caption}` : ''}
           {' · '}

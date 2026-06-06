@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 import { DeleteGuideForm } from '@/app/admin/(protected)/components/delete-guide-form'
-import { fetchGuidesAdmin } from '@/lib/guides-admin'
+import { fetchGuidePageViewCountsAdmin, fetchGuidesAdmin } from '@/lib/guides-admin'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 export default async function AdminGuidesPage() {
@@ -13,7 +13,10 @@ export default async function AdminGuidesPage() {
     )
   }
 
-  const list = await fetchGuidesAdmin()
+  const [list, viewCounts] = await Promise.all([
+    fetchGuidesAdmin(),
+    fetchGuidePageViewCountsAdmin(),
+  ])
 
   return (
     <div>
@@ -33,7 +36,10 @@ export default async function AdminGuidesPage() {
       </div>
 
       <ul className="mt-8 space-y-4">
-        {list.map((g) => (
+        {list.map((g) => {
+          const views = viewCounts.get(g.id) ?? { total: 0, last30Days: 0 }
+
+          return (
           <li
             key={g.slug}
             className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-neutral-200 bg-white p-5 shadow-sm"
@@ -43,6 +49,16 @@ export default async function AdminGuidesPage() {
               <p className="text-lg text-neutral-600">{g.slug}</p>
               <p className="mt-1 text-base text-neutral-500">
                 {g.published ? 'Publié' : 'Brouillon'} — ordre {g.sort_order}
+              </p>
+              <p className="mt-2 text-base text-neutral-700">
+                <span className="font-semibold text-neutral-900">{views.total}</span> vue
+                {views.total !== 1 ? 's' : ''}
+                {views.last30Days > 0 ? (
+                  <span className="text-neutral-500">
+                    {' '}
+                    ({views.last30Days} sur les 30 derniers jours)
+                  </span>
+                ) : null}
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-3">
@@ -55,7 +71,8 @@ export default async function AdminGuidesPage() {
               <DeleteGuideForm slug={g.slug} title={g.title} />
             </div>
           </li>
-        ))}
+          )
+        })}
       </ul>
     </div>
   )

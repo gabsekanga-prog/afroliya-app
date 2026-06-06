@@ -4,7 +4,7 @@ import { SiteFooter } from '@/app/components/site-footer'
 import { SiteHeader } from '@/app/components/site-header'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 import { isReservationLinkExpired } from '@/lib/reservations'
-import { siteHeading1Class } from '@/lib/site-styles'
+import { siteHeading1Class, siteSectionBgSubtleClass } from '@/lib/site-styles'
 
 import { restaurantSlugFromName } from '@/lib/restaurant-slug'
 
@@ -53,7 +53,7 @@ export default async function ReservationClientPage({
   )
 
   return (
-    <main className="min-h-screen bg-stone-50 text-neutral-900">
+    <main className={`min-h-screen ${siteSectionBgSubtleClass} text-neutral-900`}>
       <SiteHeader />
       <div className="mx-auto w-full max-w-3xl px-4 py-12 sm:px-6">
         <h1 className={siteHeading1Class}>Votre réservation</h1>

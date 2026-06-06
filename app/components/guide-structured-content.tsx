@@ -74,7 +74,7 @@ export function GuideStructuredContent({ guide }: Props) {
 
         {guide.subsections.length === 0 ? (
           <li className="py-8 sm:py-10">
-            <p className="text-base text-neutral-600 md:text-lg">
+            <p className="text-lg text-neutral-600">
               Les détails de ce guide seront publiés prochainement.
             </p>
           </li>

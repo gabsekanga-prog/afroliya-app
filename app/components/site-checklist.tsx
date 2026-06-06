@@ -7,12 +7,9 @@ type Props = {
 }
 
 export function SiteChecklist({ items, className, tone = 'default' }: Props) {
-  const bodyClass =
-    tone === 'onDark'
-      ? 'text-base leading-relaxed text-[#f8e9dc]/95 md:text-lg'
-      : siteBodyRelaxedClass
-  const checkClass =
-    tone === 'onDark' ? 'text-[#f8e9dc] shrink-0 font-semibold' : 'text-brand shrink-0 font-semibold'
+  void tone
+  const bodyClass = siteBodyRelaxedClass
+  const checkClass = 'text-brand shrink-0 font-semibold'
 
   return (
     <ul

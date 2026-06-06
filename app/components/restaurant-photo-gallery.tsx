@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
+import { trackRestaurantEvent } from '@/lib/restaurant-stats-client'
 import { siteRestaurantPhotoGalleryImageClass } from '@/lib/site-styles'
 
 type Props = {
@@ -9,11 +11,12 @@ type Props = {
   alt: string
   /** Index de la photo de couverture (affichée en dernier dans `images`). */
   coverIndex?: number
+  trackingRestaurantId?: string
 }
 
-/** Moins de vignettes visibles = cartes plus larges (~1,1 mobile, ~2,5 PC). */
+/** Moins de vignettes visibles = cartes plus larges (~1 mobile, ~2 PC). */
 const SLIDE_CLASS =
-  'w-[calc((100%-1.25rem)/1.1)] shrink-0 snap-start sm:w-[calc((100%-1.25rem)/1.75)] md:w-[calc((100%-1.25rem)/2.2)] lg:w-[calc((100%-1.25rem)/2.5)]'
+  'w-[calc(100%-0.5rem)] shrink-0 snap-start sm:w-[calc((100%-1.25rem)/1.45)] md:w-[calc((100%-1.25rem)/1.85)] lg:w-[calc((100%-1.25rem)/2.1)]'
 
 const TRACK_GAP_PX = 16
 
@@ -43,7 +46,12 @@ function photoAlt(alt: string, index: number, coverIndex: number | undefined): s
   return `${alt} — photo ${index + 1}`
 }
 
-export function RestaurantPhotoGallery({ images, alt, coverIndex }: Props) {
+export function RestaurantPhotoGallery({
+  images,
+  alt,
+  coverIndex,
+  trackingRestaurantId,
+}: Props) {
   const trackRef = useRef<HTMLDivElement>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const count = images.length
@@ -122,7 +130,16 @@ export function RestaurantPhotoGallery({ images, alt, coverIndex }: Props) {
             <button
               key={`${src}-${index}`}
               type="button"
-              onClick={() => setLightboxIndex(index)}
+              onClick={() => {
+                if (trackingRestaurantId) {
+                  void trackRestaurantEvent({
+                    restaurantId: trackingRestaurantId,
+                    eventType: 'click',
+                    eventKey: RESTAURANT_STATS_CLICK_LABELS.viewPhotos,
+                  })
+                }
+                setLightboxIndex(index)
+              }}
               className={`${SLIDE_CLASS} group overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]`}
             >
               <img

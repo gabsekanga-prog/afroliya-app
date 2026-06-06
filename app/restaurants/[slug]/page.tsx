@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { AlertTriangle } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 
@@ -9,6 +10,7 @@ import { RestaurantMenuGallery } from '@/app/components/restaurant-menu-gallery'
 import { RestaurantContactAccess } from '@/app/components/restaurant-contact-access'
 import { RestaurantOpeningHours } from '@/app/components/restaurant-opening-hours'
 import { RestaurantPhotoGallery } from '@/app/components/restaurant-photo-gallery'
+import { RestaurantPageStatsTracker } from '@/app/components/restaurant-page-stats-tracker'
 import { RestaurantReviewsSection } from '@/app/components/restaurant-reviews-section'
 import { RestaurantReservationLink } from '@/app/components/restaurant-reservation-link'
 import { RestaurantReservationContent } from '@/app/components/restaurant-reservation-content'
@@ -29,6 +31,7 @@ import {
   fetchRestaurantOpeningHours,
   formatRestaurantHeroRatingLine,
 } from '@/lib/restaurants'
+import { buildRestaurantPageMetadata } from '@/lib/site-metadata'
 import { fetchRestaurantCommunityStats } from '@/lib/restaurant-community'
 import { getRestaurantReservationCta } from '@/lib/restaurant-reservation-cta'
 import {
@@ -36,11 +39,10 @@ import {
   restaurantContentSectionClass,
   restaurantDetailChipClass,
   siteBodyClass,
-  siteButtonOnDarkClass,
+  siteBodySemiboldClass,
   siteButtonPrimaryClass,
   siteHeading2Class,
   siteHeading3Class,
-  siteHeroMetaOnDarkClass,
 } from '@/lib/site-styles'
 
 type Params = {
@@ -52,6 +54,19 @@ export const revalidate = 60
 export async function generateStaticParams() {
   const slugs = await fetchPublishedRestaurantSlugs()
   return slugs.map((slug) => ({ slug }))
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<Params>
+}): Promise<Metadata> {
+  const { slug } = await params
+  const restaurant = await fetchRestaurantBySlug(slug)
+  if (!restaurant) {
+    return { title: 'Restaurant introuvable' }
+  }
+  return buildRestaurantPageMetadata(restaurant)
 }
 
 export default async function RestaurantDetailPage({
@@ -108,6 +123,10 @@ export default async function RestaurantDetailPage({
   return (
     <main className="min-h-screen text-neutral-900">
       <SiteHeader />
+      <RestaurantPageStatsTracker
+        restaurantId={restaurant.id}
+        pagePath={`/restaurants/${restaurant.slug}`}
+      />
 
       <MarketingSplitHero
         imageSrc={restaurant.image}
@@ -116,7 +135,6 @@ export default async function RestaurantDetailPage({
         imagePriority
         breadcrumb={
           <ExperienceBreadcrumb
-            tone="onDark"
             parent={{ label: 'Restaurants', href: '/restaurants' }}
             currentLabel={restaurant.nom}
           />
@@ -125,15 +143,10 @@ export default async function RestaurantDetailPage({
           <div className="mt-5 space-y-3 sm:mt-6">
             <RestaurantCuisineLocation
               restaurant={restaurant}
-              className={`flex flex-wrap items-center gap-x-1.5 gap-y-0.5 font-bold text-white/95 ${siteHeroMetaOnDarkClass}`}
-              cuisineIconClassName="h-3.5 w-3.5 shrink-0 text-white/80"
-              locationIconClassName="h-3.5 w-3.5 shrink-0 text-white/80"
-              separatorClassName="text-white/60"
+              className={`flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-neutral-800 ${siteBodySemiboldClass}`}
             />
             {heroRatingLine ? (
-              <p className={`text-white/90 ${siteHeroMetaOnDarkClass}`}>
-                {heroRatingLine}
-              </p>
+              <p className={siteBodySemiboldClass}>{heroRatingLine}</p>
             ) : null}
           </div>
         }
@@ -141,9 +154,10 @@ export default async function RestaurantDetailPage({
         <div className="mt-8 flex flex-wrap gap-3">
           <RestaurantReservationLink
             restaurant={restaurant}
-            className={`${siteButtonOnDarkClass} h-12`}
+            className={`${siteButtonPrimaryClass} h-12`}
+            trackingRestaurantId={restaurant.id}
           />
-          <RestaurantQuickActions actions={quickActions} tone="onDark" />
+          <RestaurantQuickActions actions={quickActions} trackingRestaurantId={restaurant.id} />
         </div>
       </MarketingSplitHero>
 
@@ -170,12 +184,14 @@ export default async function RestaurantDetailPage({
                 images={galleryImages}
                 alt={restaurant.nom}
                 coverIndex={coverGalleryIndex}
+                trackingRestaurantId={restaurant.id}
               />
             </div>
             <div className="mt-8">
               <RestaurantReservationLink
                 restaurant={restaurant}
                 className={siteButtonPrimaryClass}
+                trackingRestaurantId={restaurant.id}
               />
             </div>
           </div>
@@ -208,13 +224,18 @@ export default async function RestaurantDetailPage({
               </p>
               {hasMenuPhotos ? (
                 <div className="mt-8">
-                  <RestaurantMenuGallery pages={menuPages} alt={restaurant.nom} />
+                  <RestaurantMenuGallery
+                    pages={menuPages}
+                    alt={restaurant.nom}
+                    trackingRestaurantId={restaurant.id}
+                  />
                 </div>
               ) : null}
               <div className="mt-8">
                 <RestaurantReservationLink
                   restaurant={restaurant}
                   className={siteButtonPrimaryClass}
+                  trackingRestaurantId={restaurant.id}
                 />
               </div>
             </>
@@ -228,6 +249,7 @@ export default async function RestaurantDetailPage({
                 <RestaurantReservationLink
                   restaurant={restaurant}
                   className={siteButtonPrimaryClass}
+                  trackingRestaurantId={restaurant.id}
                 />
               </div>
             </>
@@ -267,6 +289,7 @@ export default async function RestaurantDetailPage({
             <RestaurantReservationLink
               restaurant={restaurant}
               className={siteButtonPrimaryClass}
+              trackingRestaurantId={restaurant.id}
             />
           </div>
         </div>
@@ -308,6 +331,7 @@ export default async function RestaurantDetailPage({
             <RestaurantReservationLink
               restaurant={restaurant}
               className={siteButtonPrimaryClass}
+              trackingRestaurantId={restaurant.id}
             />
           </div>
         </div>

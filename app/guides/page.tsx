@@ -14,7 +14,7 @@ import {
 export const revalidate = 120
 
 export const metadata: Metadata = {
-  title: 'Guides thématiques | Afroliya',
+  title: 'Guides thématiques',
   description:
     'Sélections de restaurants africains à Bruxelles : camerounais, congolais, dîners romantiques et plus.',
 }
@@ -38,7 +38,7 @@ export default async function GuidesIndexPage() {
       <section className={siteGuideListSectionClass}>
         <div className={siteGuideListInnerClass}>
           {guides.length === 0 ? (
-            <p className="text-base text-neutral-600 md:text-lg">
+            <p className="text-lg text-neutral-600">
               Aucun guide publié pour le moment. Revenez bientôt ou parcourez les{' '}
               <Link
                 href="/restaurants"

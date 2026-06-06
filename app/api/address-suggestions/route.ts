@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { EmailConfigurationError, EmailDeliveryError, sendAdminSiteNotification } from '@/lib/email/sendgrid'
+import { syncSendGridContact } from '@/lib/email/sendgrid-contacts'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 export async function POST(request: Request) {
@@ -65,6 +66,10 @@ export async function POST(request: Request) {
         { status: 502 },
       )
     }
+  }
+
+  if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    void syncSendGridContact({ email, source: 'address_suggestion' })
   }
 
   return NextResponse.json({ ok: true })

@@ -103,7 +103,7 @@ export function RestaurantCommunityReactions({
             J&apos;ai déjà testé
           </button>
           {ateHereVoteLabel ? (
-            <p className="mt-2 text-center text-sm text-neutral-600">{ateHereVoteLabel}</p>
+            <p className="mt-2 text-center text-base text-neutral-600">{ateHereVoteLabel}</p>
           ) : null}
         </div>
 
@@ -118,13 +118,13 @@ export function RestaurantCommunityReactions({
             Je vais tester
           </button>
           {loveVoteLabel ? (
-            <p className="mt-2 text-center text-sm text-neutral-600">{loveVoteLabel}</p>
+            <p className="mt-2 text-center text-base text-neutral-600">{loveVoteLabel}</p>
           ) : null}
         </div>
       </div>
 
       {message ? (
-        <p className="mt-3 text-sm text-amber-800" role="status">
+        <p className="mt-3 text-base text-amber-800" role="status">
           {message}
         </p>
       ) : null}

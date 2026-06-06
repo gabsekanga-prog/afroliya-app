@@ -1,10 +1,7 @@
 import { RestaurantAfroliyaTouch } from '@/app/components/restaurant-afroliya-touch'
 import { RestaurantCommunityReactions } from '@/app/components/restaurant-community-reactions'
 import type { RestaurantCommunityStats } from '@/lib/restaurant-community'
-import { siteHeading3Class } from '@/lib/site-styles'
-
-const communityBoxClass =
-  'rounded-2xl border border-neutral-200/90 bg-white p-6 shadow-md shadow-neutral-900/[0.06] sm:p-8'
+import { restaurantDetailPanelClass, siteHeading3Class } from '@/lib/site-styles'
 
 type Props = {
   restaurantId: string
@@ -27,10 +24,11 @@ export async function RestaurantAfroliyaCommunityColumn({
     <div className="min-w-0">
       <h3 className={siteHeading3Class}>La touche Afroliya</h3>
 
-      <div className={`mt-6 ${communityBoxClass}`} id="communaute-reactions">
+      <div className={`mt-6 ${restaurantDetailPanelClass}`} id="communaute-reactions">
         {showNotreVisite ? (
           <RestaurantAfroliyaTouch
             postUrl={afroliyaInstagramPostUrl}
+            restaurantId={restaurantId}
             manualThumbnailUrl={afroliyaInstagramThumbnailUrl}
             fallbackCoverUrl={restaurantCoverImageUrl}
             embedded

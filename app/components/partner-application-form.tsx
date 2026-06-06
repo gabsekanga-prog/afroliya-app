@@ -92,7 +92,7 @@ export function PartnerApplicationForm() {
   return (
     <form
       key={formKey}
-      className="mt-10 flex w-full flex-col gap-6"
+      className="flex w-full flex-col gap-6"
       onSubmit={handleSubmit}
     >
       <label className={formLabelClassName}>

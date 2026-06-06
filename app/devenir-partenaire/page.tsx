@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import {
   BadgeEuro,
@@ -21,9 +22,13 @@ import {
   siteHeading2Class,
   siteHeading2LeadingClass,
   siteHeading3Class,
+  sitePainPointItemClass,
+  sitePainPointsListClass,
   siteSectionBgWhiteClass,
   siteSectionContentFirstClass,
   siteSectionContentSecondClass,
+  siteCardOnMutedClass,
+  siteCardOnWhiteClass,
   siteSectionColumnImageClass,
   siteSectionMediaFirstClass,
   siteSectionMediaSecondClass,
@@ -35,6 +40,12 @@ import { MarketingSplitHero } from '../components/marketing-split-hero'
 import { PartnerApplicationForm } from '../components/partner-application-form'
 import { PlatformStatsList } from '../components/platform-stats-list'
 import { SiteFooter } from '../components/site-footer'
+
+export const metadata: Metadata = {
+  title: 'Devenir partenaire',
+  description:
+    'Boostez la visibilité de votre restaurant africain avec Afroliya : audience ciblée, réservation sans commission, accompagnement marketing.',
+}
 
 const benefits: {
   title: string
@@ -116,10 +127,25 @@ export default function DevenirPartenairePage() {
             <h2 className={siteHeading2Class}>
               Marre des solutions marketing inefficaces ?
             </h2>
-            <ul className={`mt-6 space-y-2 pl-6 ${siteBodyClass}`}>
-              <li>✖︎ Public généraliste et peu intéressé</li>
-              <li>✖︎ Coûts élevés et commissions abusives</li>
-              <li>✖︎ Trop d'efforts pour peu de résultats</li>
+            <ul className={`mt-6 space-y-2 ${sitePainPointsListClass}`}>
+              <li className={sitePainPointItemClass}>
+                <span className="shrink-0" aria-hidden>
+                  ✖︎
+                </span>
+                <span>Public généraliste et peu intéressé</span>
+              </li>
+              <li className={sitePainPointItemClass}>
+                <span className="shrink-0" aria-hidden>
+                  ✖︎
+                </span>
+                <span>Coûts élevés et commissions abusives</span>
+              </li>
+              <li className={sitePainPointItemClass}>
+                <span className="shrink-0" aria-hidden>
+                  ✖︎
+                </span>
+                <span>Trop d&apos;efforts pour peu de résultats</span>
+              </li>
             </ul>
             <p className={`mt-6 ${siteBodySemiboldClass}`}>
               Afroliya est la solution qu'il vous faut.
@@ -139,7 +165,10 @@ export default function DevenirPartenairePage() {
         </div>
       </section>
 
-      <section className={siteSectionMutedClass}>
+      <section
+        id="avantages-partenaire"
+        className={`w-full scroll-mt-24 ${siteSectionMutedClass}`}
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-8 sm:mb-10">
           <h2 className={siteHeading2Class}>
@@ -153,7 +182,7 @@ export default function DevenirPartenairePage() {
             return (
             <article
               key={item.title}
-              className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-7"
+              className={`${siteCardOnMutedClass} shadow-sm sm:p-7`}
             >
               <div className="inline-flex rounded-xl bg-stone-100 p-2.5 text-brand">
                 <Icon size={20} strokeWidth={2} />
@@ -176,7 +205,10 @@ export default function DevenirPartenairePage() {
         </div>
       </section>
 
-      <section className={siteSectionWhiteClass}>
+      <section
+        id="chiffres-cles"
+        className={`w-full scroll-mt-24 ${siteSectionWhiteClass}`}
+      >
         <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-12">
           <div
             className={`${siteSectionMediaFirstClass} overflow-hidden rounded-3xl border border-neutral-200/80`}
@@ -217,7 +249,7 @@ export default function DevenirPartenairePage() {
           {offers.map((offer) => (
             <article
               key={offer.name}
-              className="rounded-2xl border border-neutral-200 bg-stone-50/80 p-6 shadow-sm"
+              className={`${siteCardOnMutedClass} shadow-sm`}
             >
               <h3 className={siteHeading3Class}>{offer.name}</h3>
               <p className={`mt-2 ${siteBodyClass}`}>{offer.subtitle}</p>
@@ -248,7 +280,9 @@ export default function DevenirPartenairePage() {
             Démarrons la collaboration
           </h2>
 
-          <PartnerApplicationForm />
+          <div className={`mt-8 sm:mt-10 ${siteCardOnWhiteClass}`}>
+            <PartnerApplicationForm />
+          </div>
         </div>
       </section>
       <SiteFooter />

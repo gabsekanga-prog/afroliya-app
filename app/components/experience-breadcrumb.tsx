@@ -10,7 +10,7 @@ type Props = {
   currentLabel: string
   /** Segment intermédiaire (ex. Restaurants sur une fiche détail). */
   parent?: BreadcrumbSegment
-  /** Fond sombre du hero marketing. */
+  /** Conservé pour compatibilité — les heros utilisent un fond clair. */
   tone?: 'default' | 'onDark'
 }
 

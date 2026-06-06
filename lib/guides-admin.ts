@@ -2,7 +2,13 @@ import type { GuideSubsection } from '@/lib/guide-types'
 import { parseSubsections } from '@/lib/guides-parse'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
+export type GuidePageViewCountsAdmin = {
+  total: number
+  last30Days: number
+}
+
 export type GuideAdmin = {
+  id: string
   slug: string
   title: string
   image_src: string
@@ -14,6 +20,7 @@ export type GuideAdmin = {
 }
 
 type GuideRowAdmin = {
+  id: string
   slug: string
   title: string
   image_src: string
@@ -26,6 +33,7 @@ type GuideRowAdmin = {
 
 function mapAdminRow(row: GuideRowAdmin): GuideAdmin {
   return {
+    id: row.id,
     slug: row.slug,
     title: row.title,
     image_src: row.image_src,
@@ -44,7 +52,7 @@ export async function fetchGuidesAdmin(): Promise<GuideAdmin[]> {
   const { data, error } = await admin
     .from('guides')
     .select(
-      'slug, title, image_src, image_alt, intro, subsections, published, sort_order',
+      'id, slug, title, image_src, image_alt, intro, subsections, published, sort_order',
     )
     .order('sort_order', { ascending: true })
 
@@ -65,7 +73,7 @@ export async function fetchGuideAdminBySlug(
   const { data, error } = await admin
     .from('guides')
     .select(
-      'slug, title, image_src, image_alt, intro, subsections, published, sort_order',
+      'id, slug, title, image_src, image_alt, intro, subsections, published, sort_order',
     )
     .eq('slug', slug)
     .maybeSingle()
@@ -78,6 +86,46 @@ export async function fetchGuideAdminBySlug(
   if (!data) return null
 
   return mapAdminRow(data as GuideRowAdmin)
+}
+
+function periodStartIso(days: number): string {
+  const start = new Date()
+  start.setDate(start.getDate() - (days - 1))
+  start.setHours(0, 0, 0, 0)
+  return start.toISOString()
+}
+
+export async function fetchGuidePageViewCountsAdmin(): Promise<
+  Map<string, GuidePageViewCountsAdmin>
+> {
+  const admin = getSupabaseAdmin()
+  const counts = new Map<string, GuidePageViewCountsAdmin>()
+  if (!admin) return counts
+
+  const { data, error } = await admin
+    .from('guide_page_views')
+    .select('guide_id, created_at')
+    .order('created_at', { ascending: false })
+    .limit(50000)
+
+  if (error) {
+    console.error('[guides-admin] page views', error.message)
+    return counts
+  }
+
+  const cutoff30 = periodStartIso(30)
+
+  for (const row of data ?? []) {
+    const guideId = String(row.guide_id)
+    const current = counts.get(guideId) ?? { total: 0, last30Days: 0 }
+    current.total += 1
+    if (row.created_at >= cutoff30) {
+      current.last30Days += 1
+    }
+    counts.set(guideId, current)
+  }
+
+  return counts
 }
 
 export function subsectionsToJsonbPayload(

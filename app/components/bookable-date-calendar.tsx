@@ -121,7 +121,7 @@ export function BookableDateCalendar({
         >
           <ChevronLeft className="h-5 w-5" aria-hidden />
         </button>
-        <p className="text-base font-semibold capitalize text-neutral-900">{monthLabel}</p>
+        <p className="text-lg font-semibold capitalize text-neutral-900">{monthLabel}</p>
         <button
           type="button"
           onClick={() =>
@@ -164,7 +164,7 @@ export function BookableDateCalendar({
               aria-current={isToday ? 'date' : undefined}
               onClick={() => onChange(isoDate)}
               className={[
-                'flex h-10 w-full items-center justify-center rounded-lg text-sm font-medium transition',
+                'flex h-10 w-full items-center justify-center rounded-lg text-base font-medium transition',
                 !inMonth ? 'text-neutral-300' : '',
                 inMonth && !bookable ? 'cursor-not-allowed text-neutral-300' : '',
                 inMonth && bookable && !selected
@@ -186,7 +186,7 @@ export function BookableDateCalendar({
       </div>
 
       {hasOpeningHours ? (
-        <p className="mt-3 text-sm text-neutral-500">
+        <p className="mt-3 text-base text-neutral-500">
           Seuls les jours d’ouverture avec des créneaux disponibles sont sélectionnables.
         </p>
       ) : null}

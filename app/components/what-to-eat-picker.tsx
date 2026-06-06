@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Sparkles, UtensilsCrossed } from 'lucide-react'
+import { Salad } from 'lucide-react'
 
 import { FormSelect } from '@/app/components/form-fields'
 import { RestaurantCard } from '@/app/components/restaurant-card'
@@ -18,7 +18,7 @@ import {
   siteGuideIntroSectionClass,
   siteHeading1OnDarkClass,
   siteHeading2Class,
-  siteSectionBgWhiteClass,
+  siteSectionBgMutedClass,
   siteSectionInnerClass,
   siteSectionMutedClass,
   siteSectionTwoColumnGridClass,
@@ -99,7 +99,7 @@ export function WhatToEatPicker({
     <>
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
-          <span className="mb-2 block text-base font-semibold text-neutral-900">
+          <span className="mb-2 block text-lg font-semibold text-neutral-900">
             Quelle commune ?
           </span>
           <FormSelect
@@ -122,7 +122,7 @@ export function WhatToEatPicker({
         </label>
 
         <label className="block">
-          <span className="mb-2 block text-base font-semibold text-neutral-900">
+          <span className="mb-2 block text-lg font-semibold text-neutral-900">
             Quelle envie ?
           </span>
           <FormSelect
@@ -154,7 +154,7 @@ export function WhatToEatPicker({
       </button>
 
       {emptyMessage ? (
-        <p className="mt-6 text-base text-neutral-700" role="status">
+        <p className="mt-6 text-lg text-neutral-700" role="status">
           {emptyMessage}{' '}
           <Link href="/restaurants" className="font-semibold text-[#8D5524] hover:underline">
             Voir tous les restaurants
@@ -167,7 +167,7 @@ export function WhatToEatPicker({
   const pickerResult = (
     <>
       {fallbackNotice ? (
-        <p className="text-base text-neutral-700" role="status">
+        <p className="text-lg text-neutral-700" role="status">
           {fallbackNotice}
         </p>
       ) : null}
@@ -199,8 +199,8 @@ export function WhatToEatPicker({
         <section className={siteGuideIntroSectionClass}>
           <div className={siteSectionInnerClass}>
             <div className="flex flex-col items-start text-left">
-              <UtensilsCrossed
-                className="h-16 w-16 text-[#f8e9dc] sm:h-20 sm:w-20"
+              <Salad
+                className="h-16 w-16 text-brand sm:h-20 sm:w-20"
                 strokeWidth={1.5}
                 aria-hidden
               />
@@ -213,7 +213,7 @@ export function WhatToEatPicker({
         </section>
 
         <section
-          className={`w-full ${siteSectionBgWhiteClass} pb-12 pt-6 sm:pb-16 sm:pt-8`}
+          className={`w-full ${siteSectionBgMutedClass} pb-12 pt-6 sm:pb-16 sm:pt-8`}
         >
           <div className={`${siteSectionInnerClass} text-left`}>
             <div className={`${siteSectionTwoColumnGridClass} lg:items-start`}>
@@ -230,7 +230,7 @@ export function WhatToEatPicker({
     <section className={siteSectionMutedClass}>
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <div className="flex items-start gap-3">
-          <Sparkles
+          <Salad
             className="mt-1 h-7 w-7 shrink-0 text-[#8D5524]"
             strokeWidth={1.5}
             aria-hidden

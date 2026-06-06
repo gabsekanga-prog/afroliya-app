@@ -13,19 +13,13 @@ type Props = {
 }
 
 function breadcrumbStyles(tone: 'default' | 'onDark') {
-  const isOnDark = tone === 'onDark'
+  void tone
 
   return {
-    nav: isOnDark
-      ? 'flex flex-wrap items-center gap-x-2 text-sm'
-      : 'flex flex-wrap items-center gap-x-2 text-sm',
-    link: isOnDark
-      ? 'font-normal text-white/60 underline underline-offset-2 transition hover:text-white/85'
-      : 'font-normal text-neutral-500 underline underline-offset-2 transition hover:text-neutral-700',
-    current: isOnDark
-      ? 'font-normal text-white'
-      : 'font-normal text-neutral-900',
-    separator: isOnDark ? 'text-white/35' : 'text-neutral-400',
+    nav: 'flex flex-wrap items-center gap-x-2 text-base',
+    link: 'font-normal text-neutral-500 underline underline-offset-2 transition hover:text-neutral-700',
+    current: 'font-normal text-neutral-900',
+    separator: 'text-neutral-400',
   }
 }
 

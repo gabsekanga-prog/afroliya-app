@@ -4,6 +4,7 @@ import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+import { trackRestaurantEvent } from '@/lib/restaurant-stats-client'
 
 export type QuickActionItem = {
   id: string
@@ -15,6 +16,7 @@ export type QuickActionItem = {
 type Props = {
   actions: QuickActionItem[]
   tone?: 'default' | 'onDark'
+  trackingRestaurantId?: string
 }
 
 const PANEL_WIDTH = 256
@@ -107,7 +109,11 @@ function computePanelPosition(button: HTMLButtonElement): {
   }
 }
 
-export function RestaurantQuickActions({ actions, tone = 'default' }: Props) {
+export function RestaurantQuickActions({
+  actions,
+  tone = 'default',
+  trackingRestaurantId,
+}: Props) {
   const [open, setOpen] = useState(false)
   const [position, setPosition] = useState<{
     top: number
@@ -177,15 +183,12 @@ export function RestaurantQuickActions({ actions, tone = 'default' }: Props) {
     setOpen(false)
   }
 
-  const triggerClass =
-    tone === 'onDark'
-      ? 'inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-white/50 bg-transparent px-6 text-lg font-normal text-white shadow-sm transition hover:border-white hover:bg-white/10'
-      : 'inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 text-lg font-normal text-neutral-900 shadow-sm transition hover:border-[#c9a882] hover:bg-[#faf6f2]'
+  void tone
 
-  const chevronClass =
-    tone === 'onDark'
-      ? `h-4 w-4 shrink-0 text-white/80 transition-transform ${open ? 'rotate-180' : ''}`
-      : `h-4 w-4 shrink-0 text-neutral-500 transition-transform ${open ? 'rotate-180' : ''}`
+  const triggerClass =
+    'inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-neutral-300 bg-white px-6 text-lg font-normal text-neutral-900 shadow-sm transition hover:border-[#c9a882] hover:bg-[#faf6f2]'
+
+  const chevronClass = `h-4 w-4 shrink-0 text-neutral-500 transition-transform ${open ? 'rotate-180' : ''}`
 
   const panel =
     open && position && mounted ? (
@@ -202,7 +205,7 @@ export function RestaurantQuickActions({ actions, tone = 'default' }: Props) {
         className="fixed z-[200] overflow-hidden rounded-xl border border-neutral-200 bg-white text-neutral-900 shadow-lg"
       >
         <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
-          <p id="quick-actions-title" className="text-base font-bold text-neutral-900">
+          <p id="quick-actions-title" className="text-lg font-bold text-neutral-900">
             Raccourcis
           </p>
           <button
@@ -230,7 +233,15 @@ export function RestaurantQuickActions({ actions, tone = 'default' }: Props) {
               <a
                 href={action.href}
                 role="menuitem"
-                onClick={close}
+                onClick={() => {
+                  close()
+                  if (!trackingRestaurantId) return
+                  void trackRestaurantEvent({
+                    restaurantId: trackingRestaurantId,
+                    eventType: 'click',
+                    eventKey: action.label,
+                  })
+                }}
                 className={`group flex items-center gap-3 rounded-xl px-3 py-2.5 ${restaurantPageTextLinkClass}`}
                 {...(action.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
               >

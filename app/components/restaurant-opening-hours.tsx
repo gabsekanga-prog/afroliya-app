@@ -56,7 +56,7 @@ export function RestaurantOpeningHours({ days }: Props) {
   return (
     <div className="mt-8 grid grid-cols-1 gap-x-10 gap-y-3 sm:grid-cols-2">
       {columns.map((column, columnIndex) => (
-        <ul key={columnIndex} className="space-y-3 text-base md:text-lg">
+        <ul key={columnIndex} className="space-y-3 text-lg">
           {column.map((dayHours) => (
             <DayRow key={dayHours.day} dayHours={dayHours} isToday={dayHours.day === today} />
           ))}

@@ -1,16 +1,17 @@
-import Link from 'next/link'
-
 import { InstagramPostVideoCard } from '@/app/components/instagram-post-video-card'
+import { RestaurantTrackedNextLink } from '@/app/components/restaurant-tracked-link'
 import {
   fetchInstagramThumbnailFromOEmbed,
   resolveInstagramCardThumbnail,
 } from '@/lib/instagram-thumbnail'
 import { normalizeInstagramPostUrl } from '@/lib/instagram-embed'
 import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
 import { siteHeading3Class } from '@/lib/site-styles'
 
 type Props = {
   postUrl: string
+  restaurantId: string
   manualThumbnailUrl?: string
   fallbackCoverUrl?: string
   /** À l’intérieur de la boîte « Feedback de la communauté ». */
@@ -19,6 +20,7 @@ type Props = {
 
 export async function RestaurantAfroliyaTouch({
   postUrl,
+  restaurantId,
   manualThumbnailUrl = '',
   fallbackCoverUrl = '',
   embedded = false,
@@ -44,17 +46,20 @@ export async function RestaurantAfroliyaTouch({
         permalink={permalink}
         thumbnailUrl={thumbnailUrl}
         compactTop={embedded}
+        trackingRestaurantId={restaurantId}
       />
 
       <p className="mt-4">
-        <Link
+        <RestaurantTrackedNextLink
           href={permalink}
           target="_blank"
           rel="noopener noreferrer"
+          restaurantId={restaurantId}
+          eventKey={RESTAURANT_STATS_CLICK_LABELS.instagram}
           className={restaurantPageTextLinkClass}
         >
           Voir sur Instagram
-        </Link>
+        </RestaurantTrackedNextLink>
       </p>
     </div>
   )

@@ -87,11 +87,11 @@ export function RestaurantReservationVote({
         {pending ? 'Envoi…' : 'Voter'}
       </button>
       {voteLabel ? (
-        <p className="mt-2 text-center text-sm text-neutral-600">{voteLabel}</p>
+        <p className="mt-2 text-center text-base text-neutral-600">{voteLabel}</p>
       ) : null}
 
       {message ? (
-        <p className="mt-3 text-sm text-amber-800" role="status">
+        <p className="mt-3 text-base text-amber-800" role="status">
           {message}
         </p>
       ) : null}

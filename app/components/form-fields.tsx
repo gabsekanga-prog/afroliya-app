@@ -4,13 +4,13 @@ export const formLabelClassName =
   'flex flex-col gap-2 text-lg font-semibold text-neutral-800'
 
 export const formInputClassName =
-  'w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 font-normal text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300'
+  'w-full rounded-xl border border-neutral-300 bg-white px-4 py-2.5 text-lg font-normal text-neutral-900 placeholder:text-neutral-500 outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300'
 
 export const formTextareaClassName =
   `${formInputClassName} min-h-[120px] resize-y`
 
 export const formSelectClassName =
-  'w-full appearance-none rounded-xl border border-neutral-300 bg-white px-4 py-2.5 pr-14 font-normal text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300'
+  'w-full appearance-none rounded-xl border border-neutral-300 bg-white px-4 py-2.5 pr-14 text-lg font-normal text-neutral-900 outline-none transition focus:border-neutral-500 focus:ring-2 focus:ring-neutral-300'
 
 function SelectChevron() {
   return (

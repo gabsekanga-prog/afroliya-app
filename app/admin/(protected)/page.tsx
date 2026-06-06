@@ -36,6 +36,15 @@ export default function AdminDashboardPage() {
             Consulter les demandes envoyées via le formulaire Devenir partenaire.
           </p>
         </Link>
+        <Link
+          href="/admin/statistiques"
+          className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm transition hover:border-brand hover:shadow-md"
+        >
+          <h2 className="text-xl font-bold text-neutral-900">Statistiques</h2>
+          <p className="mt-2 text-lg text-neutral-600">
+            Vues et clics sur les fiches restaurants, avec évolution sur 7 ou 30 jours.
+          </p>
+        </Link>
       </div>
     </div>
   )

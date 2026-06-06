@@ -2,6 +2,13 @@ import Link from 'next/link'
 
 import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
 import {
+  siteContactEmail,
+  siteContactPhoneHref,
+  siteContactPhoneLabel,
+  siteSocialFacebookUrl,
+  siteSocialInstagramUrl,
+} from '@/lib/site-links'
+import {
   siteBodyClass,
   siteFooterLabelClass,
   siteHeading2Class,
@@ -42,15 +49,12 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <a
-                  href="/#communaute"
-                  className={footerLinkClass}
-                >
+                <a href="/#communaute" className={footerLinkClass}>
                   Rejoindre la communauté
                 </a>
               </li>
               <li>
-                <Link href="#" className={footerLinkClass}>
+                <Link href="/suggerer-un-resto" className={footerLinkClass}>
                   Suggérer un resto
                 </Link>
               </li>
@@ -61,21 +65,23 @@ export function SiteFooter() {
             <h3 className={siteHeading3Class}>Partenaires</h3>
             <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
-                <Link
-                  href="/devenir-partenaire"
-                  className={footerLinkClass}
-                >
+                <Link href="/devenir-partenaire" className={footerLinkClass}>
                   Devenir partenaire
                 </Link>
               </li>
               <li>
-                <Link href="#" className={footerLinkClass}>
-                  Nos offres
+                <Link href="/devenir-partenaire#avantages-partenaire" className={footerLinkClass}>
+                  Les avantages
                 </Link>
               </li>
               <li>
-                <Link href="#" className={footerLinkClass}>
-                  Espace resto
+                <Link href="/devenir-partenaire#chiffres-cles" className={footerLinkClass}>
+                  Les chiffres clés
+                </Link>
+              </li>
+              <li>
+                <Link href="/devenir-partenaire#offres-partenaire" className={footerLinkClass}>
+                  Nos offres
                 </Link>
               </li>
             </ul>
@@ -85,28 +91,22 @@ export function SiteFooter() {
             <h3 className={siteHeading3Class}>À propos</h3>
             <ul className={`mt-4 space-y-2 ${siteBodyClass}`}>
               <li>
-                <Link href="#" className={footerLinkClass}>
+                <Link href="/contact" className={footerLinkClass}>
                   Nous contacter
                 </Link>
               </li>
               <li>
-                <a
-                  href="mailto:contact@afroliya.be"
-                  className={footerLinkClass}
-                >
-                  contact@afroliya.be
+                <a href={`mailto:${siteContactEmail}`} className={footerLinkClass}>
+                  {siteContactEmail}
                 </a>
               </li>
               <li>
-                <a
-                  href="tel:+32456880787"
-                  className={footerLinkClass}
-                >
-                  +32 456 88 07 87
+                <a href={siteContactPhoneHref} className={footerLinkClass}>
+                  {siteContactPhoneLabel}
                 </a>
               </li>
               <li>
-                <Link href="#" className={footerLinkClass}>
+                <Link href="/mentions-legales" className={footerLinkClass}>
                   Mentions légales
                 </Link>
               </li>
@@ -117,8 +117,10 @@ export function SiteFooter() {
         <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-neutral-300 pt-6">
           <span className={siteFooterLabelClass}>Réseaux sociaux :</span>
           <a
-            href="#"
-            aria-label="Instagram"
+            href={siteSocialInstagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Instagram Afroliya"
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 text-brand transition hover:border-[#c9a882] hover:bg-[#f5e6d9]"
           >
             <svg
@@ -135,8 +137,10 @@ export function SiteFooter() {
             </svg>
           </a>
           <a
-            href="#"
-            aria-label="Facebook"
+            href={siteSocialFacebookUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Facebook Afroliya"
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-neutral-300 text-brand transition hover:border-[#c9a882] hover:bg-[#f5e6d9]"
           >
             <svg

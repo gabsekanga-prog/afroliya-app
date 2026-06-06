@@ -4,7 +4,6 @@ import { useState } from 'react'
 
 import { formInputClassName, formLabelClassName } from '@/app/components/form-fields'
 import { SiteChecklist } from '@/app/components/site-checklist'
-import { supabase } from '@/lib/supabase'
 import {
   siteButtonPrimaryClass,
   siteHeading2Class,
@@ -13,6 +12,7 @@ import {
   siteSectionMediaSecondClass,
   communitySignupSectionClass,
   communitySignupSectionInnerClass,
+  siteCardOnCommunityClass,
   siteSectionColumnImageClass,
   siteSectionInnerClass,
 } from '@/lib/site-styles'
@@ -50,42 +50,40 @@ export function CommunitySignupSection({
     setCommunityMessage('')
     setCommunityMessageType(null)
 
-    if (!supabase) {
-      setCommunityMessage(
-        'Supabase n’est pas configuré : renseignez NEXT_PUBLIC_SUPABASE_URL et NEXT_PUBLIC_SUPABASE_ANON_KEY dans .env.local.',
-      )
-      setCommunityMessageType('error')
-      setIsSubmittingCommunity(false)
-      return
-    }
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: normalizedEmail }),
+      })
 
-    const { error: insertError } = await supabase
-      .from('newsletter')
-      .insert({ email: normalizedEmail })
+      const data = (await response.json()) as {
+        error?: string
+        alreadyMember?: boolean
+      }
 
-    if (insertError) {
-      if (insertError.code === '23505') {
+      if (!response.ok) {
+        setCommunityMessage(data.error ?? 'Une erreur est survenue. Merci de réessayer.')
+        setCommunityMessageType('error')
+        setIsSubmittingCommunity(false)
+        return
+      }
+
+      if (data.alreadyMember) {
         setCommunityMessage('Vous êtes déjà membre de la communauté.')
         setCommunityMessageType('error')
-      } else if (
-        insertError.code === '42501' ||
-        insertError.message.toLowerCase().includes('row-level security')
-      ) {
-        setCommunityMessage(
-          "Configuration Supabase requise : autorisez l'insertion anonyme dans la table newsletter.",
-        )
-        setCommunityMessageType('error')
-      } else {
-        setCommunityMessage('Une erreur est survenue. Merci de réessayer.')
-        setCommunityMessageType('error')
+        setIsSubmittingCommunity(false)
+        return
       }
-      setIsSubmittingCommunity(false)
-      return
+
+      setCommunityMessage('Bienvenue dans la communauté Afroliya.')
+      setCommunityMessageType('success')
+      setCommunityEmail('')
+    } catch {
+      setCommunityMessage('Une erreur est survenue. Merci de réessayer.')
+      setCommunityMessageType('error')
     }
 
-    setCommunityMessage('Bienvenue dans la communauté Afroliya.')
-    setCommunityMessageType('success')
-    setCommunityEmail('')
     setIsSubmittingCommunity(false)
   }
 
@@ -159,7 +157,7 @@ export function CommunitySignupSection({
             />
           </div>
 
-          <div className="mt-8">{formInner}</div>
+          <div className={`mt-8 ${siteCardOnCommunityClass}`}>{formInner}</div>
         </div>
 
         <div

@@ -128,9 +128,21 @@ export function generateEmailVerificationCode(): string {
   return String(Math.floor(100000 + Math.random() * 900000))
 }
 
+function normalizeSiteBaseUrl(raw: string): string {
+  const trimmed = raw.replace(/\/$/, '')
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+
+  const isLocal =
+    trimmed.startsWith('localhost') ||
+    trimmed.startsWith('127.') ||
+    /^\d{1,3}(\.\d{1,3}){3}(:\d+)?$/.test(trimmed)
+
+  return `${isLocal ? 'http' : 'https'}://${trimmed}`
+}
+
 export function getSiteBaseUrl(): string {
   const fromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim()
-  if (fromEnv) return fromEnv.replace(/\/$/, '')
+  if (fromEnv) return normalizeSiteBaseUrl(fromEnv)
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`
   return 'http://localhost:3000'
 }

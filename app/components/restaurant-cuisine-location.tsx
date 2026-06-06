@@ -13,9 +13,9 @@ type Props = {
 
 export function RestaurantCuisineLocation({
   restaurant,
-  className = 'flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-base text-neutral-600',
-  cuisineIconClassName = 'h-3.5 w-3.5 shrink-0 text-neutral-500',
-  locationIconClassName = 'h-3.5 w-3.5 shrink-0 text-neutral-500',
+  className = 'flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-lg text-neutral-600',
+  cuisineIconClassName = 'h-4 w-4 shrink-0 text-neutral-500',
+  locationIconClassName = 'h-4 w-4 shrink-0 text-neutral-500',
   separatorClassName = 'text-neutral-400',
 }: Props) {
   const location = formatRestaurantLocationLine(

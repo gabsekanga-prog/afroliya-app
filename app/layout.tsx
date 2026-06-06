@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
 import { Baloo_2, Geist, Geist_Mono } from "next/font/google";
+
+import { ScrollToTopButton } from "@/app/components/scroll-to-top-button";
+import { rootLayoutMetadata } from "@/lib/site-metadata";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,10 +19,7 @@ const baloo = Baloo_2({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Afroliya - Restaurants africains à Bruxelles et alentours",
-  description: "Trouvez et réservez des restaurants africains à Bruxelles et alentours.",
-};
+export const metadata = rootLayoutMetadata;
 
 export default function RootLayout({
   children,
@@ -31,7 +30,10 @@ export default function RootLayout({
     <html
       lang="fr"
       className={`${geistSans.variable} ${geistMono.variable} ${baloo.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <ScrollToTopButton />
+      </body>
     </html>
   );
 }

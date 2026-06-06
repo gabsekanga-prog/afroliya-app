@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 
+import { syncSendGridContactFromFullName } from '@/lib/email/sendgrid-contacts'
 import { notifyNewReservation } from '@/lib/reservation-notifications'
 import {
   parseRestaurantOpeningSlots,
@@ -134,6 +135,13 @@ export async function POST(request: Request, context: RouteContext) {
       } catch (notifyError) {
         console.error('[reservations] notifications', notifyError)
       }
+
+      syncSendGridContactFromFullName({
+        email: parsed.data.clientEmail,
+        fullName: parsed.data.clientName,
+        phone: parsed.data.clientPhone,
+        source: 'reservation',
+      })
 
       return NextResponse.json({ ok: true, publicCode: reservation.public_code })
     }

@@ -145,7 +145,7 @@ export function BookableDateField({ openingHours, value, onChange, disabled }: P
         className="fixed z-[200] rounded-2xl border border-neutral-200 bg-white p-4 shadow-xl sm:p-5"
       >
         <div className="mb-3 flex items-start justify-between gap-3">
-          <h3 id={titleId} className="text-base font-bold text-neutral-900">
+          <h3 id={titleId} className="text-lg font-bold text-neutral-900">
             Choisir une date
           </h3>
           <button

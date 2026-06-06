@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { EmailConfigurationError, EmailDeliveryError, sendAdminSiteNotification } from '@/lib/email/sendgrid'
+import { syncSendGridContactFromFullName } from '@/lib/email/sendgrid-contacts'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 const OFFERS = ['standard', 'premium'] as const
@@ -77,6 +78,13 @@ export async function POST(request: Request) {
       )
     }
   }
+
+  syncSendGridContactFromFullName({
+    email,
+    fullName: contactName,
+    phone,
+    source: 'partner_application',
+  })
 
   return NextResponse.json({ ok: true })
 }

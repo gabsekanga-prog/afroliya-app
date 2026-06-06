@@ -16,6 +16,8 @@ import {
   isBookableBookingDate,
 } from '@/lib/reservation-opening-hours'
 import type { RestaurantOpeningHoursDay } from '@/lib/restaurants'
+import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
+import { trackRestaurantEvent } from '@/lib/restaurant-stats-client'
 import {
   restaurantDetailPanelClass,
   siteBodyClass,
@@ -160,6 +162,11 @@ export function RestaurantReservationWidget({
     if (data.publicCode) {
       setSubmittedPublicCode(data.publicCode)
     }
+    void trackRestaurantEvent({
+      restaurantId,
+      eventType: 'click',
+      eventKey: RESTAURANT_STATS_CLICK_LABELS.reserveOnline,
+    })
     setStep(5)
     return true
   }
@@ -255,7 +262,7 @@ export function RestaurantReservationWidget({
         </p>
       ) : (
         <>
-      <p className="mb-6 text-sm font-medium text-neutral-500">Étape {step} sur 4</p>
+      <p className="mb-6 text-base font-medium text-neutral-500">Étape {step} sur 4</p>
 
       {step === 1 ? (
         <div className="space-y-4">
@@ -396,7 +403,7 @@ export function RestaurantReservationWidget({
               await requestEmailCode()
               setPending(false)
             }}
-            className="text-base text-[#8D5524] underline underline-offset-2"
+            className="text-lg text-[#8D5524] underline underline-offset-2"
           >
             Renvoyer le code
           </button>
@@ -404,7 +411,7 @@ export function RestaurantReservationWidget({
       ) : null}
 
       {error ? (
-        <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-base text-red-800">{error}</p>
+        <p className="mt-4 rounded-xl bg-red-50 px-3 py-2 text-lg text-red-800">{error}</p>
       ) : null}
 
       <div className="mt-8 flex flex-wrap gap-3">

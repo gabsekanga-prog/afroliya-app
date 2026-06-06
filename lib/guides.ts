@@ -8,6 +8,7 @@ export type { GuideSubsection } from '@/lib/guide-types'
 
 /** Champs utilisés par l’app (camelCase). */
 export type Guide = {
+  id: string
   slug: string
   title: string
   /** Image de couverture (hero + cartes liste / carrousel). */
@@ -18,6 +19,7 @@ export type Guide = {
 }
 
 type GuideRow = {
+  id: string
   slug: string
   title: string
   image_src: string
@@ -28,6 +30,7 @@ type GuideRow = {
 
 function mapRow(row: GuideRow): Guide {
   return {
+    id: row.id,
     slug: row.slug,
     title: row.title,
     imageSrc: row.image_src,
@@ -43,7 +46,7 @@ export async function fetchPublishedGuides(): Promise<Guide[]> {
 
   const { data, error } = await supabase
     .from('guides')
-    .select('slug, title, image_src, image_alt, intro, subsections')
+    .select('id, slug, title, image_src, image_alt, intro, subsections')
     .eq('published', true)
     .order('sort_order', { ascending: true })
 
@@ -66,7 +69,7 @@ export async function fetchLatestPublishedGuides(
 
   const { data, error } = await supabase
     .from('guides')
-    .select('slug, title, image_src, image_alt, intro, subsections')
+    .select('id, slug, title, image_src, image_alt, intro, subsections')
     .eq('published', true)
     .order('updated_at', { ascending: false })
     .limit(limit)
@@ -87,7 +90,7 @@ export async function fetchGuideBySlug(slug: string): Promise<Guide | null> {
 
   const { data, error } = await supabase
     .from('guides')
-    .select('slug, title, image_src, image_alt, intro, subsections')
+    .select('id, slug, title, image_src, image_alt, intro, subsections')
     .eq('slug', slug)
     .eq('published', true)
     .maybeSingle()

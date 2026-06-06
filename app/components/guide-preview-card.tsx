@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Guide } from '@/lib/guides'
 import {
   siteHeading3Class,
+  siteCardBgOnMutedClass,
   siteCardThumbnailImageClass,
   siteTextLinkInCardClass,
 } from '@/lib/site-styles'
@@ -16,7 +17,7 @@ export function GuidePreviewCard({ guide, className = '' }: Props) {
   return (
     <Link
       href={`/guides/${guide.slug}`}
-      className={`group flex flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-[#c9a882]/60 hover:shadow-md ${className}`.trim()}
+      className={`group flex flex-col overflow-hidden rounded-2xl border border-neutral-200 ${siteCardBgOnMutedClass} shadow-sm transition hover:-translate-y-0.5 hover:border-[#c9a882]/60 hover:shadow-md ${className}`.trim()}
     >
       <div className="overflow-hidden">
         <img

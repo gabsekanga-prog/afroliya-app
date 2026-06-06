@@ -3,8 +3,10 @@ import type { ReactNode } from 'react'
 
 import type { Restaurant } from '@/lib/restaurants'
 import { formatBelgianPhoneDisplay, formatBelgianPhoneTelHref } from '@/lib/format-phone'
-import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
 import { RestaurantReservationLink } from '@/app/components/restaurant-reservation-link'
+import { RestaurantTrackedLink } from '@/app/components/restaurant-tracked-link'
+import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
 
 function formatAccessAddress(restaurant: Restaurant): string {
   return restaurant.adresse.trim()
@@ -59,6 +61,7 @@ function ReserveButton({ restaurant }: { restaurant: Restaurant }) {
   return (
     <RestaurantReservationLink
       restaurant={restaurant}
+      trackingRestaurantId={restaurant.id}
       wrapperClassName="mt-6"
       className="inline-flex rounded-xl bg-[#8D5524] px-6 py-3 text-lg font-normal text-white transition hover:bg-[#74431a]"
     />
@@ -107,14 +110,16 @@ function AddressMap({
       />
       {mapsHref ? (
         <p className="border-t border-neutral-200 bg-white px-4 py-2 text-center text-sm">
-          <a
+          <RestaurantTrackedLink
             href={mapsHref}
             target="_blank"
             rel="noopener noreferrer"
+            restaurantId={restaurant.id}
+            eventKey={RESTAURANT_STATS_CLICK_LABELS.directions}
             className={restaurantPageTextLinkClass}
           >
-            Ouvrir dans Google Maps
-          </a>
+            Voir l&apos;itinéraire
+          </RestaurantTrackedLink>
         </p>
       ) : null}
     </div>
@@ -142,14 +147,16 @@ export function RestaurantContactAccess({ restaurant }: Props) {
       icon: <MapPin className="h-5 w-5" strokeWidth={1.75} />,
       label: 'Adresse',
       children: mapsHref ? (
-        <a
+        <RestaurantTrackedLink
           href={mapsHref}
           target="_blank"
           rel="noopener noreferrer"
+          restaurantId={restaurant.id}
+          eventKey={RESTAURANT_STATS_CLICK_LABELS.directions}
           className={restaurantPageTextLinkClass}
         >
           {address}
-        </a>
+        </RestaurantTrackedLink>
       ) : (
         <span>{address}</span>
       ),
@@ -161,12 +168,14 @@ export function RestaurantContactAccess({ restaurant }: Props) {
       icon: <Phone className="h-5 w-5" strokeWidth={1.75} />,
       label: 'Téléphone',
       children: (
-        <a
+        <RestaurantTrackedLink
           href={formatBelgianPhoneTelHref(restaurant.telephone)}
+          restaurantId={restaurant.id}
+          eventKey={RESTAURANT_STATS_CLICK_LABELS.call}
           className={restaurantPageTextLinkClass}
         >
           {formatBelgianPhoneDisplay(restaurant.telephone)}
-        </a>
+        </RestaurantTrackedLink>
       ),
     })
   }
@@ -177,14 +186,16 @@ export function RestaurantContactAccess({ restaurant }: Props) {
       icon: <Globe className="h-5 w-5" strokeWidth={1.75} />,
       label: 'Site web',
       children: (
-        <a
+        <RestaurantTrackedLink
           href={href}
           target="_blank"
           rel="noopener noreferrer"
+          restaurantId={restaurant.id}
+          eventKey={RESTAURANT_STATS_CLICK_LABELS.website}
           className={restaurantPageTextLinkClass}
         >
           {restaurant.siteWeb.replace(/^https?:\/\//i, '')}
-        </a>
+        </RestaurantTrackedLink>
       ),
     })
   }
@@ -197,27 +208,31 @@ export function RestaurantContactAccess({ restaurant }: Props) {
       children: (
         <span>
           {restaurant.instagram ? (
-            <a
+            <RestaurantTrackedLink
               href={externalHref(restaurant.instagram)}
               target="_blank"
               rel="noopener noreferrer"
+              restaurantId={restaurant.id}
+              eventKey={RESTAURANT_STATS_CLICK_LABELS.instagram}
               className={linkClass}
             >
               Instagram
-            </a>
+            </RestaurantTrackedLink>
           ) : null}
           {restaurant.instagram && restaurant.facebook ? (
             <span className="text-neutral-500"> · </span>
           ) : null}
           {restaurant.facebook ? (
-            <a
+            <RestaurantTrackedLink
               href={externalHref(restaurant.facebook)}
               target="_blank"
               rel="noopener noreferrer"
+              restaurantId={restaurant.id}
+              eventKey={RESTAURANT_STATS_CLICK_LABELS.facebook}
               className={linkClass}
             >
               Facebook
-            </a>
+            </RestaurantTrackedLink>
           ) : null}
         </span>
       ),

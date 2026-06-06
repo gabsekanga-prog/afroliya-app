@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 import { SiteChecklist } from '@/app/components/site-checklist'
 import {
-  siteHeading1OnDarkClass,
+  siteHeading1HeroClass,
   siteMarketingSplitHeroContentClass,
   siteMarketingSplitHeroContentWrapClass,
   siteMarketingSplitHeroGridClass,
@@ -41,12 +41,12 @@ export function MarketingSplitHero({
         <div className={siteMarketingSplitHeroContentWrapClass}>
           <div className={siteMarketingSplitHeroContentClass}>
             {breadcrumb}
-            <h1 className={`${breadcrumb ? 'mt-4' : ''} ${siteHeading1OnDarkClass}`}>
+            <h1 className={`${breadcrumb ? 'mt-4' : ''} ${siteHeading1HeroClass}`}>
               {title}
             </h1>
             {intro ?? (lead ? <p className={siteMarketingSplitHeroLeadClass}>{lead}</p> : null)}
             {checklistItems && checklistItems.length > 0 ? (
-              <SiteChecklist items={checklistItems} tone="onDark" />
+              <SiteChecklist items={checklistItems} />
             ) : null}
             {children}
           </div>

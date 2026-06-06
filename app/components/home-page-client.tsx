@@ -13,12 +13,15 @@ import {
   siteHeading2LeadingClass,
   siteHeading3Class,
   siteSectionContentSecondClass,
+  siteCardOnMutedClass,
   siteSectionColumnImageClass,
   siteSectionColumnImageTallSmClass,
   siteSectionMediaFirstClass,
   siteSectionMutedClass,
   siteSectionWhiteClass,
   siteBodySemiboldClass,
+  sitePainPointItemClass,
+  sitePainPointsListClass,
 } from '@/lib/site-styles'
 
 import type { Guide } from '@/lib/guides'
@@ -88,10 +91,25 @@ export function HomePageClient({ latestGuides }: Props) {
             <h2 className={siteHeading2LeadingClass}>
             À la recherche d'un restaurant afro à tester ?
             </h2>
-            <ul className={`mt-7 space-y-3 ${siteBodyClass}`}>
-              <li>✖︎ Vous tournez en rond avec les mêmes adresses</li>
-              <li>✖︎ Vous perdez du temps à chercher sur Instagram et TikTok</li>
-              <li>✖︎ Vous dépendez toujours des recommandations de vos proches</li>
+            <ul className={`mt-7 space-y-3 ${sitePainPointsListClass}`}>
+              <li className={sitePainPointItemClass}>
+                <span className="shrink-0" aria-hidden>
+                  ✖︎
+                </span>
+                <span>Vous tournez en rond avec les mêmes adresses</span>
+              </li>
+              <li className={sitePainPointItemClass}>
+                <span className="shrink-0" aria-hidden>
+                  ✖︎
+                </span>
+                <span>Vous perdez du temps à chercher sur Instagram et TikTok</span>
+              </li>
+              <li className={sitePainPointItemClass}>
+                <span className="shrink-0" aria-hidden>
+                  ✖︎
+                </span>
+                <span>Vous dépendez toujours des recommandations de vos proches</span>
+              </li>
             </ul>
             <p className={`mt-7 ${siteBodySemiboldClass}`}>
               Afroliya vous simplifie la vie.
@@ -105,7 +123,7 @@ export function HomePageClient({ latestGuides }: Props) {
           </div>
 
           <div
-            className={`${siteSectionMediaFirstClass} overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm sm:rounded-3xl`}
+            className={`${siteSectionMediaFirstClass} overflow-hidden rounded-2xl border border-neutral-200 shadow-sm sm:rounded-3xl`}
           >
             <img
               src="/images/Restaurant sénégalais Bruxelles.webp"
@@ -131,7 +149,7 @@ export function HomePageClient({ latestGuides }: Props) {
               return (
                 <article
                   key={block.title}
-                  className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm sm:p-7"
+                  className={`${siteCardOnMutedClass} shadow-sm sm:p-7`}
                 >
                   <div className="inline-flex rounded-xl bg-stone-100 p-2.5 text-brand">
                     <Icon size={20} strokeWidth={2} />

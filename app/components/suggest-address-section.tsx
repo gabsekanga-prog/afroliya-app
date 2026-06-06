@@ -6,15 +6,18 @@ import { formInputClassName, formLabelClassName, formTextareaClassName } from '@
 import {
   siteBodyClass,
   siteButtonPrimarySmClass,
+  siteCardOnWhiteClass,
   siteGuideContentHeadingClass,
   siteSectionDividerClass,
 } from '@/lib/site-styles'
 
 type Props = {
   guideSlug?: string
+  /** `page` : page dédiée (sans bordure haute). `embedded` : bloc sous un guide. */
+  variant?: 'embedded' | 'page'
 }
 
-export function SuggestAddressSection({ guideSlug }: Props) {
+export function SuggestAddressSection({ guideSlug, variant = 'embedded' }: Props) {
   const [restaurantName, setRestaurantName] = useState('')
   const [commune, setCommune] = useState('')
   const [details, setDetails] = useState('')
@@ -67,14 +70,17 @@ export function SuggestAddressSection({ guideSlug }: Props) {
     setPending(false)
   }
 
+  const Wrapper = variant === 'page' ? 'section' : 'aside'
+  const outerClass =
+    variant === 'page' ? '' : `mt-12 ${siteSectionDividerClass} pt-12`
   return (
-    <aside
-      className={`mt-12 ${siteSectionDividerClass} pt-12`}
+    <Wrapper
+      className={outerClass}
       aria-labelledby="suggest-address-heading"
     >
-      <div className="rounded-2xl border border-neutral-200/90 bg-stone-50 p-6 sm:p-8">
+      <div className={siteCardOnWhiteClass}>
       <h2 id="suggest-address-heading" className={siteGuideContentHeadingClass}>
-        Suggérer une adresse
+        {variant === 'page' ? 'Votre suggestion' : 'Suggérer une adresse'}
       </h2>
       <p className={`mt-3 ${siteBodyClass}`}>
         Vous connaissez une pépite qui n'est pas encore sur Afroliya ?
@@ -156,6 +162,6 @@ export function SuggestAddressSection({ guideSlug }: Props) {
         ) : null}
       </form>
       </div>
-    </aside>
+    </Wrapper>
   )
 }

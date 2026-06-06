@@ -16,7 +16,7 @@ export function RestaurantCardReservationHint({ restaurant }: Props) {
   const Icon = mode === 'phone' ? Phone : CalendarCheck
 
   return (
-    <p className="inline-flex items-center gap-1.5 text-sm font-medium text-neutral-600">
+    <p className="inline-flex items-center gap-1.5 text-base font-medium text-neutral-600">
       <Icon
         className="h-3.5 w-3.5 shrink-0 text-neutral-500"
         strokeWidth={1.75}

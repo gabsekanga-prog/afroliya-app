@@ -1,8 +1,8 @@
-import Link from 'next/link'
 import { Star } from 'lucide-react'
 
 import { RestaurantAfroliyaCommunityColumn } from '@/app/components/restaurant-afroliya-community-column'
 import { RestaurantReservationLink } from '@/app/components/restaurant-reservation-link'
+import { RestaurantTrackedNextLink } from '@/app/components/restaurant-tracked-link'
 import type { Restaurant } from '@/lib/restaurants'
 import type { RestaurantCommunityStats } from '@/lib/restaurant-community'
 import {
@@ -18,6 +18,7 @@ import {
   siteButtonPrimaryClass,
 } from '@/lib/site-styles'
 import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
+import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
 
 type Props = {
   restaurant: Pick<
@@ -47,17 +48,25 @@ function formatGoogleReviewCount(count: number): string {
   return count === 1 ? '1 avis sur Google' : `${count} avis sur Google`
 }
 
-function GoogleReviewsLink({ href }: { href: string }) {
+function GoogleReviewsLink({
+  href,
+  restaurantId,
+}: {
+  href: string
+  restaurantId: string
+}) {
   return (
     <p className="mt-6">
-      <Link
+      <RestaurantTrackedNextLink
         href={href}
         target="_blank"
         rel="noopener noreferrer"
+        restaurantId={restaurantId}
+        eventKey={RESTAURANT_STATS_CLICK_LABELS.googleReviews}
         className={restaurantPageTextLinkClass}
       >
-        Voir tous les avis
-      </Link>
+        Voir tous les avis Google
+      </RestaurantTrackedNextLink>
     </p>
   )
 }
@@ -133,13 +142,19 @@ export async function RestaurantReviewsSection({
                 </p>
               )}
 
-              {googleMapsHref ? <GoogleReviewsLink href={googleMapsHref} /> : null}
+              {googleMapsHref ? (
+                <GoogleReviewsLink href={googleMapsHref} restaurantId={restaurant.id} />
+              ) : null}
             </div>
           </div>
         </div>
 
         <div className="mt-10">
-          <RestaurantReservationLink restaurant={restaurant} className={siteButtonPrimaryClass} />
+          <RestaurantReservationLink
+            restaurant={restaurant}
+            trackingRestaurantId={restaurant.id}
+            className={siteButtonPrimaryClass}
+          />
         </div>
       </div>
     </section>
