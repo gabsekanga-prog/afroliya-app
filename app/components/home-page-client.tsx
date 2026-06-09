@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { CalendarCheck, MapPin, StarIcon } from 'lucide-react'
+import { CalendarCheck, MapPin, ShieldAlertIcon, ShieldCheckIcon, StarIcon, ThumbsUpIcon, Umbrella, Utensils, UtensilsIcon } from 'lucide-react'
 import {
   siteBodyClass,
   siteBodyRelaxedClass,
@@ -37,20 +37,20 @@ const plaisirBlocks = [
   {
     title: 'Plein d\'adresses à tester',
     description:
-      'Ne perdez plus de temps à chercher partout. Découvrez facilement de nouveaux restaurants afro et variez les plaisirs.',
+      'Ne tournez plus en rond avec les mêmes adresses. Découvrez facilement de nouveaux restaurants afro à tester.',
     icon: MapPin,
   },
   {
-    title: 'Guides thématiques',
-    description:
-      'Trouvez l\'adresse parfaite selon vos envies grâce à nos sélections ciblées et originales.',
-    icon: StarIcon,
-  },
-  {
-    title: 'Réservation en ligne',
+    title: 'Réservation gratuite 24h/24',
     description:
       'Bloquez votre table en quelques clics, gratuitement. Plus besoin de vous soucier des horaires ni de rappeler 5 fois.',
     icon: CalendarCheck,
+  },
+  {
+    title: 'Moins d\'attente et de ruptures de stock',
+    description:
+      'En réservant à l\'avance, vous aidez le restaurant à anticiper votre venue. Résultat : moins d\'attente et de ruptures de stock.',
+    icon: UtensilsIcon,
   },
 ]
 
@@ -66,8 +66,9 @@ export function HomePageClient({ latestGuides }: Props) {
       <MarketingSplitHero
         imageSrc="/images/Couple manger restaurant africain.jpg"
         imageAlt="Couple profitant d'un repas dans un restaurant africain"
-        title="Votre plateforme de restaurants afro à Bruxelles et autour"
-        lead="Plein d'adresses à tester | Guides thématiques | Réservation en ligne"
+        title="Mangez afro sans stress à Bruxelles et autour"
+        lead="Découvrez et réservez vos restaurants afro sur Afroliya."
+        checklistItems={["Plein d'adresses à tester", "Réservation gratuite 24h/24", "Moins d'attente et de ruptures de stock"]}
       >
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
@@ -89,30 +90,30 @@ export function HomePageClient({ latestGuides }: Props) {
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14">
           <div className={siteSectionContentSecondClass}>
             <h2 className={siteHeading2LeadingClass}>
-            À la recherche d'un restaurant afro à tester ?
+            Manger afro ne doit plus être une galère...
             </h2>
             <ul className={`mt-7 space-y-3 ${sitePainPointsListClass}`}>
               <li className={sitePainPointItemClass}>
                 <span className="shrink-0" aria-hidden>
                   ✖︎
                 </span>
-                <span>Vous tournez en rond avec les mêmes adresses</span>
+                <span>Tourner en rond avec les mêmes adresses</span>
               </li>
               <li className={sitePainPointItemClass}>
                 <span className="shrink-0" aria-hidden>
                   ✖︎
                 </span>
-                <span>Vous perdez du temps à chercher sur Instagram et TikTok</span>
+                <span>Devoir rappeler 5 fois pour réserver une table</span>
               </li>
               <li className={sitePainPointItemClass}>
                 <span className="shrink-0" aria-hidden>
                   ✖︎
                 </span>
-                <span>Vous dépendez toujours des recommandations de vos proches</span>
+                <span>Subir des lenteurs de service et des ruptures de stock</span>
               </li>
             </ul>
             <p className={`mt-7 ${siteBodySemiboldClass}`}>
-              Afroliya vous simplifie la vie.
+              Mangez afro sans stress avec Afroliya.
             </p>
             <Link
               href="/restaurants"
@@ -138,7 +139,7 @@ export function HomePageClient({ latestGuides }: Props) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="mb-8 sm:mb-10">
             <h2 className={siteHeading2Class}>
-              Pourquoi passer par Afroliya ?
+              Comment afroliya élimine le stress ?
             </h2>
           </div>
 
@@ -206,7 +207,7 @@ export function HomePageClient({ latestGuides }: Props) {
 
       <GuidesTeaserSection
         guides={latestGuides}
-        title="Découvrez nos guides thématiques"
+        title="Nos guides thématiques"
       />
 
       <CommunitySignupSection />

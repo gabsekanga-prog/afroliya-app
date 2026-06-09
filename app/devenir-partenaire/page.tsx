@@ -10,6 +10,10 @@ import {
   MegaphoneIcon,
   Utensils,
   type LucideIcon,
+  TargetIcon,
+  KeySquare,
+  Smile,
+  Heart,
 } from 'lucide-react'
 import { SiteHeader } from '@/app/components/site-header'
 import {
@@ -53,21 +57,21 @@ const benefits: {
   icon: LucideIcon
 }[] = [
   {
-    title: 'Visibilité ciblée',
+    title: "Des milliers d'utilisateurs passionnés",
     description: 'Ne payez plus pour atteindre un public généraliste. Touchez chaque semaine des centaines de passionnés de cuisine afro.',
-    icon: MegaphoneIcon
+    icon: Heart
   },
   {
-    title: 'Réservation sans commission',
+    title: 'Des réservations sans commission',
     description:
       "Recevez des réservations 24h/24, même en plein rush ou quand vous êtes fermé. Le tout sans commission pour protéger vos marges.",
     icon: CalendarClock
   },
   {
-    title: 'On s\'occupe de tout',
+    title: 'Une gestion sans prise de tête',
     description:
-      'Nous gérons tout, de la création de votre fiche dédiée à la mise en avant dans nos guides, newsletters et réseaux sociaux. Ça ne vous demande aucun effort.',
-    icon: CogIcon
+      "On s'occupe de tout, de la création de votre page vitrine à la mise en avant dans nos guides, newsletters et réseaux sociaux. Ça ne vous demande aucun effort.",
+    icon: Smile
   }
 ]
 
@@ -75,12 +79,12 @@ const offers = [
   {
     name: 'Standard - Gratuit',
     subtitle: 'Soyez visible sur Afroliya',
-    cta: 'Inscrire votre resto',
+    cta: 'Choisir l\'offre',
     points: [
       'Référencement complet sur la plateforme',
-      'Page vitrine dédiée (infos, photos, menu, etc.)',
+      'Page vitrine dédiée (infos, photos, menu, horaires)',
       'Visibilité auprès de centaines de passionnés chaque semaine',
-      'Réservation par téléphone (bouton d\'appel direct)',
+      'Limité à 1 réservation par mois',
       'Rapport de statistiques mensuel',
       'Sans engagement : arrêtez quand vous voulez',
     ],
@@ -94,8 +98,9 @@ const offers = [
       'Priorité dans les résultats de recherche sur la plateforme',
       'Mise en avant dans nos guides thématiques et newsletters',
       'Création de contenus sur nos réseaux sociaux', 
-      'Module de réservation en ligne, sans commission',
-      'Possibilité de transfert vers votre système (Zenchef, TheFork, etc.)'
+      'Réservations illimitées et sans commission', 
+      'Module de réservation intégrable sur votre site web',
+      'Boutons de réservation sur vos profils Google, Instagram et Facebook'
     ],
   }
 ]
@@ -108,10 +113,9 @@ export default function DevenirPartenairePage() {
       <MarketingSplitHero
         imageSrc="/images/Restauratrice%20resto%20afro%20gestion%20digital%20r%C3%A9servations%20couple%20clients.jpg"
         imageAlt="Restauratrice gérant les réservations digitales de son restaurant afro"
-        title="Le partenaire marketing de votre restaurant africain"
-        lead="Visibilité ciblée | Réservation sans commission | On s'occupe de tout"
-        checklistItems={[
-        ]}
+        title="Boostez l'activité de votre restaurant africain"
+        lead="Rejoignez la plateforme de réservation 100% afro."
+        checklistItems={["Des milliers d'utilisateurs passionnés", "Des réservations sans commission", "Une gestion sans prise de tête"]}
       >
         <Link
           href="#offres-partenaire"
@@ -132,23 +136,23 @@ export default function DevenirPartenairePage() {
                 <span className="shrink-0" aria-hidden>
                   ✖︎
                 </span>
-                <span>Public généraliste et peu intéressé</span>
+                <span>Un public généraliste et peu intéressé</span>
               </li>
               <li className={sitePainPointItemClass}>
                 <span className="shrink-0" aria-hidden>
                   ✖︎
                 </span>
-                <span>Coûts élevés et commissions abusives</span>
+                <span>Des coûts élevés et des commissions abusives</span>
               </li>
               <li className={sitePainPointItemClass}>
                 <span className="shrink-0" aria-hidden>
                   ✖︎
                 </span>
-                <span>Trop d&apos;efforts pour peu de résultats</span>
+                <span>Trop d'efforts pour peu de résultats</span>
               </li>
             </ul>
             <p className={`mt-6 ${siteBodySemiboldClass}`}>
-              Afroliya est la solution qu'il vous faut.
+            Boostez l'activité de votre établissement avec Afroliya.
             </p>
             <Link
               href="#offres-partenaire"
@@ -172,7 +176,7 @@ export default function DevenirPartenairePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="mb-8 sm:mb-10">
           <h2 className={siteHeading2Class}>
-            Pourquoi choisir Afroliya ?
+            Comment Afroliya booste votre activité ?
           </h2>
         </div>
         <div className="grid gap-5 sm:grid-cols-3">

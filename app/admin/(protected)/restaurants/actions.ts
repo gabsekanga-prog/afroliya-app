@@ -30,6 +30,13 @@ function parseOptionalNonNegativeInt(raw: string): number | null {
   return n
 }
 
+function parseOptionalDate(raw: string): string | null {
+  const t = raw.trim()
+  if (!t) return null
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(t)) return null
+  return t
+}
+
 function parseOptionalCoord(raw: string): number | null {
   const t = raw.trim().replace(',', '.')
   if (!t) return null
@@ -59,6 +66,12 @@ export async function saveRestaurantAction(
   const description = emptyToNull(String(formData.get('description') ?? ''))
   const bookable = formData.has('bookable')
   const sponsored = formData.has('sponsored')
+  const sponsorship_start_date = parseOptionalDate(
+    String(formData.get('sponsorship_start_date') ?? ''),
+  )
+  const sponsorship_end_date = parseOptionalDate(
+    String(formData.get('sponsorship_end_date') ?? ''),
+  )
   const active = formData.has('active')
   const google_quotation = parseGoogleNote(String(formData.get('google_quotation') ?? ''))
   const google_review_total_value = parseOptionalNonNegativeInt(
@@ -90,6 +103,12 @@ export async function saveRestaurantAction(
     return { error: 'Le nom et la ville sont obligatoires.' }
   }
 
+  if (sponsorship_start_date && sponsorship_end_date && sponsorship_start_date > sponsorship_end_date) {
+    return {
+      error: 'La date de fin de sponsorisation doit être postérieure ou égale à la date de début.',
+    }
+  }
+
   const restaurantId = id && UUID_RE.test(id) ? id : undefined
   const slug = await resolveRestaurantSlug(admin, slugRaw || name, name, restaurantId)
 
@@ -100,6 +119,8 @@ export async function saveRestaurantAction(
     description,
     bookable,
     sponsored,
+    sponsorship_start_date,
+    sponsorship_end_date,
     active,
     google_quotation,
     google_review_total_value,
@@ -146,6 +167,12 @@ export async function saveRestaurantAction(
   const rowWithoutSlug = { ...row }
   delete (rowWithoutSlug as { slug?: string | null }).slug
 
+  const rowWithoutSponsorshipDates = { ...row }
+  delete (rowWithoutSponsorshipDates as { sponsorship_start_date?: string | null })
+    .sponsorship_start_date
+  delete (rowWithoutSponsorshipDates as { sponsorship_end_date?: string | null })
+    .sponsorship_end_date
+
   const rowLegacy = { ...rowWithoutGoogleSummary }
   delete (rowLegacy as { booking_url?: string | null }).booking_url
   delete (rowLegacy as { slug?: string | null }).slug
@@ -163,6 +190,7 @@ export async function saveRestaurantAction(
     rowWithoutAfroliyaThumbnail,
     rowWithoutAfroliyaInstagram,
     rowWithoutBookingUrl,
+    rowWithoutSponsorshipDates,
     rowWithoutSlug,
     rowLegacy,
   ]
@@ -176,6 +204,8 @@ export async function saveRestaurantAction(
       !isMissingDbColumnError(message, 'booking_url') &&
       !isMissingDbColumnError(message, 'afroliya_instagram_post_url') &&
       !isMissingDbColumnError(message, 'afroliya_instagram_thumbnail_url') &&
+      !isMissingDbColumnError(message, 'sponsorship_start_date') &&
+      !isMissingDbColumnError(message, 'sponsorship_end_date') &&
       !isMissingDbColumnError(message, 'slug')
     ) {
       break

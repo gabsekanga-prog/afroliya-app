@@ -12,6 +12,12 @@ import {
   validateCreateReservationPayload,
   type ReservationRecord,
 } from '@/lib/reservations'
+import {
+  fetchRestaurantMonthlyReservationCount,
+  isAfroliyaReservationAvailable,
+  NON_SPONSORED_MONTHLY_RESERVATION_LIMIT,
+} from '@/lib/restaurant-reservation-capacity'
+import { isRestaurantSponsorshipActive } from '@/lib/restaurant-sponsorship'
 import { getSupabaseAdmin } from '@/lib/supabase-admin'
 
 const UUID_RE =
@@ -84,7 +90,9 @@ export async function POST(request: Request, context: RouteContext) {
 
   const { data: restaurant, error: restaurantError } = await admin
     .from('restaurants')
-    .select('id, name, email, whatsapp_phone, active, sponsored, booking_url')
+    .select(
+      'id, name, email, whatsapp_phone, active, sponsored, booking_url, sponsorship_start_date, sponsorship_end_date',
+    )
     .eq('id', restaurantId)
     .eq('active', true)
     .maybeSingle()
@@ -93,11 +101,25 @@ export async function POST(request: Request, context: RouteContext) {
     return NextResponse.json({ error: 'Restaurant introuvable.' }, { status: 404 })
   }
 
-  const hasPartnerUrl = Boolean(String(restaurant.booking_url ?? '').trim())
-  if (!restaurant.sponsored || hasPartnerUrl) {
-    return NextResponse.json({ error: 'Réservation en ligne indisponible pour ce restaurant.' }, {
-      status: 403,
-    })
+  const sponsorshipFields = {
+    sponsored: restaurant.sponsored === true,
+    sponsorshipStartDate: restaurant.sponsorship_start_date,
+    sponsorshipEndDate: restaurant.sponsorship_end_date,
+  }
+
+  if (!isRestaurantSponsorshipActive(sponsorshipFields)) {
+    const monthlyCount = await fetchRestaurantMonthlyReservationCount(restaurantId)
+    if (!isAfroliyaReservationAvailable(sponsorshipFields, monthlyCount)) {
+      return NextResponse.json(
+        {
+          error:
+            monthlyCount >= NON_SPONSORED_MONTHLY_RESERVATION_LIMIT
+              ? 'Complet ce mois-ci sur Afroliya.'
+              : 'Réservation en ligne indisponible pour ce restaurant.',
+        },
+        { status: 403 },
+      )
+    }
   }
 
   let publicCode = generateReservationPublicCode()

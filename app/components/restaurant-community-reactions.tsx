@@ -12,7 +12,7 @@ import {
   type RestaurantCommunityStats,
 } from '@/lib/restaurant-community'
 import { supabase } from '@/lib/supabase'
-import { communityActionButtonClass, siteHeading3Class } from '@/lib/site-styles'
+import { communityActionButtonClass } from '@/lib/site-styles'
 
 type Props = {
   restaurantId: string
@@ -86,12 +86,8 @@ export function RestaurantCommunityReactions({
   const loveVoteLabel = formatCommunityVoteLabel(stats.loveCount)
 
   return (
-    <div aria-labelledby="votre-retour-heading">
-      <h3 id="votre-retour-heading" className={siteHeading3Class}>
-        Retours de la communauté
-      </h3>
-
-      <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2">
+    <div>
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         <div className="flex flex-col">
           <button
             type="button"

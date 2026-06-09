@@ -131,6 +131,31 @@ export function RestaurantForm({ restaurant }: Props) {
             defaultChecked={restaurant?.active === true}
           />
         </div>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className={formLabelClassName}>
+            Début de sponsorisation
+            <input
+              name="sponsorship_start_date"
+              type="date"
+              defaultValue={restaurant?.sponsorship_start_date ?? ''}
+              className={formInputClassName}
+            />
+          </label>
+          <label className={formLabelClassName}>
+            Fin de sponsorisation
+            <input
+              name="sponsorship_end_date"
+              type="date"
+              defaultValue={restaurant?.sponsorship_end_date ?? ''}
+              className={formInputClassName}
+            />
+          </label>
+        </div>
+        <p className="text-base text-neutral-600">
+          Les options de réservation en ligne (formulaire Afroliya ou lien partenaire) ne sont
+          proposées que pendant cette période, si le restaurant est marqué sponsorisé. Laissez une
+          date vide pour une période ouverte (début ou fin sans limite).
+        </p>
         <label className={formLabelClassName}>
           Lien de réservation en ligne (booking_url)
           <input

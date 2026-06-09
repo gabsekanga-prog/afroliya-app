@@ -1,12 +1,9 @@
 import { InstagramPostVideoCard } from '@/app/components/instagram-post-video-card'
-import { RestaurantTrackedNextLink } from '@/app/components/restaurant-tracked-link'
 import {
   fetchInstagramThumbnailFromOEmbed,
   resolveInstagramCardThumbnail,
 } from '@/lib/instagram-thumbnail'
 import { normalizeInstagramPostUrl } from '@/lib/instagram-embed'
-import { restaurantPageTextLinkClass } from '@/lib/restaurant-page-link'
-import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
 import { siteHeading3Class } from '@/lib/site-styles'
 
 type Props = {
@@ -48,19 +45,6 @@ export async function RestaurantAfroliyaTouch({
         compactTop={embedded}
         trackingRestaurantId={restaurantId}
       />
-
-      <p className="mt-4">
-        <RestaurantTrackedNextLink
-          href={permalink}
-          target="_blank"
-          rel="noopener noreferrer"
-          restaurantId={restaurantId}
-          eventKey={RESTAURANT_STATS_CLICK_LABELS.instagram}
-          className={restaurantPageTextLinkClass}
-        >
-          Voir sur Instagram
-        </RestaurantTrackedNextLink>
-      </p>
     </div>
   )
 }

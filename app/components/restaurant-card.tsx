@@ -1,7 +1,8 @@
-import { siteCardBgOnMutedClass, siteCardThumbnailImageClass } from '@/lib/site-styles'
+import { Euro } from 'lucide-react'
 import Link from 'next/link'
 
-import { RestaurantCardReservationHint } from '@/app/components/restaurant-card-reservation-hint'
+import { siteCardBgOnMutedClass, siteCardThumbnailImageClass } from '@/lib/site-styles'
+
 import { RestaurantCuisineLocation } from '@/app/components/restaurant-cuisine-location'
 import type { Restaurant } from '@/lib/restaurants'
 
@@ -32,10 +33,12 @@ export function RestaurantCard({ restaurant, openInNewTab = false }: Props) {
             ★ {restaurant.note}
           </span>
         </div>
-        <RestaurantCuisineLocation restaurant={restaurant} />
-        <RestaurantCardReservationHint restaurant={restaurant} />
+        <RestaurantCuisineLocation restaurant={restaurant} layout="stacked" />
         {restaurant.tarif ? (
-          <p className="text-base font-medium text-neutral-600">{restaurant.tarif}</p>
+          <p className="flex items-center gap-1.5 text-lg text-neutral-600">
+            <Euro className="h-4 w-4 shrink-0 text-neutral-500" strokeWidth={1.75} aria-hidden />
+            <span>{restaurant.tarif}</span>
+          </p>
         ) : null}
       </div>
     </Link>

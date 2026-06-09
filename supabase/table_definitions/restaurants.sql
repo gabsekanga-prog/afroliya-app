@@ -22,6 +22,8 @@ create table public.restaurants (
   phone text null,
   email text null,
   sponsored boolean null,
+  sponsorship_start_date date null,
+  sponsorship_end_date date null,
   booking_url text null,
   afroliya_instagram_post_url text null,
   afroliya_instagram_thumbnail_url text null,

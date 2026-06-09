@@ -3,10 +3,22 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Play } from 'lucide-react'
 
+function InstagramIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={className} fill="currentColor">
+      <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zM17.75 6a1.25 1.25 0 1 1-1.25 1.25A1.25 1.25 0 0 1 17.75 6z" />
+    </svg>
+  )
+}
+
 import { InstagramPostEmbed } from '@/app/components/instagram-post-embed'
 import { RESTAURANT_STATS_CLICK_LABELS } from '@/lib/restaurant-stats-events'
 import { trackRestaurantEvent } from '@/lib/restaurant-stats-client'
-import { siteMobileImageHeightClass } from '@/lib/site-styles'
+import {
+  siteRestaurantPhotoGalleryImageClass,
+  siteRestaurantPhotoGallerySlideButtonClass,
+  siteRestaurantPhotoGallerySlideClass,
+} from '@/lib/site-styles'
 
 type Props = {
   postUrl: string
@@ -92,20 +104,28 @@ export function InstagramPostVideoCard({
           }
           setOpen(true)
         }}
-        className={`group relative block w-full max-w-[300px] overflow-hidden rounded-2xl border border-neutral-200 bg-stone-100 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524] ${compactTop ? 'mt-4' : 'mt-6'}`}
+        className={`relative block shrink-0 text-left ${compactTop ? 'mt-4 w-full max-w-[220px] overflow-hidden rounded-2xl border border-neutral-200 bg-stone-100 shadow-sm transition hover:-translate-y-0.5 hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]' : `mt-6 ${siteRestaurantPhotoGallerySlideClass} ${siteRestaurantPhotoGallerySlideButtonClass}`}`}
         aria-label="Lire la vidéo Afroliya sur Instagram"
       >
-        <div className={`relative ${siteMobileImageHeightClass} w-full sm:aspect-[4/5] sm:h-auto`}>
+        <div className="relative">
           {previewUrl ? (
             <img
               src={previewUrl}
               alt="Aperçu de notre passage sur Instagram"
-              className="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+              className={
+                compactTop
+                  ? 'h-[200px] w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:aspect-[4/5] sm:h-auto sm:max-h-[280px]'
+                  : siteRestaurantPhotoGalleryImageClass
+              }
               referrerPolicy="no-referrer"
             />
           ) : (
             <div
-              className="absolute inset-0 bg-gradient-to-br from-[#8D5524]/25 via-[#f8f1ea] to-stone-200"
+              className={
+                compactTop
+                  ? 'h-[200px] w-full bg-gradient-to-br from-[#8D5524]/25 via-[#f8f1ea] to-stone-200 sm:aspect-[4/5] sm:h-auto sm:max-h-[280px]'
+                  : `${siteRestaurantPhotoGalleryImageClass} bg-gradient-to-br from-[#8D5524]/25 via-[#f8f1ea] to-stone-200`
+              }
               aria-hidden
             />
           )}
@@ -122,8 +142,9 @@ export function InstagramPostVideoCard({
           </span>
 
           <span className="absolute bottom-0 left-0 right-0 p-4">
-            <span className="text-sm font-semibold text-white drop-shadow-sm">
-              Contenu d'Afroliya
+            <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-white drop-shadow-sm">
+              <InstagramIcon className="h-4 w-4 shrink-0" />
+              Instagram
             </span>
             <span className="mt-1 block text-xs text-white/90">Appuyer pour lire</span>
           </span>

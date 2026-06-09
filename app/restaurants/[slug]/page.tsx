@@ -7,8 +7,10 @@ import { CommunitySignupSection } from '@/app/components/community-signup-sectio
 import { RestaurantCard } from '@/app/components/restaurant-card'
 import { RestaurantCuisineLocation } from '@/app/components/restaurant-cuisine-location'
 import { RestaurantMenuGallery } from '@/app/components/restaurant-menu-gallery'
-import { RestaurantContactAccess } from '@/app/components/restaurant-contact-access'
+import { RestaurantInfoAccordion } from '@/app/components/restaurant-info-accordion'
+import { RestaurantLocation } from '@/app/components/restaurant-location'
 import { RestaurantOpeningHours } from '@/app/components/restaurant-opening-hours'
+import { RestaurantAfroliyaTouch } from '@/app/components/restaurant-afroliya-touch'
 import { RestaurantPhotoGallery } from '@/app/components/restaurant-photo-gallery'
 import { RestaurantPageStatsTracker } from '@/app/components/restaurant-page-stats-tracker'
 import { RestaurantReviewsSection } from '@/app/components/restaurant-reviews-section'
@@ -29,10 +31,10 @@ import {
   fetchRestaurantFeatures,
   fetchRestaurantMenuPages,
   fetchRestaurantOpeningHours,
-  formatRestaurantHeroRatingLine,
 } from '@/lib/restaurants'
 import { buildRestaurantPageMetadata } from '@/lib/site-metadata'
 import { fetchRestaurantCommunityStats } from '@/lib/restaurant-community'
+import { fetchRestaurantMonthlyReservationCount } from '@/lib/restaurant-reservation-capacity'
 import { getRestaurantReservationCta } from '@/lib/restaurant-reservation-cta'
 import {
   detailPageSectionInnerClass,
@@ -91,6 +93,7 @@ export default async function RestaurantDetailPage({
   const features = await fetchRestaurantFeatures(restaurant.id)
   const openingHours = await fetchRestaurantOpeningHours(restaurant.id)
   const communityStats = await fetchRestaurantCommunityStats(restaurant.id)
+  const monthlyReservationCount = await fetchRestaurantMonthlyReservationCount(restaurant.id)
   const sponsoredSuggestions = await fetchRandomSponsoredRestaurants(restaurant.id, 3)
 
   const coverImage = restaurant.image
@@ -98,21 +101,26 @@ export default async function RestaurantDetailPage({
   const galleryImages = [...otherImages, coverImage]
   const coverGalleryIndex = galleryImages.length - 1
   const showPhotoGallery = otherImages.length > 0
-  const heroRatingLine = formatRestaurantHeroRatingLine(
-    restaurant.note,
-    restaurant.googleReviewCount,
-    restaurant.tarif,
-  )
-  const reservationCta = getRestaurantReservationCta(restaurant)
+  const hasAfroliyaContent = Boolean(restaurant.afroliyaInstagramPostUrl.trim())
+  const showPhotosSection = showPhotoGallery || hasAfroliyaContent
+  const heroNote =
+    restaurant.note.trim() && restaurant.note !== '—' ? restaurant.note : ''
+  const heroTarif = restaurant.tarif.trim()
+  const heroGoogleReviewCount =
+    restaurant.googleReviewCount != null && restaurant.googleReviewCount > 0
+      ? restaurant.googleReviewCount
+      : null
+  const reservationCta = getRestaurantReservationCta()
   const quickActions: QuickActionItem[] = [
-    ...(showPhotoGallery
+    ...(showPhotosSection
       ? [{ id: 'photos', label: 'Photos', href: '#photos' }]
       : []),
     { id: 'carte', label: 'La carte', href: '#carte' },
     { id: 'apropos', label: 'À propos', href: '#a-propos' },
-    { id: 'avis', label: 'Avis et retours', href: '#avis' },
+    { id: 'localisation', label: 'Localisation', href: '#localisation' },
     { id: 'horaires', label: 'Horaires', href: '#horaires' },
-    { id: 'contact', label: 'Contact et accès', href: '#contact-acces' },
+    { id: 'avis', label: 'Avis et retours', href: '#avis' },
+    { id: 'contact', label: 'Contact', href: '#contact' },
     {
       id: 'reserver',
       label: reservationCta.label,
@@ -145,15 +153,24 @@ export default async function RestaurantDetailPage({
               restaurant={restaurant}
               className={`flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-neutral-800 ${siteBodySemiboldClass}`}
             />
-            {heroRatingLine ? (
-              <p className={siteBodySemiboldClass}>{heroRatingLine}</p>
+            {heroNote || heroTarif ? (
+              <ul className="list-disc space-y-1 pl-5 text-lg text-neutral-600">
+                {heroNote ? (
+                  <li>
+                    {heroNote}
+                    {heroGoogleReviewCount != null
+                      ? ` (+${heroGoogleReviewCount} avis Google)`
+                      : ''}
+                  </li>
+                ) : null}
+                {heroTarif ? <li>{heroTarif}</li> : null}
+              </ul>
             ) : null}
           </div>
         }
       >
         <div className="mt-8 flex flex-wrap gap-3">
           <RestaurantReservationLink
-            restaurant={restaurant}
             className={`${siteButtonPrimaryClass} h-12`}
             trackingRestaurantId={restaurant.id}
           />
@@ -161,7 +178,7 @@ export default async function RestaurantDetailPage({
         </div>
       </MarketingSplitHero>
 
-      {showPhotoGallery ? (
+      {showPhotosSection ? (
         <section
           id="photos"
           className={restaurantContentSectionClass}
@@ -172,24 +189,37 @@ export default async function RestaurantDetailPage({
               id="restaurant-photos-heading"
               className={siteHeading2Class}
             >
-              Photos
+              Photos et vidéos
             </h2>
-            <p className={`mt-2 ${siteBodyClass}`}>
-              {galleryImages.length === 1
-                ? '1 photo'
-                : `${galleryImages.length} photos — Défilez pour voir plus. Cliquez pour agrandir.`}
-            </p>
-            <div className="mt-6">
-              <RestaurantPhotoGallery
-                images={galleryImages}
-                alt={restaurant.nom}
-                coverIndex={coverGalleryIndex}
-                trackingRestaurantId={restaurant.id}
-              />
-            </div>
+            {showPhotoGallery ? (
+              <>
+                <p className={`mt-2 ${siteBodyClass}`}>
+                  {galleryImages.length === 1
+                    ? '1 photo'
+                    : `${galleryImages.length} photos — Défilez pour voir plus. Cliquez pour agrandir.`}
+                </p>
+                <div className="mt-6">
+                  <RestaurantPhotoGallery
+                    images={galleryImages}
+                    alt={restaurant.nom}
+                    coverIndex={coverGalleryIndex}
+                    trackingRestaurantId={restaurant.id}
+                  />
+                </div>
+              </>
+            ) : null}
+            {hasAfroliyaContent ? (
+              <div className={showPhotoGallery ? 'mt-10' : 'mt-6'}>
+                <RestaurantAfroliyaTouch
+                  postUrl={restaurant.afroliyaInstagramPostUrl}
+                  restaurantId={restaurant.id}
+                  manualThumbnailUrl={restaurant.afroliyaInstagramThumbnailUrl}
+                  fallbackCoverUrl={restaurant.image}
+                />
+              </div>
+            ) : null}
             <div className="mt-8">
               <RestaurantReservationLink
-                restaurant={restaurant}
                 className={siteButtonPrimaryClass}
                 trackingRestaurantId={restaurant.id}
               />
@@ -219,7 +249,7 @@ export default async function RestaurantDetailPage({
                   aria-hidden
                 />
                 <span>
-                  Informations purement indicatives. Plats et prix susceptibles de changer.
+                Purement indicatif. Plats et prix susceptibles de changer.
                 </span>
               </p>
               {hasMenuPhotos ? (
@@ -233,7 +263,6 @@ export default async function RestaurantDetailPage({
               ) : null}
               <div className="mt-8">
                 <RestaurantReservationLink
-                  restaurant={restaurant}
                   className={siteButtonPrimaryClass}
                   trackingRestaurantId={restaurant.id}
                 />
@@ -247,7 +276,6 @@ export default async function RestaurantDetailPage({
               </p>
               <div className="mt-8">
                 <RestaurantReservationLink
-                  restaurant={restaurant}
                   className={siteButtonPrimaryClass}
                   trackingRestaurantId={restaurant.id}
                 />
@@ -285,20 +313,36 @@ export default async function RestaurantDetailPage({
               </ul>
             </div>
           ) : null}
+          <div id="contact" className="mt-10 scroll-mt-24">
+            <h3 className={siteHeading3Class}>Autres informations</h3>
+            <div className="mt-4">
+              <RestaurantInfoAccordion restaurant={restaurant} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="localisation"
+        className={`${restaurantContentSectionClass} scroll-mt-24`}
+        aria-labelledby="restaurant-localisation-heading"
+      >
+        <div className={detailPageSectionInnerClass}>
+          <h2
+            id="restaurant-localisation-heading"
+            className={siteHeading2Class}
+          >
+            Localisation
+          </h2>
+          <RestaurantLocation restaurant={restaurant} />
           <div className="mt-8">
             <RestaurantReservationLink
-              restaurant={restaurant}
               className={siteButtonPrimaryClass}
               trackingRestaurantId={restaurant.id}
             />
           </div>
         </div>
       </section>
-
-      <RestaurantReviewsSection
-        restaurant={restaurant}
-        communityStats={communityStats}
-      />
 
       <section
         id="horaires"
@@ -318,7 +362,7 @@ export default async function RestaurantDetailPage({
               strokeWidth={2}
               aria-hidden
             />
-            <span>Informations purement indicatives. Réservez pour être sûr(e).</span>
+            <span>Purement indicatif. Réservez pour être sûr(e).</span>
           </p>
           {openingHours.length > 0 ? (
             <RestaurantOpeningHours days={openingHours} />
@@ -329,7 +373,6 @@ export default async function RestaurantDetailPage({
           )}
           <div className="mt-8">
             <RestaurantReservationLink
-              restaurant={restaurant}
               className={siteButtonPrimaryClass}
               trackingRestaurantId={restaurant.id}
             />
@@ -337,21 +380,10 @@ export default async function RestaurantDetailPage({
         </div>
       </section>
 
-      <section
-        id="contact-acces"
-        className={restaurantContentSectionClass}
-        aria-labelledby="restaurant-contact-heading"
-      >
-        <div className={detailPageSectionInnerClass}>
-          <h2
-            id="restaurant-contact-heading"
-            className={siteHeading2Class}
-          >
-            Contact et accès
-          </h2>
-          <RestaurantContactAccess restaurant={restaurant} />
-        </div>
-      </section>
+      <RestaurantReviewsSection
+        restaurant={restaurant}
+        communityStats={communityStats}
+      />
 
       <section
         id="reserver"
@@ -369,6 +401,7 @@ export default async function RestaurantDetailPage({
             restaurant={restaurant}
             openingHours={openingHours}
             reservationVoteCount={communityStats.reservationVoteCount}
+            monthlyReservationCount={monthlyReservationCount}
           />
         </div>
       </section>

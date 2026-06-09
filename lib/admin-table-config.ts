@@ -40,6 +40,8 @@ export const ADMIN_TABLES: AdminTableConfig[] = [
       'phone',
       'email',
       'sponsored',
+      'sponsorship_start_date',
+      'sponsorship_end_date',
       'booking_url',
       'afroliya_instagram_post_url',
       'afroliya_instagram_thumbnail_url',

@@ -9,7 +9,7 @@ export const platformStats = [
     value: 500,
     prefix: '+',
     suffix: '',
-    label: 'Visiteurs actifs chaque semaine',
+    label: 'Utilisateurs actifs chaque semaine',
   },
   {
     value: 2000,

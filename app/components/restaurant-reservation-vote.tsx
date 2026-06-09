@@ -15,15 +15,30 @@ import { restaurantDetailPanelClass, siteHeading3Class, communityActionButtonCla
 type Props = {
   restaurantId: string
   initialVoteCount: number
-  /** À l’intérieur du panneau téléphone (réservation par appel). */
+  /** Panneau côte à côte (fiche restaurant). */
   embedded?: boolean
+  /** Libellés selon le contexte du vote. */
+  purpose?: 'online_booking' | 'more_capacity'
 }
+
+const PURPOSE_COPY = {
+  online_booking: {
+    embeddedTitle: 'Votez pour la réservation en ligne',
+    standaloneTitle: 'Envie de réserver en ligne ici ?',
+  },
+  more_capacity: {
+    embeddedTitle: 'Votez pour plus de capacité sur Afroliya',
+    standaloneTitle: 'Votez pour plus de capacité sur Afroliya',
+  },
+} as const
 
 export function RestaurantReservationVote({
   restaurantId,
   initialVoteCount,
   embedded = false,
+  purpose = 'online_booking',
 }: Props) {
+  const copy = PURPOSE_COPY[purpose]
   const [voteCount, setVoteCount] = useState(() =>
     Math.max(0, Number(initialVoteCount) || 0),
   )
@@ -102,7 +117,7 @@ export function RestaurantReservationVote({
     return (
       <div className={`min-w-0 ${restaurantDetailPanelClass}`}>
         <h3 id="reservation-vote-heading" className={siteHeading3Class}>
-          Votez pour la réservation en ligne
+          {copy.embeddedTitle}
         </h3>
         <div className="mt-4">{voteBody}</div>
       </div>
@@ -118,7 +133,7 @@ export function RestaurantReservationVote({
           aria-hidden
         />
         <div className="min-w-0 flex-1">
-          <h3 className={siteHeading3Class}>Envie de réserver en ligne ici ?</h3>
+          <h3 className={siteHeading3Class}>{copy.standaloneTitle}</h3>
           <div className="mt-2">{voteBody}</div>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { unstable_noStore as noStore } from 'next/cache'
 
+import { isRestaurantSponsorshipActive } from '@/lib/restaurant-sponsorship'
 import { restaurantSlugFromName } from '@/lib/restaurant-slug'
 import { slugify } from '@/lib/slug'
 import { supabase } from '@/lib/supabase'
@@ -85,6 +86,10 @@ export type Restaurant = {
   /** Libellés des tarifs associés (vide si aucun). */
   tarif: string
   sponsored: boolean
+  /** Début de la période de sponsorisation (YYYY-MM-DD), ou vide si immédiat. */
+  sponsorshipStartDate: string | null
+  /** Fin de la période de sponsorisation (YYYY-MM-DD), ou vide si sans limite. */
+  sponsorshipEndDate: string | null
   bookable: boolean
   /** Lien externe de réservation (`booking_url`), pour les établissements sponsorisés. */
   bookingUrl: string
@@ -148,6 +153,8 @@ type DbRestaurantRow = {
   google_review_total_value: number | null
   google_reviews_summary?: string | null
   sponsored: boolean | null
+  sponsorship_start_date?: string | null
+  sponsorship_end_date?: string | null
   bookable: boolean | null
   booking_url?: string | null
   afroliya_instagram_post_url?: string | null
@@ -341,7 +348,7 @@ export function sortRestaurantsForDisplay(restaurants: Restaurant[]): Restaurant
   const others: Restaurant[] = []
 
   for (const restaurant of restaurants) {
-    if (restaurant.sponsored) {
+    if (isRestaurantSponsorshipActive(restaurant)) {
       sponsored.push(restaurant)
     } else if (restaurant.bookable) {
       bookable.push(restaurant)
@@ -399,7 +406,7 @@ export function pickRandomRestaurantPreferringSponsored(
 ): Restaurant | null {
   if (restaurants.length === 0) return null
 
-  const sponsored = restaurants.filter((restaurant) => restaurant.sponsored)
+  const sponsored = restaurants.filter((restaurant) => isRestaurantSponsorshipActive(restaurant))
   const pool = sponsored.length > 0 ? sponsored : restaurants
   return pool[Math.floor(Math.random() * pool.length)] ?? null
 }
@@ -446,6 +453,8 @@ export function mapDbRestaurantToPublic(row: DbRestaurantRow): Restaurant {
     description: (row.description ?? '').trim() || 'Découvrez ce restaurant partenaire.',
     tarif: formatTarifLabels(row.restaurants_tarifs),
     sponsored: row.sponsored === true,
+    sponsorshipStartDate: (row.sponsorship_start_date ?? '').trim() || null,
+    sponsorshipEndDate: (row.sponsorship_end_date ?? '').trim() || null,
     bookable: row.bookable === true,
     bookingUrl: (row.booking_url ?? '').trim(),
     afroliyaInstagramPostUrl: (row.afroliya_instagram_post_url ?? '').trim(),
@@ -474,6 +483,8 @@ const RESTAURANT_CORE_COLUMNS_BASE = `
   google_quotation,
   google_review_total_value,
   sponsored,
+  sponsorship_start_date,
+  sponsorship_end_date,
   bookable
 `
 
@@ -550,6 +561,8 @@ const RESTAURANT_CORE_COLUMNS_NO_SLUG = `
   google_quotation,
   google_review_total_value,
   sponsored,
+  sponsorship_start_date,
+  sponsorship_end_date,
   bookable,
   booking_url
 `
@@ -590,6 +603,8 @@ function isOptionalRestaurantColumnError(message: string): boolean {
     isMissingDbColumnError(message, 'booking_url') ||
     isMissingDbColumnError(message, 'afroliya_instagram_post_url') ||
     isMissingDbColumnError(message, 'afroliya_instagram_thumbnail_url') ||
+    isMissingDbColumnError(message, 'sponsorship_start_date') ||
+    isMissingDbColumnError(message, 'sponsorship_end_date') ||
     isMissingDbColumnError(message, 'slug')
   )
 }
@@ -1153,7 +1168,8 @@ export async function fetchRandomSponsoredRestaurants(
   noStore()
   const restaurants = await fetchPublishedRestaurants()
   const sponsored = restaurants.filter(
-    (restaurant) => restaurant.sponsored && restaurant.id !== excludeRestaurantId,
+    (restaurant) =>
+      isRestaurantSponsorshipActive(restaurant) && restaurant.id !== excludeRestaurantId,
   )
   return shuffleRestaurants(sponsored).slice(0, Math.max(0, limit))
 }

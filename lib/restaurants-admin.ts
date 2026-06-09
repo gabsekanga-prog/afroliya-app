@@ -25,6 +25,8 @@ export type RestaurantAdmin = {
   phone: string | null
   email: string | null
   sponsored: boolean | null
+  sponsorship_start_date?: string | null
+  sponsorship_end_date?: string | null
   commune: string | null
   active: boolean | null
   booking_url?: string | null
@@ -55,6 +57,8 @@ const ADMIN_CORE_COLUMNS_BASE = `
   phone,
   email,
   sponsored,
+  sponsorship_start_date,
+  sponsorship_end_date,
   commune,
   active
 `
@@ -96,6 +100,8 @@ const ADMIN_CORE_COLUMNS_NO_SLUG = `
   phone,
   email,
   sponsored,
+  sponsorship_start_date,
+  sponsorship_end_date,
   commune,
   active,
   booking_url
@@ -133,6 +139,8 @@ function isOptionalAdminColumnError(message: string): boolean {
     isMissingDbColumnError(message, 'booking_url') ||
     isMissingDbColumnError(message, 'afroliya_instagram_post_url') ||
     isMissingDbColumnError(message, 'afroliya_instagram_thumbnail_url') ||
+    isMissingDbColumnError(message, 'sponsorship_start_date') ||
+    isMissingDbColumnError(message, 'sponsorship_end_date') ||
     isMissingDbColumnError(message, 'slug')
   )
 }

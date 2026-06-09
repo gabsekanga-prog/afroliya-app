@@ -1,23 +1,20 @@
 'use client'
 
 import { getRestaurantReservationCta } from '@/lib/restaurant-reservation-cta'
-import type { Restaurant } from '@/lib/restaurants'
 import { trackRestaurantEvent } from '@/lib/restaurant-stats-client'
 
 type Props = {
-  restaurant: Pick<Restaurant, 'sponsored' | 'bookingUrl' | 'telephone'>
   className?: string
   wrapperClassName?: string
   trackingRestaurantId?: string
 }
 
 export function RestaurantReservationLink({
-  restaurant,
   className,
   wrapperClassName,
   trackingRestaurantId,
 }: Props) {
-  const { label, href } = getRestaurantReservationCta(restaurant)
+  const { label, href } = getRestaurantReservationCta()
   const link = (
     <a
       href={href}

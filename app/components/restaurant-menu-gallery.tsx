@@ -86,7 +86,7 @@ export function RestaurantMenuGallery({ pages, alt, trackingRestaurantId }: Prop
 
   return (
     <>
-      <div className="relative w-full max-w-3xl">
+      <div className="relative w-full">
         <p className="mb-3 text-left text-base text-neutral-600">
           Page {index + 1} / {count}
           {current.caption ? ` — ${current.caption}` : ''}

@@ -10,6 +10,7 @@ import {
   siteHeading1OnDarkClass,
   siteHeading2Class,
   sitePageHeroSectionClass,
+  siteSubtitleLeadOnDarkClass,
   restaurantsListContentInnerClass,
   restaurantsListContentSectionClass,
 } from '@/lib/site-styles'
@@ -212,6 +213,9 @@ export function RestaurantsListClient({
           <div className="max-w-4xl">
             <ExperienceBreadcrumb currentLabel="Restaurants" />
             <h1 className={siteHeading1OnDarkClass}>{pageTitle}</h1>
+            <p className={siteSubtitleLeadOnDarkClass}>
+            
+            </p>
             <form
               className="mt-4"
               onSubmit={(e) => e.preventDefault()}

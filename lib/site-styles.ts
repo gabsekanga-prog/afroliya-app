@@ -104,6 +104,13 @@ export const siteMarketingSplitHeroImageClass = siteSectionColumnImageClass
 export const siteRestaurantPhotoGalleryImageClass =
   `${siteMobileImageHeightClass} w-full object-cover transition duration-300 group-hover:scale-[1.02] sm:h-[320px] lg:h-[380px]`
 
+/** Largeur d’une vignette dans le carrousel galerie (fiche restaurant). */
+export const siteRestaurantPhotoGallerySlideClass =
+  'w-[calc(100%-0.5rem)] shrink-0 snap-start sm:w-[calc((100%-1.25rem)/1.45)] md:w-[calc((100%-1.25rem)/1.85)] lg:w-[calc((100%-1.25rem)/2.1)]'
+
+export const siteRestaurantPhotoGallerySlideButtonClass =
+  'group overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 text-left shadow-sm transition hover:border-[#c9a882]/60 hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#8D5524]'
+
 /** Aperçu menu « La carte » (fiche restaurant). */
 export const siteRestaurantMenuGalleryImageClass =
   `mx-auto ${siteMobileImageHeightClass} w-full bg-white object-contain object-center sm:h-auto sm:max-h-[min(72vh,560px)]`

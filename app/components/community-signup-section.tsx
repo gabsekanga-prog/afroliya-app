@@ -147,13 +147,13 @@ export function CommunitySignupSection({
         <div className={siteSectionContentFirstClass}>
           <div className="max-w-2xl">
             <h2 className={siteHeading2Class}>
-            Rejoignez la communauté Afroliya
+            Devenez la référence food afro de vos amis
             </h2>
             <p className={siteSubtitleLeadClass}>
-            Découvertes chaque semaine | Repas gratuits à gagner | Réductions exclusives
+            Rejoignez la communauté Afroliya
             </p>
             <SiteChecklist
-              items={[]}
+              items={["Des découvertes chaque semaine", "Des repas gratuits à gagner", "Des réductions exclusives"]}
             />
           </div>
 
